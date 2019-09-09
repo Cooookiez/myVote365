@@ -1,0 +1,149 @@
+body {
+  background: url("/static/img/planning-finance-business-presentation-businessman-sales-1584859-pxhere.com.jpg") no-repeat center center fixed;
+  background-size: cover;
+}
+
+body > main {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+body > main > article {
+  background-color: rgba(86, 86, 86, 0.8);
+  display: block;
+  margin: 20px;
+  padding: 20px;
+  width: 420px;
+  max-width: 420px;
+}
+
+body > main > article:nth-child(2n+1) {
+  text-align: right;
+}
+
+body > main > article:nth-child(2n+0) {
+  text-align: left;
+}
+
+body > main > article > form > header {
+  color: white;
+  font-weight: 500;
+  font-size: 32pt;
+}
+
+body > main > article > form > section {
+  text-align: left;
+}
+
+body > main > article > form > section > label {
+  font-size: 18pt;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  display: block;
+  color: #E3E3E3;
+}
+
+body > main > article > form > section > input {
+  width: 100%;
+}
+
+body > main > article > form > section > input[type=text], body > main > article > form > section > input[type=email], body > main > article > form > section > input[type=password] {
+  font-size: 18pt;
+  padding: 5px;
+  background-color: rgba(255, 255, 255, 0.7);
+}
+
+body > main > article > form > section > input[type=submit] {
+  font-size: 18pt;
+  height: 42px;
+  background-color: rgba(137, 205, 0, 0.7);
+  -webkit-transition: .8s ease all;
+  transition: .8s ease all;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+body > main > article > form > section > input[type=submit]:hover, body > main > article > form > section > input[type=submit]:active {
+  -webkit-transition: .2s ease all;
+  transition: .2s ease all;
+  -webkit-box-shadow: inset 0px 0px 20px -10px black;
+          box-shadow: inset 0px 0px 20px -10px black;
+  background-color: rgba(81, 158, 0, 0.7);
+}
+
+body > main > article > form > section > ul, body > main > article > form > section > ol {
+  background-color: rgba(236, 235, 235, 0.7);
+  font-size: 12pt;
+  padding: 5px;
+}
+
+body > main > article > form > section > ul > li, body > main > article > form > section > ol > li {
+  color: black;
+  list-style-type: none;
+  letter-spacing: 1px;
+}
+
+body > main > article > form > section > p.callback {
+  padding: 5px;
+  border-width: 4px;
+  border-bottom-width: 0px;
+  border-top-width: 0px;
+  border-style: solid;
+  font-size: 14pt;
+  text-align: left;
+}
+
+body > main > article > form > section > p.callback:empty {
+  font-size: 0pt;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+body > main > article > form > section > p.callback[data-callback-type=success] {
+  background-color: rgba(81, 158, 0, 0.7);
+  color: #89CD00;
+  border-color: rgba(137, 205, 0, 0.7);
+}
+
+body > main > article > form > section > p.callback[data-callback-type=error] {
+  background-color: rgba(99, 0, 0, 0.7);
+  color: #CD0202;
+  border-color: rgba(205, 2, 2, 0.7);
+}
+
+body > footer {
+  display: block;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: rgba(86, 86, 86, 0.8);
+  color: #E3E3E3;
+  font-weight: 300;
+  padding: 10px;
+}
+
+body > footer > span {
+  font-weight: 400;
+}
+
+body > footer > a {
+  text-decoration: none;
+  color: #E3E3E3;
+  cursor: pointer;
+}
+
+body > footer > a:active, body > footer > a:hover {
+  color: #0091FF;
+}
+/*# sourceMappingURL=login-register.css.map */

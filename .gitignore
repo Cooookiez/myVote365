@@ -1,2 +1,6 @@
 
 myVote365/\.vscode/
+
+*.DS_Store
+
+myVote365/static/__PRIVATE__/

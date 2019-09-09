@@ -1,9 +1,13 @@
-@import url("https://fonts.googleapis.com/css?family=Roboto:300,400&display=swap&subset=latin-ext");
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,400,500&display=swap&subset=latin-ext");
 * {
   margin: 0;
   padding: 0;
   border: none;
   outline: none;
   font-family: 'Roboto', sans-serif;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  letter-spacing: .5px;
+  word-spacing: 1.5px;
 }
 /*# sourceMappingURL=main.css.map */

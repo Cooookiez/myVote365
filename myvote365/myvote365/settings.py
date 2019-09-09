@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',
+    '192.168.1.1111',
     'myVote365.com',
     'myVote365.cookiez.pl',
 ]
