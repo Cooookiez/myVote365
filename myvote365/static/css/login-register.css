@@ -1,6 +1,13 @@
 body {
   background: url("/static/img/planning-finance-business-presentation-businessman-sales-1584859-pxhere.com.jpg") no-repeat center center fixed;
   background-size: cover;
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  max-width: 100%;
+  min-height: 100%;
 }
 
 body > main {
@@ -16,6 +23,7 @@ body > main {
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
+  margin-bottom: 64px;
 }
 
 body > main > article {

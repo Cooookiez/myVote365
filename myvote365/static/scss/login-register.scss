@@ -14,12 +14,21 @@ body{
     -o-background-size: cover;
     background-size: cover;
 
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    min-height: 100%;
+
     &>main{
 
         display: flex;
         flex-wrap: wrap;
         flex-direction: row;
         justify-content: center;
+        margin-bottom: 64px;
 
         &>article{
 

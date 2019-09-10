@@ -127,13 +127,11 @@ def audytor_register(request):
                 'msg': 'Zarejestrowałeś się! Za chwilę zostaniesz zalogowany!',
             })
     else:
-        callback = [
-            {
-                'place': 'callback-register-submit',
-                'type': 'error',
-                'msg': 'Coś poszło nie tak, spróbuj ponownie później.',
-            },
-        ]
+        callback = [{
+            'place': 'Hacker\'s computer',
+            'type': 'hacked',
+            'msg': 'Don\'t be hacker pls 👏',
+        }]
 
     json_callback = json.dumps(callback)
     return HttpResponse(json_callback)
@@ -194,18 +192,17 @@ def audytor_login(request):
                 'msg': 'Za wiele kont na jeden email. Skontaktuj się z administratorem by rozwiązać problem (kukizk@gmail.com)',
             })
     else:
-        callback = []
-        callback.append({
+        callback = [{
             'place': 'Hacker\'s computer',
             'type': 'hacked',
             'msg': 'Don\'t be hacker pls 👏',
-        })
+        }]
     json_callback = json.dumps(callback)
     return HttpResponse(json_callback)
 
 
 def audytor_login_register(request):
-    if request.session['audytor']['logged'] == True:
+    if 'audytor' in request.session and request.session['audytor']['logged'] is True:
         return redirect('audytor:panel')
     else:
         return render(request, 'audytor/login_register.html')
