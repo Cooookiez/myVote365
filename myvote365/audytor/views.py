@@ -224,5 +224,10 @@ def audytor_logout(request):
 
 
 def panel(request):
-    return render(request, 'audytor/panel.html')
-    pass
+    return redirect('audytor:panel_presentations')
+
+def presentations(request):
+    return render(request, 'audytor/presentations.html')
+
+def user_settings(request):
+    return render(request, 'audytor/usersettings.html')

@@ -3,11 +3,6 @@
 
 body{
 
-    // background-color: white;
-    // background-image: ;
-    // background-repeat: no-repeat;
-    // background-size: cover;
-
     background: url('/static/img/planning-finance-business-presentation-businessman-sales-1584859-pxhere.com.jpg') no-repeat center center fixed; 
     -webkit-background-size: cover;
     -moz-background-size: cover;
@@ -199,10 +194,12 @@ body{
             text-decoration: none;
             color: $color-light-1;
             cursor: pointer;
+            transition: color ease .5s;
 
             &:active,
             &:hover{
 
+                transition: color ease .1s;
                 color: $color-blue-1;
 
             }

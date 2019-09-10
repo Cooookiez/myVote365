@@ -149,9 +149,13 @@ body > footer > a {
   text-decoration: none;
   color: #E3E3E3;
   cursor: pointer;
+  -webkit-transition: color ease .5s;
+  transition: color ease .5s;
 }
 
 body > footer > a:active, body > footer > a:hover {
+  -webkit-transition: color ease .1s;
+  transition: color ease .1s;
   color: #0091FF;
 }
 /*# sourceMappingURL=login-register.css.map */
