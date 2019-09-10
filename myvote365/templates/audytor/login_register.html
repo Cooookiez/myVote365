@@ -24,13 +24,13 @@
             //* register
             $('#register > form').submit(function(){
                 console.log('Register start')
-                let first_last_name = $('#register_first_last_name').val();
-                let email = $('#register_email').val();
-                let password_1 = $('#register_password_1').val();
-                let password_2 = $('#register_password_2').val();
-                let reCaptcha_response = reChaptcha_token;
-                console.log(reCaptcha_response);
-                let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+                var first_last_name = $('#register_first_last_name').val();
+                var email = $('#register_email').val();
+                var password_1 = $('#register_password_1').val();
+                var password_2 = $('#register_password_2').val();
+                var reCaptcha_response = reChaptcha_token;
+                {#console.log(reCaptcha_response);#}
+                var csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
 
                 $.post('{% url 'audytor:register' %}', {
                     first_last_name: first_last_name,
@@ -40,14 +40,17 @@
                     reCaptcha_response: reCaptcha_response,
                     csrfmiddlewaretoken: csrfmiddlewaretoken,
                 }).done(function(response_raw){
-
-                    //* write callback
-                    response_json = JSON.parse(response_raw)
-                    let responses_count = Object.keys(response_json).length
+                    //clear previous callback(s)
+                    $('p.callback').each(function(){
+                        $(this).text('');
+                    });
+                    // write callback
+                    var response_json = JSON.parse(response_raw)
+                    var responses_count = Object.keys(response_json).length
                     for( i = 0; i < responses_count; i++ ){
-                        let place = response_json[i].place;
-                        let type = response_json[i].type;
-                        let msg = response_json[i].msg;
+                        var place = response_json[i].place;
+                        var type = response_json[i].type;
+                        var msg = response_json[i].msg;
                         $('#'+place).attr('data-callback-type', type).text(msg)
                     }
 
@@ -59,12 +62,45 @@
                 return false;
             });
 
+            //* login
+            $('#login > form').submit(function(){
+                console.log('Login start')
+                var email = $('#login_email').val();
+                var password = $('#login_password').val();
+                var csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+
+                $.post('{% url 'audytor:login' %}', {
+                    email: email,
+                    password: password,
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+                }).done(function(response_raw){
+                    //clear previous callback(s)
+                    $('p.callback').each(function(){
+                        $(this).text('');
+                    });
+                    // write callback
+                    var response_json = JSON.parse(response_raw)
+                    var responses_count = Object.keys(response_json).length
+                    for( i = 0; i < responses_count; i++ ){
+                        var place = response_json[i].place;
+                        var type = response_json[i].type;
+                        var msg = response_json[i].msg;
+                        $('#'+place).attr('data-callback-type', type).text(msg)
+                        if( type == 'success' ){
+                            window.location.replace("/panel");
+                        }
+                    }
+
+                }).fail(function(){
+
+                });
+                return false
+            });
+
         }); // jQ END
 
         function generateReChaptchaToken(){
             grecaptcha.execute('6LekELYUAAAAAD0T6UTe8hN9tTeFNZ9JEDTR25H1', {action: 'register'}).then(function(token) {
-                {#console.log('reCaptcha')#}
-                {#console.log(token)#}
                 reChaptcha_token = token
             });
         }
@@ -82,11 +118,11 @@
                 <header>Zaloguj się</header>
                 <section>
                     <label for="login_email">Twój Email</label>
-                    <input id="login_email" name="login_email" type="email" placeholder="twój@email.com" required autofocus>
+                    <input id="login_email" name="login_email" type="email" placeholder="twój@email.com" required autofocus value="kukizk+jannowak@gmail.com">
                 </section>
                 <section>
                     <label for="login_password">Twoje hasło</label>
-                    <input id="login_password" name="login_password" type="password" placeholder="********" required>
+                    <input id="login_password" name="login_password" type="text" placeholder="********" required value="zaq1@WSX">
                 </section>
                 <section>
                     <input type="submit" value="Zaloguj się">
@@ -109,7 +145,7 @@
                 </section>
                 <section>
                     <label for="register_password_1">Hasło</label>
-                    <input id="register_password_1" name="register_password_1" type="password" placeholder="Wpisz hasło" required value="zaq1@WSX">
+                    <input id="register_password_1" name="register_password_1" type="text" placeholder="Wpisz hasło" required value="zaq1@WSX">
                     <p class="callback" data-callback-type="" id="callback-register-password-1"></p>
                     <ul>
                         <li>Minimum 8 znaków</li>
@@ -121,7 +157,7 @@
                     <ul>
                         <li>Hasła są identyczne</li>
                     </ul>
-                    <input id="register_password_2" name="register_password_2" type="password" placeholder="Potwierdź hasło" required value="zaq1@WSX">
+                    <input id="register_password_2" name="register_password_2" type="text" placeholder="Potwierdź hasło" required value="zaq1@WSX">
                     <p class="callback" data-callback-type="" id="callback-register-password-2"></p>
                 </section>
                 <section>

@@ -6,6 +6,7 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 import string
 import requests
+import bcrypt
 
 cred = credentials.Certificate('static/__PRIVATE__/myvote365-aa6f5-firebase-adminsdk-ipqcy-ce6c711131.json')
 firebase_admin.initialize_app(cred)
@@ -21,10 +22,10 @@ def audytor_register(request):
         # requested data
         first_last_name = str(request.POST.get('first_last_name')).strip()
         email = str(request.POST.get('email')).strip()
-        password_1 = str(request.POST.get('password_1')).strip()
-        password_2 = str(request.POST.get('password_2')).strip()
+        password_1 = request.POST.get('password_1')
+        password_2 = request.POST.get('password_2')
+        password_hash = bcrypt.hashpw(str(password_1).encode('utf-8'), bcrypt.gensalt())
         reCaptcha_response = str(request.POST.get('reCaptcha_response'))
-        register_date = str(datetime.now())
 
         # EMAIL check if email exist
         audytors_ref = db.collection(u'audytors')
@@ -103,8 +104,7 @@ def audytor_register(request):
             }
             r = requests.post(url='https://www.google.com/recaptcha/api/siteverify', data=reCaptcha_data).text
             reCaptcha_json_result = json.loads(r)
-            print(reCaptcha_json_result)
-            if not reCaptcha_json_result['success']:
+            if reCaptcha_json_result['success'] in locals() and not reCaptcha_json_result['success']:
                 is_error = True
                 callback.append({
                     'place': 'callback-register-submit',
@@ -112,8 +112,20 @@ def audytor_register(request):
                     'msg': 'reChaptcha errror',
                 })
 
-
-
+        # if no errors, register
+        if not is_error:
+            audytors_ref = db.collection(u'audytors').document()
+            audytors_ref.set({
+                u'name': first_last_name,
+                u'email': email,
+                u'password': password_hash,
+                u'register_date': datetime.now(),
+            })
+            callback.append({
+                'place': 'callback-register-submit',
+                'type': 'success',
+                'msg': 'Zarejestrowałeś się! Za chwilę zostaniesz zalogowany!',
+            })
     else:
         callback = [
             {
@@ -128,16 +140,92 @@ def audytor_register(request):
 
 
 def audytor_login(request):
-    pass
+    if request.method == 'POST':
+
+        callback = []
+
+        # requested data
+        email = str(request.POST.get('email')).strip()
+        password = request.POST.get('password')
+
+        # is only one audytor with mail & get audytor id
+        index = 0
+        audytor_id = None # audytor id to get user later on
+        audytors_ref = db.collection(u'audytors')
+        audytors_where_ref = audytors_ref.where(u'email', u'==', email)
+        audytors = audytors_where_ref.get()
+        for audytor in audytors:
+            index = index + 1
+            audytor_id = audytor.id
+
+        # is only one audytor
+        if index == 1:
+            audytor_ref = db.collection(u'audytors').document(audytor_id)
+            audytor = audytor_ref.get().to_dict()
+            match = bcrypt.checkpw(str(password).encode('utf-8'), audytor['password'])
+            if match: # passwords match, login
+                # add audytor to session
+                request.session['audytor'] = {
+                    'logged': True,
+                    'name': audytor['name'],
+                    'email': audytor['email'],
+                    'audytor_id': audytor_id,
+                }
+                # add 'last logged' to db
+                audytor_ref.update({
+                    u'last_logged': datetime.now(),
+                })
+                # return msg
+                callback.append({
+                    'place': 'callback-login-submit',
+                    'type': 'success',
+                    'msg': 'Zalogowałeś się, już cię przekierowujemy!',
+                })
+            else: # passwords doesn't match
+                callback.append({
+                    'place': 'callback-login-submit',
+                    'type': 'error',
+                    'msg': 'Email, lub hasło są błędne',
+                })
+        else:
+            callback.append({
+                'place': 'callback-login-submit',
+                'type': 'error',
+                'msg': 'Za wiele kont na jeden email. Skontaktuj się z administratorem by rozwiązać problem (kukizk@gmail.com)',
+            })
+    else:
+        callback = []
+        callback.append({
+            'place': 'Hacker\'s computer',
+            'type': 'hacked',
+            'msg': 'Don\'t be hacker pls 👏',
+        })
+    json_callback = json.dumps(callback)
+    return HttpResponse(json_callback)
 
 
 def audytor_login_register(request):
-    return render(request, 'audytor/login_register.html')
+    if request.session['audytor']['logged'] == True:
+        return redirect('audytor:panel')
+    else:
+        return render(request, 'audytor/login_register.html')
 
 
 def audytor_logout(request):
-    pass
+    # add 'last logged' to db
+    audytor_ref = db.collection(u'audytors').document(request.session['audytor']['audytor_id'])
+    audytor_ref.update({
+        u'last_logged': datetime.now(),
+    })
+    request.session['audytor'] = {
+        'logged': False,
+        'name': None,
+        'email': None,
+        'audytor_id': None,
+    }
+    return redirect('audytor:index')
 
 
-def show_conference_list(request):
+def panel(request):
+    return render(request, 'audytor/panel.html')
     pass
