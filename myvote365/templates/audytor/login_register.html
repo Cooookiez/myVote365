@@ -8,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>myVote365 – Login / Register</title>
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
-    <link rel="stylesheet" href="{% static 'css/login-register.css' %}">
+    <link rel="stylesheet" href="{% static 'css/login_register.css' %}">
     <script src="https://www.google.com/recaptcha/api.js?render=6LekELYUAAAAAD0T6UTe8hN9tTeFNZ9JEDTR25H1"></script>
     <script src="{% static 'javascript/jquery-3.4.1.min.js' %}"></script>
     <script>
@@ -52,6 +52,11 @@
                         var type = response_json[i].type;
                         var msg = response_json[i].msg;
                         $('#'+place).attr('data-callback-type', type).text(msg)
+                        if( type == 'success' ){
+                            $('#login_email').val(email);
+                            $('#login_password').val(password_1);
+                            login_post();
+                        }
                     }
 
                 }).fail(function(){
@@ -64,7 +69,20 @@
 
             //* login
             $('#login > form').submit(function(){
-                console.log('Login start')
+                login_post();
+                return false
+            });
+
+        }); // jQ END
+
+        function generateReChaptchaToken(){
+            grecaptcha.execute('6LekELYUAAAAAD0T6UTe8hN9tTeFNZ9JEDTR25H1', {action: 'register'}).then(function(token) {
+                reChaptcha_token = token
+            });
+        }
+
+        function login_post(){
+            console.log('Login start')
                 var email = $('#login_email').val();
                 var password = $('#login_password').val();
                 var csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
@@ -93,15 +111,6 @@
 
                 }).fail(function(){
 
-                });
-                return false
-            });
-
-        }); // jQ END
-
-        function generateReChaptchaToken(){
-            grecaptcha.execute('6LekELYUAAAAAD0T6UTe8hN9tTeFNZ9JEDTR25H1', {action: 'register'}).then(function(token) {
-                reChaptcha_token = token
             });
         }
 
@@ -114,15 +123,15 @@
         {% csrf_token %}
 
         <article id="login">
-            <form>
+            <form method="POST">
                 <header>Zaloguj się</header>
                 <section>
                     <label for="login_email">Twój Email</label>
-                    <input id="login_email" name="login_email" type="email" placeholder="twój@email.com" required autofocus value="kukizk+jannowak@gmail.com">
+                    <input id="login_email" name="login_email" type="email" placeholder="twój@email.com" required autofocus>
                 </section>
                 <section>
                     <label for="login_password">Twoje hasło</label>
-                    <input id="login_password" name="login_password" type="text" placeholder="********" required value="zaq1@WSX">
+                    <input id="login_password" name="login_password" type="password" placeholder="Wpisz hasło" required>
                 </section>
                 <section>
                     <input type="submit" value="Zaloguj się">
@@ -132,20 +141,20 @@
         </article>
 
         <article id="register">
-            <form>
+            <form method="POST">
                 <header>Zarejestruj się</header>
                 <section>
                     <label for="register_first_last_name">Wpisz imię i nazwisko</label>
-                    <input id="register_first_last_name" name="register_first_last_name" type="text" placeholder="Jan nowak" required value="Jan Nowak">
+                    <input id="register_first_last_name" name="register_first_last_name" type="text" placeholder="Jan nowak" required>
                 </section>
                 <section>
                     <label for="register_email">Twój email</label>
-                    <input id="register_email" name="register_email" type="email" placeholder="twój@email.com" required value="kukizk+jannowak@gmail.com">
+                    <input id="register_email" name="register_email" type="email" placeholder="twój@email.com" required>
                     <p class="callback" data-callback-type="" id="callback-register-email"></p>
                 </section>
                 <section>
                     <label for="register_password_1">Hasło</label>
-                    <input id="register_password_1" name="register_password_1" type="text" placeholder="Wpisz hasło" required value="zaq1@WSX">
+                    <input id="register_password_1" name="register_password_1" type="password" placeholder="Wpisz hasło" required>
                     <p class="callback" data-callback-type="" id="callback-register-password-1"></p>
                     <ul>
                         <li>Minimum 8 znaków</li>
@@ -155,9 +164,9 @@
                         <li>Co Najmniej 1 mała litera (a, b, c, …)</li>
                     </ul>
                     <ul>
-                        <li>Hasła są identyczne</li>
+                        <li>Hasła muszą być identyczne</li>
                     </ul>
-                    <input id="register_password_2" name="register_password_2" type="text" placeholder="Potwierdź hasło" required value="zaq1@WSX">
+                    <input id="register_password_2" name="register_password_2" type="password" placeholder="Potwierdź hasło" required>
                     <p class="callback" data-callback-type="" id="callback-register-password-2"></p>
                 </section>
                 <section>

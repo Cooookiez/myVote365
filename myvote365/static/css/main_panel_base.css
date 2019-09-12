@@ -86,7 +86,8 @@ body > nav#menu > article > a:hover {
 }
 
 body > nav#menu > article > a[data-active=true], body > nav#menu > article > a[data-active=True] {
-  background-color: #ecebeb;
+  background-color: rgba(86, 86, 86, 0.8);
+  color: #E3E3E3;
 }
 
 body > nav#menu > article > a > .ico {
@@ -107,6 +108,8 @@ body > main {
   -ms-grid-row: 1;
   -ms-grid-column: 2;
   grid-area: main;
+  overflow-x: hidden;
+  position: relative;
 }
 
 body > footer#hide-extend-menu {

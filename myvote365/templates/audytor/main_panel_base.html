@@ -5,25 +5,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>myVote365</title>
+    <title>{% block title %}{% endblock %} | myVote365</title>
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/main_panel_base.css' %}">
+    <link rel="shortcut icon" href="{% static 'favicon/Asset 3 copy.png' %}" type="image/x-icon">
     <script src="{% static 'fontawesome-pro-5.10.2-web/js/all.js' %}"></script>
+    {% block head %}{% endblock %}
 </head>
 <body>
     <nav id="menu">
         <article id="menu-options">
-            <a href="{% url 'audytor:panel_presentations' %}" class="menu-option" data-active="{% block menu_option_presentations %}{% endblock %}"><div class="ico far fa-presentation"></div><span class="label">Twoje prezentacje Twoje </span></a>
+            <a href="{% url 'audytor:panel_presentations' %}" class="menu-option" data-active="{% block menu_option_presentations %}{% endblock %}"><div class="ico far fa-presentation"></div><span class="label">Twoje prezentacje</span></a>
             <a href="{% url 'audytor:panel_user_settings' %}" class="menu-option" data-active="{% block menu_option_user_settings %}{% endblock %}"><div class="ico far fa-user-cog"></div><span class="label">Ustawienia konta</span></a>
         </article>
         <article id="menu-logout">
-            <a href="{% url 'audytor:logout' %}" class="menu-option-element"><div class="ico far fa-sign-out-alt"></div><span class="label">Wyloguj się</span></a>
+            <a href="{% url 'audytor:logout' %}" class="menu-option-element"><div class="ico far fa-sign-out-alt fa-rotate-180"></div><span class="label">Wyloguj się</span></a>
         </article>
     </nav>
     <main>
-        {% block main %}
-        
-        {% endblock %}
+        {% block main %}{% endblock %}
     </main>
     <footer id="hide-extend-menu">
         <div class="ico far fa-chevron-left"></div>

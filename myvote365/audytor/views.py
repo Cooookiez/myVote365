@@ -224,10 +224,19 @@ def audytor_logout(request):
 
 
 def panel(request):
-    return redirect('audytor:panel_presentations')
+    if 'audytor' in request.session and request.session['audytor']['logged'] is True:
+        return redirect('audytor:panel_user_settings')
+    else:
+        return redirect('audytor:index')
 
 def presentations(request):
-    return render(request, 'audytor/presentations.html')
+    if 'audytor' in request.session and request.session['audytor']['logged'] is True:
+        return render(request, 'audytor/presentations.html')
+    else:
+        return redirect('audytor:index')
 
 def user_settings(request):
-    return render(request, 'audytor/usersettings.html')
+    if 'audytor' in request.session and request.session['audytor']['logged'] is True:
+        return render(request, 'audytor/usersettings.html')
+    else:
+        return redirect('audytor:index')

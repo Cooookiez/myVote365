@@ -90,7 +90,7 @@ body > main > article > form > section > input[type=submit]:hover, body > main >
 }
 
 body > main > article > form > section > ul, body > main > article > form > section > ol {
-  background-color: rgba(236, 235, 235, 0.7);
+  background-color: rgba(236, 235, 235, 0.5);
   font-size: 12pt;
   padding: 5px;
 }
@@ -158,4 +158,4 @@ body > footer > a:active, body > footer > a:hover {
   transition: color ease .1s;
   color: #0091FF;
 }
-/*# sourceMappingURL=login-register.css.map */
+/*# sourceMappingURL=login_register.css.map */

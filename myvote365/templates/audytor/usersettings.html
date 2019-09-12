@@ -1,8 +1,83 @@
 
 {% extends 'audytor/main_panel_base.html' %}
+{% load staticfiles %}
 
+{% block title %}Ustawienia konta{% endblock %}
 {% block menu_option_user_settings %}True{% endblock %}
 
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/main_panel_user_settings.css' %}">
+{% endblock %}
+
 {% block main %}
-    <h1>Ustawienia konta</h1>
+    <article class="callback">
+        <div class="ico ico-left far fa-exclamation-triangle"></div>
+        <div class="ico ico-right far fa-exclamation-triangle"></div>
+        <span class="label">Zmiany nie zostały zapisane</span>
+    </article>
+
+    <article class="user-edit">
+        <form method="POST">
+            <section>
+                <label for="login_email">Imie i nazwisko</label>
+                <input id="login_email" name="login_email" type="email" placeholder="twój@email.com" required autofocus>
+                <p class="callback" data-callback-type="error" id="callback-register-password-1">Error</p>
+            </section>
+            <section class="full-width">
+                <input type="submit" value="Zapisz">
+                <p class="callback" data-callback-type="error" id="callback-register-password-1">Error</p>
+            </section>
+        </form>
+    </article>
+
+    <article class="user-edit" data-saved="False">
+        <form method="POST">
+            <section>
+                <label for="login_email">Email</label>
+                <input id="login_email" name="login_email" type="email" placeholder="twój@email.com" required autofocus>
+                <p class="callback" data-callback-type="error" id="callback-register-password-1">Error</p>
+            </section>
+            <section>
+                <label for="login_password">Potwierdź hasłem</label>
+                <input id="login_password" name="login_password" type="password" placeholder="Wpisz hasło" required>
+                <p class="callback" data-callback-type="error" id="callback-register-password-1">Error</p>
+            </section>
+            <section class="full-width">
+                <input type="submit" value="Zapisz">
+                <p class="callback" data-callback-type="error" id="callback-register-password-1">Error</p>
+            </section>
+        </form>
+    </article>
+
+    <article class="user-edit" data-saved="True">
+        <form method="POST">
+            <section>
+                <label for="register_password_1">Nowe hasło</label>
+                <input id="register_password_1" name="register_password_1" type="password" placeholder="Wpisz nowe hasło" required>
+                <p class="callback" data-callback-type="error" id="callback-register-password-1">Error</p>
+                <ul>
+                    <li>Minimum 8 znaków</li>
+                    <li>Co Najmniej 1 liczba</li>
+                    <li>Co Najmniej 1 znak specjalny (!, @, #, $, …)</li>
+                    <li>Co Najmniej 1 wielka litera (A, B, C, …)</li>
+                    <li>Co Najmniej 1 mała litera (a, b, c, …)</li>
+                </ul>
+                <ul>
+                    <li>Hasła muszą być identyczne</li>
+                </ul>
+                <input id="register_password_2" name="register_password_2" type="password" placeholder="Potwierdź nowe hasło" required>
+                <p class="callback" data-callback-type="error" id="callback-register-password-2">Error</p>
+            </section>
+            <section>
+                <label for="register_password_1">Aktualne hasło</label>
+                <input id="register_password_1" name="register_password_1" type="password" placeholder="Wpisz aktualne hasło" required>
+                <p class="callback" data-callback-type="error" id="callback-register-password-2">Error</p>
+            </section>
+            <section class="full-width">
+                <input type="submit" value="Zapisz">
+                <p class="callback" data-callback-type="error" id="callback-register-password-2">Error</p>
+            </section>
+        </form>
+    </article>
+
 {% endblock %}

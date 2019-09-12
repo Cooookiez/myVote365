@@ -1,0 +1,197 @@
+
+@import 'variables';
+
+main{
+    
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+
+    &>article{
+
+        background-color: rgba($color: $color-dark, $alpha: 0.80);
+        display: block;
+        width: 420px; // 420
+        max-width: 420px;
+
+        &.callback{
+
+            display: block;
+            position: absolute;
+            top: 20px;
+            display: grid;
+            grid-template-columns: 30px auto 30px;
+            grid-template-rows: 30px;
+            grid-template-areas: "ico-left label ico-right";
+            gap: 10px;
+            padding: 10px;
+            background-color: rgba($color: $color-warning-1, $alpha: 1.00);
+            box-shadow: 2px 4px 12px rgba($color: #000000, $alpha: 0.50);
+            align-items: center;
+
+            &>.ico{
+
+                width: 100%;
+                height: 100%;
+
+                &.ico-left{
+                    grid-area: ico-left;
+                }
+                
+                &.ico-right{
+                    grid-area: ico-right;
+                }
+
+            }
+    
+            &>.label{
+                grid-area: label;
+                text-align: center;
+                font-size: 16pt;
+            }
+
+        }
+
+        &.user-edit{
+            
+            margin-top: 20px;
+
+            &:nth-child(2){
+
+                margin-top: 20px*2 + 50px;
+
+            }
+
+            &:last-child{
+
+                margin-bottom: 20px;
+
+            }
+
+            &[data-saved=False]{
+
+                background-color: rgba($color: $color-dark, $alpha: 1.00);
+                box-shadow: 8px 8px 0px 0px rgba($color: $color-warning-1, $alpha: 1.00);
+
+            }
+
+            &>form{
+
+                &>section{
+
+                    text-align: left;
+                    margin: 20px;
+
+                    &.full-width{
+
+                        margin: 20px 0px 0px 0px;
+                    
+                    }
+
+                    &>label{
+
+                        font-size: 18pt;
+                        display: block;
+                        color: $color-light-1;
+                        margin-bottom: 5px;
+
+                    }
+
+                    &>input{
+
+                        width: 100%;
+                        padding: 5px;
+
+                        &[type=text],
+                        &[type=email],
+                        &[type=password]{
+
+                            font-size: 18pt;
+                            background-color: rgba($color:white, $alpha: 0.7)
+
+                        }
+
+                        &[type=submit]{
+                            
+                            font-size: 18pt;
+                            background-color: rgba($color: $color-green-1, $alpha: 0.7);
+                            transition: .8s ease all;
+                            cursor: pointer;
+
+                            &:hover,
+                            &:active{
+                                
+                                transition: .2s ease all;
+                                box-shadow: inset 0px 0px 20px -10px black;
+                                background-color: rgba($color: $color-green-2, $alpha: 0.7);
+
+                            }
+
+                        }
+
+                    }
+
+                    &>ul, &>ol{
+
+                        background-color: rgba($color: $color-light-2, $alpha: 0.5);
+                        font-size: 12pt;
+                        padding: 5px;
+
+                        &>li{
+
+                            color: black;
+                            list-style-type: none;
+                            letter-spacing: 1px;
+
+                        }
+
+                    }
+
+                    &>p{
+
+                        &.callback{
+
+                            padding: 5px;
+                            border-width: 4px;
+                            border-bottom-width: 0px;
+                            border-top-width: 0px;
+                            border-style: solid;
+                            font-size: 14pt;
+                            text-align: left;
+
+                            &:empty{
+                                font-size: 0pt;
+                                padding: {
+                                    top: 0px;
+                                    bottom: 0px;
+                                }
+                            }
+
+                            &[data-callback-type=success]{
+
+                                background-color: rgba($color: $color-success-dark, $alpha: 0.7);
+                                color: $color-success-light;
+                                border-color: rgba($color: $color-success-light, $alpha: 0.7);
+
+                            }
+
+                            &[data-callback-type=error]{
+
+                                background-color: rgba($color: $color-error-dark, $alpha: 0.7);
+                                color: $color-error-light;
+                                border-color: rgba($color: $color-error-light, $alpha: 0.7);
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    }
+
+}

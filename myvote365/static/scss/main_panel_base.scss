@@ -1,3 +1,4 @@
+//! min width is 636px (or 646?, 6X6 (find x))
 
 @import 'variables';
 
@@ -95,7 +96,8 @@ body{
                 &[data-active=true],
                 &[data-active=True]{
 
-                    background-color: rgba($color: $color-light-2, $alpha: 1.0);
+                    background-color: rgba($color: $color-dark, $alpha: 0.8);
+                    color: $color-light-1;
 
                 }
 
@@ -122,6 +124,8 @@ body{
     &>main{
 
         grid-area: main;
+        overflow-x: hidden;
+        position: relative;
 
     }
 
