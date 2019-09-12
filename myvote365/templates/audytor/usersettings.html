@@ -19,9 +19,9 @@
     <article class="user-edit">
         <form method="POST">
             <section>
-                <label for="login_email">Imie i nazwisko</label>
-                <input id="login_email" name="login_email" type="email" placeholder="twój@email.com" required autofocus>
-                <p class="callback" data-callback-type="error" id="callback-register-password-1">Error</p>
+                <label for="user_settings_name">Imie i nazwisko</label>
+                <input id="user_settings_name" name="user_settings_name" type="text" placeholder="{% if request.session.audytor.logged %}{{request.session.audytor.name}}{% else %}Jan Nowak{% endif %}" required value="{% if request.session.audytor.logged %}{{request.session.audytor.name}}{% endif %}">
+                <p class="callback" data-callback-type="error" id="callback-user-settings-name">Error</p>
             </section>
             <section class="full-width">
                 <input type="submit" value="Zapisz">
@@ -34,7 +34,7 @@
         <form method="POST">
             <section>
                 <label for="login_email">Email</label>
-                <input id="login_email" name="login_email" type="email" placeholder="twój@email.com" required autofocus>
+                <input id="login_email" name="login_email" type="email" placeholder="{% if request.session.audytor.logged %}{{request.session.audytor.email}}{% else %}twój@email.com{% endif %}" required value="{% if request.session.audytor.logged %}{{request.session.audytor.email}}{% endif %}">
                 <p class="callback" data-callback-type="error" id="callback-register-password-1">Error</p>
             </section>
             <section>
