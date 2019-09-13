@@ -10,51 +10,136 @@
 {% endblock %}
 
 {% block main %}
-    <article class="callback">
+
+    <script>
+
+        $(function(){
+            // –––––––––– GENERAL START ––––––––––
+            $('#user-settings-general-name').keyup(function(){
+                update_general_check();
+            });
+            $('article#user-settings-general > form').submit(function(){
+                console.log('GENERAL START')
+                var csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+                var name = $('#user-settings-general-name').val();
+
+                $.post('{% url 'audytor:panel_user_settings_update_general' %}', {
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+                    name: name,
+                }).done(function(response_raw){
+                    //clear previous callback(s)
+                    $('p.callback').each(function(){
+                        $(this).text('');
+                    });
+                    // write callback
+                    var response_json = JSON.parse(response_raw)
+                    var responses_count = Object.keys(response_json).length
+                    $('#'+place).attr('data-callback-type', type).text(msg)
+                    for( i = 0; i < responses_count; i++ ){
+                        var place = response_json[i].place;
+                        var type = response_json[i].type;
+                        var msg = response_json[i].msg;
+                        $('#'+place).attr({
+                            'data-callback-type': type,
+                            'data-show': 'True'
+                        }).text(msg)
+                        if( type == 'success' ){
+                            weit_and_hide_main_alert(place);
+                        }
+                    }
+                    $('#user-settings-general-name').attr('data-cur-val', $('#user-settings-general-name').val());
+                    update_general_check()
+                });
+                return false;
+            });
+            // –––––––––– GENERAL END ––––––––––
+
+        }); // –––––––––– jQ END ––––––––––
+
+        function update_general_check(){
+            if( $('#user-settings-general-name').attr('data-cur-val') != 'null' && $('#user-settings-general-name').attr('data-cur-val') != $('#user-settings-general-name').val() ){
+                $('#user-settings-general').attr('data-saved', 'False');
+            }else{
+                $('#user-settings-general').attr('data-saved', 'True');
+            }
+            check_if_saved();
+        }
+
+        function check_if_saved(){
+            var saved = true;
+            $('article.user-edit').each(function(){
+                if( $(this).attr('data-saved') == 'False' ){
+                    saved = false;
+                }
+            });
+            if(!saved){
+                $('article#main-callback').attr('data-show', 'True');
+            }else{
+                $('article#main-callback').attr('data-show', 'False');
+            }
+        }
+
+        function weit_and_hide_main_alert(place){
+            setTimeout(function(){
+                $('#'+place).attr('data-show', 'False')
+            }, 2000);
+        }
+
+    </script>
+
+    {% csrf_token %}
+
+    <article id="main-callback" class="callback" data-show="False">
         <div class="ico ico-left far fa-exclamation-triangle"></div>
         <div class="ico ico-right far fa-exclamation-triangle"></div>
         <span class="label">Zmiany nie zostały zapisane</span>
     </article>
 
-    <article class="user-edit">
+    <article class="user-edit" id="user-settings-general">
         <form method="POST">
             <section>
-                <label for="user_settings_name">Imie i nazwisko</label>
-                <input id="user_settings_name" name="user_settings_name" type="text" placeholder="{% if request.session.audytor.logged %}{{request.session.audytor.name}}{% else %}Jan Nowak{% endif %}" required value="{% if request.session.audytor.logged %}{{request.session.audytor.name}}{% endif %}">
-                <p class="callback" data-callback-type="error" id="callback-user-settings-name">Error</p>
+                <label for="user-settings-general-name">Imie i nazwisko</label>
+                <input id="user-settings-general-name"
+                    data-cur-val="{% if request.session.audytor.logged %}{{request.session.audytor.name}}{% else %}null{% endif %}"
+                    name="user-settings-general-name"
+                    type="text"
+                    placeholder="Jan Nowak"
+                    required
+                    value="{% if request.session.audytor.logged %}{{request.session.audytor.name}}{% endif %}">
+                <p class="callback" data-callback-type="" id="callback-user-settings-general-name"></p>
             </section>
             <section class="full-width">
                 <input type="submit" value="Zapisz">
-                <p class="callback" data-callback-type="error" id="callback-register-password-1">Error</p>
+                <p class="callback" data-callback-type="" id="callback-user-settings-general-submit"></p>
             </section>
         </form>
     </article>
 
-    <article class="user-edit" data-saved="False">
+    <article class="user-edit" id="user-settings-email" data-saved="True">
         <form method="POST">
             <section>
-                <label for="login_email">Email</label>
-                <input id="login_email" name="login_email" type="email" placeholder="{% if request.session.audytor.logged %}{{request.session.audytor.email}}{% else %}twój@email.com{% endif %}" required value="{% if request.session.audytor.logged %}{{request.session.audytor.email}}{% endif %}">
-                <p class="callback" data-callback-type="error" id="callback-register-password-1">Error</p>
+                <label for="user-settings-email-email">Email</label>
+                <input id="user-settings-email-email" name="user-settings-email-email" type="email" placeholder="{% if request.session.audytor.logged %}{{request.session.audytor.email}}{% else %}twój@email.com{% endif %}" required value="{% if request.session.audytor.logged %}{{request.session.audytor.email}}{% endif %}">
+                <p class="callback" data-callback-type="" id="callback-user-settings-email-email"></p>
             </section>
             <section>
-                <label for="login_password">Potwierdź hasłem</label>
-                <input id="login_password" name="login_password" type="password" placeholder="Wpisz hasło" required>
-                <p class="callback" data-callback-type="error" id="callback-register-password-1">Error</p>
+                <label for="user-settings-email-password">Potwierdź hasłem</label>
+                <input id="user-settings-email-password" name="user-settings-email-password" type="password" placeholder="Wpisz hasło" required>
+                <p class="callback" data-callback-type="" id="callback-user-settings-email-password"></p>
             </section>
             <section class="full-width">
                 <input type="submit" value="Zapisz">
-                <p class="callback" data-callback-type="error" id="callback-register-password-1">Error</p>
+                <p class="callback" data-callback-type="" id="callback-user-settings-email-submit"></p>
             </section>
         </form>
     </article>
 
-    <article class="user-edit" data-saved="True">
+    <article class="user-edit" id="user-settings-password" data-saved="True">
         <form method="POST">
             <section>
-                <label for="register_password_1">Nowe hasło</label>
-                <input id="register_password_1" name="register_password_1" type="password" placeholder="Wpisz nowe hasło" required>
-                <p class="callback" data-callback-type="error" id="callback-register-password-1">Error</p>
+                <label for="user-settings-password-new-password-1">Nowe hasło</label>
+                <input id="user-settings-password-new-password-1" name="user-settings-password-new-password-1" type="password" placeholder="Wpisz nowe hasło" required>
+                <p class="callback" data-callback-type="" id="callback-user-settings-password-new-password-1"></p>
                 <ul>
                     <li>Minimum 8 znaków</li>
                     <li>Co Najmniej 1 liczba</li>
@@ -65,17 +150,17 @@
                 <ul>
                     <li>Hasła muszą być identyczne</li>
                 </ul>
-                <input id="register_password_2" name="register_password_2" type="password" placeholder="Potwierdź nowe hasło" required>
-                <p class="callback" data-callback-type="error" id="callback-register-password-2">Error</p>
+                <input id="user-settings-password-new-password-2" name="user-settings-password-new-password-2" type="password" placeholder="Potwierdź nowe hasło" required>
+                <p class="callback" data-callback-type="" id="callback-user-settings-password-new-password-2"></p>
             </section>
             <section>
-                <label for="register_password_1">Aktualne hasło</label>
-                <input id="register_password_1" name="register_password_1" type="password" placeholder="Wpisz aktualne hasło" required>
-                <p class="callback" data-callback-type="error" id="callback-register-password-2">Error</p>
+                <label for="user-settings-password-old-password">Potwierdź hasłem</label>
+                <input id="user-settings-password-old-password" name="user-settings-password-old-password" type="password" placeholder="Wpisz aktualne hasło" required>
+                <p class="callback" data-callback-type="" id="callback-user-settings-password-old-password"></p>
             </section>
             <section class="full-width">
                 <input type="submit" value="Zapisz">
-                <p class="callback" data-callback-type="error" id="callback-register-password-2">Error</p>
+                <p class="callback" data-callback-type="" id="callback-user-settings-password-submit"></p>
             </section>
         </form>
     </article>

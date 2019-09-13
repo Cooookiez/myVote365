@@ -26,6 +26,14 @@ def audytor_register(request):
         password_2 = request.POST.get('password_2')
         password_hash = bcrypt.hashpw(str(password_1).encode('utf-8'), bcrypt.gensalt())
         reCaptcha_response = str(request.POST.get('reCaptcha_response'))
+        
+        # NAME check if empty
+        if first_last_name == '':
+            callback.append({
+                'place': 'callback-register-name',
+                'type': 'error',
+                'msg': 'Imię i nazwisko nie może być puste!',
+            })
 
         # EMAIL check if email exist
         audytors_ref = db.collection(u'audytors')
@@ -240,3 +248,65 @@ def user_settings(request):
         return render(request, 'audytor/usersettings.html')
     else:
         return redirect('audytor:index')
+
+def user_settings_update_general(request):
+    if request.method == 'POST':
+
+        is_error = False
+        callback = [];
+
+        # requested data
+        name = str(request.POST.get('name')).strip()
+
+        # NAME check if empty
+        if name == '':
+            is_error = True
+            callback.append({
+                'place': 'callback-register-name',
+                'type': 'error',
+                'msg': 'Imię i nazwisko nie może być puste!',
+            })
+
+        # if no errors, register
+        if not is_error:
+            print("request.session['audytor']['name']", ' – ', request.session['audytor']['name'])
+            request.session['audytor']['name'] = name
+            print("request.session['audytor']['name']", ' – ', request.session['audytor']['name'])
+            request.session.save()
+            print('name', ' – ', name)
+            audytor_ref = db.collection(u'audytors').document(request.session['audytor']['audytor_id'])
+            audytor_ref.update({
+                u'name': name,
+            })
+            callback = [{
+                'place': 'callback-user-settings-general-submit',
+                'type': 'success',
+                'msg': 'Zapisano',
+            }]
+
+    else:
+        callback = [{
+            'place': 'Hacker\'s computer',
+            'type': 'hacked',
+            'msg': 'Don\'t be hacker pls 👏',
+        }]
+    json_callback = json.dumps(callback)
+    return HttpResponse(json_callback)
+
+def user_settings_update_email(request):
+    callback = [{
+        'place': 'Hacker\'s computer',
+        'type': 'hacked',
+        'msg': 'Don\'t be hacker pls 👏',
+    }]
+    json_callback = json.dumps(callback)
+    return HttpResponse(json_callback)
+
+def user_settings_update_password(request):
+    callback = [{
+        'place': 'Hacker\'s computer',
+        'type': 'hacked',
+        'msg': 'Don\'t be hacker pls 👏',
+    }]
+    json_callback = json.dumps(callback)
+    return HttpResponse(json_callback)

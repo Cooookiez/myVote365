@@ -21,7 +21,7 @@ main > article {
 main > article.callback {
   display: block;
   position: absolute;
-  top: 20px;
+  top: -70px;
   display: -ms-grid;
   display: grid;
   -ms-grid-columns: 30px auto 30px;
@@ -37,6 +37,12 @@ main > article.callback {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
+  -webkit-transition: top ease .2s;
+  transition: top ease .2s;
+}
+
+main > article.callback[data-show=True] {
+  top: 20px;
 }
 
 main > article.callback > .ico {
@@ -66,14 +72,18 @@ main > article.callback > .label {
 
 main > article.user-edit {
   margin-top: 20px;
+  -webkit-transition: background-color ease .2s, -webkit-box-shadow ease .2s;
+  transition: background-color ease .2s, -webkit-box-shadow ease .2s;
+  transition: box-shadow ease .2s, background-color ease .2s;
+  transition: box-shadow ease .2s, background-color ease .2s, -webkit-box-shadow ease .2s;
 }
 
-main > article.user-edit:nth-child(2) {
+main > article.user-edit:nth-of-type(2) {
   margin-top: 90px;
 }
 
 main > article.user-edit:last-child {
-  margin-bottom: 20px;
+  margin-bottom: 90px;
 }
 
 main > article.user-edit[data-saved=False] {
@@ -144,9 +154,11 @@ main > article.user-edit > form > section > p.callback {
   border-style: solid;
   font-size: 14pt;
   text-align: left;
+  -webkit-transition: font-size ease .2s, padding ease .2s;
+  transition: font-size ease .2s, padding ease .2s;
 }
 
-main > article.user-edit > form > section > p.callback:empty {
+main > article.user-edit > form > section > p.callback[data-show=False], main > article.user-edit > form > section > p.callback:empty {
   font-size: 0pt;
   padding-top: 0px;
   padding-bottom: 0px;

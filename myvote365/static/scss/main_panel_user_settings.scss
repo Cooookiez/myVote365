@@ -18,7 +18,7 @@ main{
 
             display: block;
             position: absolute;
-            top: 20px;
+            top: -70px;
             display: grid;
             grid-template-columns: 30px auto 30px;
             grid-template-rows: 30px;
@@ -28,6 +28,13 @@ main{
             background-color: rgba($color: $color-warning-1, $alpha: 1.00);
             box-shadow: 2px 4px 12px rgba($color: #000000, $alpha: 0.50);
             align-items: center;
+            transition: top ease .2s;
+
+            &[data-show=True]{
+
+                top: 20px;
+
+            }
 
             &>.ico{
 
@@ -55,8 +62,9 @@ main{
         &.user-edit{
             
             margin-top: 20px;
+            transition: box-shadow ease .2s, background-color ease .2s;
 
-            &:nth-child(2){
+            &:nth-of-type(2){
 
                 margin-top: 20px*2 + 50px;
 
@@ -64,7 +72,7 @@ main{
 
             &:last-child{
 
-                margin-bottom: 20px;
+                margin-bottom: 20px*2 + 50px;
 
             }
 
@@ -158,7 +166,9 @@ main{
                             border-style: solid;
                             font-size: 14pt;
                             text-align: left;
+                            transition: font-size ease .2s, padding ease .2s;
 
+                            &[data-show=False],
                             &:empty{
                                 font-size: 0pt;
                                 padding: {

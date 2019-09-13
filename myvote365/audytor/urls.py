@@ -10,5 +10,8 @@ urlpatterns = [
     url(r'^panel/$', views.panel, name='panel'),
     url(r'^panel/prezentacje/$', views.presentations, name='panel_presentations'),
     url(r'^panel/ustawienia/$', views.user_settings, name='panel_user_settings'),
+    url(r'^panel/ustawienia/update/general$', views.user_settings_update_general, name='panel_user_settings_update_general'),
+    url(r'^panel/ustawienia/update/email$', views.user_settings_update_email, name='panel_user_settings_update_email'),
+    url(r'^panel/ustawienia/update/password$',views.user_settings_update_password, name='panel_user_settings_update_password'),
     url(r'^$', views.audytor_login_register, name='index'),
 ]
