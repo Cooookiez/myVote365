@@ -7,6 +7,7 @@
 
 {% block head %}
     <link rel="stylesheet" href="{% static 'css/main_panel_user_settings.css' %}">
+    <script src="{% static 'javascript/update_callback.js' %}"></script>
 {% endblock %}
 
 {% block main %}
@@ -18,7 +19,7 @@
             $('#user-settings-general-name').keyup(function(){
                 update_general_check();
             });
-            $('article#user-settings-general > form').submit(function(){
+            $('#user-settings-general > form').submit(function(){
                 console.log('GENERAL START')
                 var csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
                 var name = $('#user-settings-general-name').val();
@@ -27,32 +28,38 @@
                     csrfmiddlewaretoken: csrfmiddlewaretoken,
                     name: name,
                 }).done(function(response_raw){
-                    //clear previous callback(s)
-                    $('p.callback').each(function(){
-                        $(this).text('');
-                    });
-                    // write callback
-                    var response_json = JSON.parse(response_raw)
-                    var responses_count = Object.keys(response_json).length
-                    $('#'+place).attr('data-callback-type', type).text(msg)
-                    for( i = 0; i < responses_count; i++ ){
-                        var place = response_json[i].place;
-                        var type = response_json[i].type;
-                        var msg = response_json[i].msg;
-                        $('#'+place).attr({
-                            'data-callback-type': type,
-                            'data-show': 'True'
-                        }).text(msg)
-                        if( type == 'success' ){
-                            weit_and_hide_main_alert(place);
-                        }
-                    }
+                    show_responses_from_post(response_raw)
                     $('#user-settings-general-name').attr('data-cur-val', $('#user-settings-general-name').val());
                     update_general_check()
                 });
+                console.log('GENERAL END')
                 return false;
             });
             // –––––––––– GENERAL END ––––––––––
+            // –––––––––– EMAIL START ––––––––––
+            $('#user-settings-email-email').keyup(function(){
+                update_email_check();
+            });
+            $('#user-settings-email').submit(function(){
+                console.log('EMAIL START')
+                var csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+                var email = $('[name=user-settings-email-email]').val();
+                var password = $('[name=user-settings-email-password]').val();
+
+                $.post('{% url 'audytor:panel_user_settings_update_email' %}', {
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+                    email: email,
+                    password: password,
+                }).done(function(response_raw){
+                    show_responses_from_post(response_raw)
+                    $('#user-settings-email-email').attr('data-cur-val', $('#user-settings-email-email').val());
+                    update_email_check()
+                });
+
+                console.log('EMAIL END')
+                return false;
+            });
+            // –––––––––– EMAIL END ––––––––––
 
         }); // –––––––––– jQ END ––––––––––
 
@@ -61,6 +68,15 @@
                 $('#user-settings-general').attr('data-saved', 'False');
             }else{
                 $('#user-settings-general').attr('data-saved', 'True');
+            }
+            check_if_saved();
+        }
+
+        function update_email_check(){
+            if( $('#user-settings-email-email').attr('data-cur-val') != 'null' && $('#user-settings-email-email').attr('data-cur-val') != $('#user-settings-email-email').val() ){
+                $('#user-settings-email').attr('data-saved', 'False');
+            }else{
+                $('#user-settings-email').attr('data-saved', 'True');
             }
             check_if_saved();
         }
@@ -77,12 +93,6 @@
             }else{
                 $('article#main-callback').attr('data-show', 'False');
             }
-        }
-
-        function weit_and_hide_main_alert(place){
-            setTimeout(function(){
-                $('#'+place).attr('data-show', 'False')
-            }, 2000);
         }
 
     </script>
@@ -119,12 +129,18 @@
         <form method="POST">
             <section>
                 <label for="user-settings-email-email">Email</label>
-                <input id="user-settings-email-email" name="user-settings-email-email" type="email" placeholder="{% if request.session.audytor.logged %}{{request.session.audytor.email}}{% else %}twój@email.com{% endif %}" required value="{% if request.session.audytor.logged %}{{request.session.audytor.email}}{% endif %}">
+                <input id="user-settings-email-email"
+                    data-cur-val="{% if request.session.audytor.logged %}{{request.session.audytor.email}}{% else %}null{% endif %}"
+                    name="user-settings-email-email"
+                    type="email"
+                    placeholder="{% if request.session.audytor.logged %}{{request.session.audytor.email}}{% else %}twój@email.com{% endif %}"
+                    required
+                    value="{% if request.session.audytor.logged %}{{request.session.audytor.email}}{% endif %}">
                 <p class="callback" data-callback-type="" id="callback-user-settings-email-email"></p>
             </section>
             <section>
                 <label for="user-settings-email-password">Potwierdź hasłem</label>
-                <input id="user-settings-email-password" name="user-settings-email-password" type="password" placeholder="Wpisz hasło" required>
+                <input id="user-settings-email-password" name="user-settings-email-password" type="password" placeholder="Wpisz aktualne hasło" required>
                 <p class="callback" data-callback-type="" id="callback-user-settings-email-password"></p>
             </section>
             <section class="full-width">

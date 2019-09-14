@@ -12,6 +12,11 @@ cred = credentials.Certificate('static/__PRIVATE__/myvote365-aa6f5-firebase-admi
 firebase_admin.initialize_app(cred)
 db = firestore.client();
 
+dont_be_hacekr = [{
+    'place': 'Hacker\'s computer',
+    'type': 'hacked',
+    'msg': 'Don\'t be hacker pls 👏',
+}]
 
 def audytor_register(request):
     if request.method == 'POST':
@@ -29,20 +34,24 @@ def audytor_register(request):
         
         # NAME check if empty
         if first_last_name == '':
+            is_error = True
             callback.append({
                 'place': 'callback-register-name',
                 'type': 'error',
                 'msg': 'Imię i nazwisko nie może być puste!',
             })
 
+        # EMAIL check if empty
+        if email == '':
+            is_error = True
+            callback.append({
+                'place': 'callback-register-email',
+                'type': 'error',
+                'msg': 'Email nie może być pusty!',
+            })
+
         # EMAIL check if email exist
-        audytors_ref = db.collection(u'audytors')
-        email_ref = audytors_ref.where(u'email', u'==', email)
-        email_content = email_ref.get()
-        index = 0;
-        for tmp in email_content:
-            index = index + 1
-        if index > 0:
+        if not check_id_email_exist(email):
             is_error = True
             callback.append({
                 'place': 'callback-register-email',
@@ -135,11 +144,7 @@ def audytor_register(request):
                 'msg': 'Zarejestrowałeś się! Za chwilę zostaniesz zalogowany!',
             })
     else:
-        callback = [{
-            'place': 'Hacker\'s computer',
-            'type': 'hacked',
-            'msg': 'Don\'t be hacker pls 👏',
-        }]
+        callback = dont_be_hacekr
 
     json_callback = json.dumps(callback)
     return HttpResponse(json_callback)
@@ -197,14 +202,10 @@ def audytor_login(request):
             callback.append({
                 'place': 'callback-login-submit',
                 'type': 'error',
-                'msg': 'Za wiele kont na jeden email. Skontaktuj się z administratorem by rozwiązać problem (kukizk@gmail.com)',
+                'msg': 'Email, lub hasło są błędne',
             })
     else:
-        callback = [{
-            'place': 'Hacker\'s computer',
-            'type': 'hacked',
-            'msg': 'Don\'t be hacker pls 👏',
-        }]
+        callback = dont_be_hacekr
     json_callback = json.dumps(callback)
     return HttpResponse(json_callback)
 
@@ -228,6 +229,7 @@ def audytor_logout(request):
         'email': None,
         'audytor_id': None,
     }
+    request.session.save()
     return redirect('audytor:index')
 
 
@@ -237,17 +239,20 @@ def panel(request):
     else:
         return redirect('audytor:index')
 
+
 def presentations(request):
     if 'audytor' in request.session and request.session['audytor']['logged'] is True:
         return render(request, 'audytor/presentations.html')
     else:
         return redirect('audytor:index')
 
+
 def user_settings(request):
     if 'audytor' in request.session and request.session['audytor']['logged'] is True:
         return render(request, 'audytor/usersettings.html')
     else:
         return redirect('audytor:index')
+
 
 def user_settings_update_general(request):
     if request.method == 'POST':
@@ -269,11 +274,8 @@ def user_settings_update_general(request):
 
         # if no errors, register
         if not is_error:
-            print("request.session['audytor']['name']", ' – ', request.session['audytor']['name'])
             request.session['audytor']['name'] = name
-            print("request.session['audytor']['name']", ' – ', request.session['audytor']['name'])
             request.session.save()
-            print('name', ' – ', name)
             audytor_ref = db.collection(u'audytors').document(request.session['audytor']['audytor_id'])
             audytor_ref.update({
                 u'name': name,
@@ -285,28 +287,94 @@ def user_settings_update_general(request):
             }]
 
     else:
-        callback = [{
-            'place': 'Hacker\'s computer',
-            'type': 'hacked',
-            'msg': 'Don\'t be hacker pls 👏',
-        }]
+        callback = dont_be_hacekr
     json_callback = json.dumps(callback)
     return HttpResponse(json_callback)
+
 
 def user_settings_update_email(request):
-    callback = [{
-        'place': 'Hacker\'s computer',
-        'type': 'hacked',
-        'msg': 'Don\'t be hacker pls 👏',
-    }]
+    if request.method == 'POST':
+
+        is_error = False
+        callback = []
+
+        # requested data
+        email = str(request.POST.get('email'))
+        password = str(request.POST.get('password'))
+
+        # EMAIL check if empty
+        if email == '':
+            is_error = True
+            callback.append({
+                'place': 'callback-user-settings-email-email',
+                'type': 'error',
+                'msg': 'Email nie może być pusty!',
+            })
+
+        # EMAIL check if email exist
+        print('request.session.audytor.email', request.session['audytor']['email'])
+        if not check_id_email_exist(email, request.session['audytor']['email']):
+            is_error = True
+            callback.append({
+                'place': 'callback-user-settings-email-email',
+                'type': 'error',
+                'msg': 'Podany email jest już w użyciu. Spróbuj inny',
+            })
+
+        audytor_ref = db.collection(u'audytors').document(request.session['audytor']['audytor_id'])
+        audytor = audytor_ref.get().to_dict()
+        match = bcrypt.checkpw(str(password).encode('utf-8'), audytor['password'])
+        if match:  # passwords match
+            if not is_error:
+                request.session['audytor']['email'] = email
+                request.session.save()
+                audytor_ref = db.collection(u'audytors').document(request.session['audytor']['audytor_id'])
+                audytor_ref.update({
+                    u'email': email,
+                })
+        else:
+            callback.append({
+                'place': 'callback-user-settings-email-password',
+                'type': 'error',
+                'msg': 'Błędne hasło',
+            })
+
+    else:
+        callback = dont_be_hacekr
+
     json_callback = json.dumps(callback)
     return HttpResponse(json_callback)
 
+
 def user_settings_update_password(request):
-    callback = [{
-        'place': 'Hacker\'s computer',
-        'type': 'hacked',
-        'msg': 'Don\'t be hacker pls 👏',
-    }]
+    callback = dont_be_hacekr
     json_callback = json.dumps(callback)
     return HttpResponse(json_callback)
+
+
+
+
+
+
+def check_id_email_exist(email, email_cur=None):
+    """
+    :email: email to check
+    :email_cur: [optional] if one email exist, check if not the same as this
+    :return:bool
+        true if email doesnt exist or exist only one adn is the same as email_cur
+        false otherwise
+    """
+
+    # EMAIL check if email exist
+    audytors_ref = db.collection(u'audytors')
+    email_ref = audytors_ref.where(u'email', u'==', email)
+    email_content = email_ref.get()
+    index = 0;
+    for tmp in email_content:
+        index = index + 1
+    if index == 0:
+        return True
+    elif index > 0 and email == email_cur:
+        return True
+    else:
+        return False
