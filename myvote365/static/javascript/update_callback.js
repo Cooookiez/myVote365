@@ -20,6 +20,10 @@ function show_responses_from_post(response_raw){
         }).text(msg)
         if( type == 'success' ){
             weit_and_hide_main_alert(place);
+            if( place == 'callback-user-settings-password-submit' ){
+                $('#user-settings-password-new-password-1').val('');
+                $('#user-settings-password-new-password-2').val('');
+            }
         }
     }
 }

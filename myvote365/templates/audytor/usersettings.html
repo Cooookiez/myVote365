@@ -16,9 +16,7 @@
 
         $(function(){
             // –––––––––– GENERAL START ––––––––––
-            $('#user-settings-general-name').keyup(function(){
-                update_general_check();
-            });
+            $('#user-settings-general-name').keyup(function(){update_general_check();});
             $('#user-settings-general > form').submit(function(){
                 console.log('GENERAL START')
                 var csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
@@ -35,11 +33,8 @@
                 console.log('GENERAL END')
                 return false;
             });
-            // –––––––––– GENERAL END ––––––––––
             // –––––––––– EMAIL START ––––––––––
-            $('#user-settings-email-email').keyup(function(){
-                update_email_check();
-            });
+            $('#user-settings-email-email').keyup(function(){update_email_check();});
             $('#user-settings-email').submit(function(){
                 console.log('EMAIL START')
                 var csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
@@ -59,7 +54,28 @@
                 console.log('EMAIL END')
                 return false;
             });
-            // –––––––––– EMAIL END ––––––––––
+            // –––––––––– PASSWORD START ––––––––––
+            $('#user-settings-password-new-password-1').keyup(function(){update_password_check();});
+            $('#user-settings-password-new-password-2').keyup(function(){update_password_check();});
+            $('#user-settings-password').submit(function(){
+                console.log('PASSWORD END')
+                var csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+                var password_new_1 = $('[name=user-settings-password-new-password-1]').val();
+                var password_new_2 = $('[name=user-settings-password-new-password-2]').val();
+                var password_old = $('[name=user-settings-password-old-password]').val();
+                $.post('{% url 'audytor:panel_user_settings_update_password' %}', {
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+                    password_new_1: password_new_1,
+                    password_new_2: password_new_2,
+                    password_old: password_old,
+                }).done(function(response_raw){
+                    show_responses_from_post(response_raw);
+                    update_password_check();
+                });
+
+                console.log('PASSWORD END');
+                return false;
+            });
 
         }); // –––––––––– jQ END ––––––––––
 
@@ -77,6 +93,18 @@
                 $('#user-settings-email').attr('data-saved', 'False');
             }else{
                 $('#user-settings-email').attr('data-saved', 'True');
+            }
+            check_if_saved();
+        }
+
+        function update_password_check(){
+            if(
+                String( $('#user-settings-password-new-password-1').val() ) != "" ||
+                String( $('#user-settings-password-new-password-2').val() ) != ""
+            ){
+                $('#user-settings-password').attr('data-saved', 'False');
+            }else{
+                $('#user-settings-password').attr('data-saved', 'True');
             }
             check_if_saved();
         }
@@ -154,7 +182,11 @@
         <form method="POST">
             <section>
                 <label for="user-settings-password-new-password-1">Nowe hasło</label>
-                <input id="user-settings-password-new-password-1" name="user-settings-password-new-password-1" type="password" placeholder="Wpisz nowe hasło" required>
+                <input id="user-settings-password-new-password-1"
+                       name="user-settings-password-new-password-1"
+                       type="password"
+                       placeholder="Wpisz nowe hasło"
+                       required>
                 <p class="callback" data-callback-type="" id="callback-user-settings-password-new-password-1"></p>
                 <ul>
                     <li>Minimum 8 znaków</li>
@@ -166,7 +198,11 @@
                 <ul>
                     <li>Hasła muszą być identyczne</li>
                 </ul>
-                <input id="user-settings-password-new-password-2" name="user-settings-password-new-password-2" type="password" placeholder="Potwierdź nowe hasło" required>
+                <input id="user-settings-password-new-password-2"
+                       name="user-settings-password-new-password-2"
+                       type="password"
+                       placeholder="Potwierdź nowe hasło"
+                       required>
                 <p class="callback" data-callback-type="" id="callback-user-settings-password-new-password-2"></p>
             </section>
             <section>

@@ -51,7 +51,7 @@ def audytor_register(request):
             })
 
         # EMAIL check if email exist
-        if not check_id_email_exist(email):
+        if not email_exist(email):
             is_error = True
             callback.append({
                 'place': 'callback-register-email',
@@ -59,41 +59,8 @@ def audytor_register(request):
                 'msg': 'Podany email jest już w użyciu. Spróbuj się zalogować',
             })
 
-        # PASSWORD-1 check if correct
-        min_8_chars = False
-        at_last_1_digit = False
-        at_last_1_special_char = False
-        at_last_1_uppercase = False
-        at_last_1_lowercase = False
-
-        password_lenght = len(password_1)
-        # PASSWORD-1 min 8 chars
-        if password_lenght >= 8:
-            min_8_chars = True
-        # PASSWORD-1 at last 1 digit
-        for i in range(password_lenght):
-            if password_1[i] in string.digits:
-                at_last_1_digit = True
-                break
-        # PASSWORD-1 at last 1 special char
-        for i in range(password_lenght):
-            if password_1[i] in '`~!@#$%^&*()_-+={}[]\\|;;\'"<>,.?/':
-                at_last_1_special_char = True
-                break
-        # PASSWORD-1 at last 1 uppercase
-        for i in range(password_lenght):
-            if password_1[i] in string.ascii_uppercase:
-                at_last_1_uppercase = True
-                break
-        # PASSWORD-1 at last 1 lowercase
-        for i in range(password_lenght):
-            if password_1[i] in string.ascii_lowercase:
-                at_last_1_lowercase = True
-                break
-        # PASSWORD-1 final check
-        if min_8_chars and at_last_1_digit and at_last_1_special_char and at_last_1_uppercase and at_last_1_lowercase:
-            pass
-        else:
+        # PASSWORD-1 check
+        if not password_correct_pattern(password_1):
             is_error = True
             callback.append({
                 'place': 'callback-register-password-1',
@@ -108,7 +75,7 @@ def audytor_register(request):
             callback.append({
                 'place': 'callback-register-password-2',
                 'type': 'error',
-                'msg': 'Hasła nie są od siebie różnią',
+                'msg': 'Hasła muszą być identyczne',
             })
 
         # reCaptcha_response
@@ -313,7 +280,7 @@ def user_settings_update_email(request):
 
         # EMAIL check if email exist
         print('request.session.audytor.email', request.session['audytor']['email'])
-        if not check_id_email_exist(email, request.session['audytor']['email']):
+        if not email_exist(email, request.session['audytor']['email']):
             is_error = True
             callback.append({
                 'place': 'callback-user-settings-email-email',
@@ -347,7 +314,55 @@ def user_settings_update_email(request):
 
 
 def user_settings_update_password(request):
-    callback = dont_be_hacekr
+    if request.method == 'POST':
+
+        is_error = False
+        callback = []
+
+        # requested data
+        password_new_1 = str(request.POST.get('password_new_1'))
+        password_new_2 = str(request.POST.get('password_new_2'))
+        password_hash = bcrypt.hashpw(str(password_new_1).encode('utf-8'), bcrypt.gensalt())
+        password_old = str(request.POST.get('password_old'))
+
+        if not password_correct_pattern(password_new_1):
+            is_error = True
+            callback.append({
+                'place': 'callback-user-settings-password-new-password-1',
+                'type': 'error',
+                'msg': 'Hasło nie spełnia wymagań. Sprawdź je poniżej',
+            })
+
+        if password_new_1 != password_new_2:
+            is_error = True
+            callback.append({
+                'place': 'callback-user-settings-password-new-password-2',
+                'type': 'error',
+                'msg': 'Hasła muszą być identyczne',
+            })
+
+        audytor_ref = db.collection(u'audytors').document(request.session['audytor']['audytor_id'])
+        audytor = audytor_ref.get().to_dict()
+        match = bcrypt.checkpw(str(password_old).encode('utf-8'), audytor['password'])
+        if match:  # passwords match
+            if not is_error:
+                audytor_ref.update({
+                    u'password': password_hash,
+                })
+                callback.append({
+                    'place': 'callback-user-settings-password-submit',
+                    'type': 'success',
+                    'msg': 'Hasło zmienione',
+                })
+        else:
+            callback.append({
+                'place': 'callback-user-settings-password-old-password',
+                'type': 'error',
+                'msg': 'Błędne hasło',
+            })
+
+    else:
+        callback = dont_be_hacekr
     json_callback = json.dumps(callback)
     return HttpResponse(json_callback)
 
@@ -356,7 +371,7 @@ def user_settings_update_password(request):
 
 
 
-def check_id_email_exist(email, email_cur=None):
+def email_exist(email, email_cur=None):
     """
     :email: email to check
     :email_cur: [optional] if one email exist, check if not the same as this
@@ -375,6 +390,48 @@ def check_id_email_exist(email, email_cur=None):
     if index == 0:
         return True
     elif index > 0 and email == email_cur:
+        return True
+    else:
+        return False
+
+def password_correct_pattern(password):
+    """
+
+    :return:
+    """
+    # PASSWORD-1 check if correct
+    min_8_chars = False
+    at_last_1_digit = False
+    at_last_1_special_char = False
+    at_last_1_uppercase = False
+    at_last_1_lowercase = False
+
+    password_lenght = len(password)
+    # PASSWORD-1 min 8 chars
+    if password_lenght >= 8:
+        min_8_chars = True
+    # PASSWORD-1 at last 1 digit
+    for i in range(password_lenght):
+        if password[i] in string.digits:
+            at_last_1_digit = True
+            break
+    # PASSWORD-1 at last 1 special char
+    for i in range(password_lenght):
+        if password[i] in '`~!@#$%^&*()_-+={}[]\\|;;\'"<>,.?/':
+            at_last_1_special_char = True
+            break
+    # PASSWORD-1 at last 1 uppercase
+    for i in range(password_lenght):
+        if password[i] in string.ascii_uppercase:
+            at_last_1_uppercase = True
+            break
+    # PASSWORD-1 at last 1 lowercase
+    for i in range(password_lenght):
+        if password[i] in string.ascii_lowercase:
+            at_last_1_lowercase = True
+            break
+    # PASSWORD-1 final check
+    if min_8_chars and at_last_1_digit and at_last_1_special_char and at_last_1_uppercase and at_last_1_lowercase:
         return True
     else:
         return False
