@@ -6,7 +6,7 @@
 - **REGISTER & USER SETTINGS** – live chech if email exist
 - **PANEL** – hide / extend left menu
 - **PANEL** – footer with alpha looking bad when something is scrollable in main
-- ~~**LOGIN** – if wrong email, wrong error~~
+- ✅ **LOGIN** – if wrong email, wrong error
 
 ## 📚 Used libraries
 
