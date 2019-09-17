@@ -7,12 +7,12 @@ from firebase_admin import credentials, firestore
 import string
 import requests
 import bcrypt
-import static.python.convert as convert
+import static.python.convert as Convert
 import random
 
 cred = credentials.Certificate('static/__PRIVATE__/myvote365-aa6f5-firebase-adminsdk-ipqcy-ce6c711131.json')
 firebase_admin.initialize_app(cred)
-db = firestore.client()
+db = firestore.client();
 
 dont_be_hacekr = [{
     'place': 'Hacker\'s computer',
@@ -21,78 +21,8 @@ dont_be_hacekr = [{
 }]
 
 
-def panel(request):
-    if 'auditor' in request.session and request.session['auditor']['logged'] is True:
-        # logged
-        return redirect('auditor:presentations_list')
-    else:
-        # NOT logged
-        return render(request, 'auditor/login_register.html')
-
-
-def login(request):
+def audytor_register(request):
     if request.method == 'POST':
-        # login
-        callback = []
-
-        # requested data
-        email = str(request.POST.get('email')).strip()
-        password = request.POST.get('password')
-
-        # is only one audytor with mail & get audytor id
-        index = 0
-        auditor_id = None # audytor id to get user later on
-        auditors_ref = db.collection(u'auditors')
-        auditors_where_ref = auditors_ref.where(u'email', u'==', email)
-        auditors = auditors_where_ref.get()
-        for auditor in auditors:
-            index = index + 1
-            auditor_id = auditor.id
-
-        # is only one auditor
-        if index == 1:
-            auditor_ref = db.collection(u'auditors').document(auditor_id)
-            auditor = auditor_ref.get().to_dict()
-            match = bcrypt.checkpw(str(password).encode('utf-8'), auditor['password'])
-            if match:  # passwords match, login
-                # add auditor to session
-                request.session['auditor'] = {
-                    'logged': True,
-                    'name': auditor['name'],
-                    'email': auditor['email'],
-                    'auditor_id': auditor_id,
-                }
-                # add 'last logged' to db
-                auditor_ref.update({
-                    u'last_logged': datetime.now(),
-                })
-                # return msg
-                callback.append({
-                    'place': 'callback-login-submit',
-                    'type': 'success',
-                    'msg': 'Zalogowałeś się, już cię przekierowujemy!',
-                })
-            else:  # passwords doesn't match
-                callback.append({
-                    'place': 'callback-login-submit',
-                    'type': 'error',
-                    'msg': 'Email, lub hasło są błędne',
-                })
-        else:
-            callback.append({
-                'place': 'callback-login-submit',
-                'type': 'error',
-                'msg': 'Email, lub hasło są błędne',
-            })
-        json_callback = json.dumps(callback)
-        return HttpResponse(json_callback)
-    else:
-        return login_register(request)
-
-
-def register(request):
-    if request.method == 'POST':
-        # register
         is_error = False
         callback = [];
 
@@ -103,7 +33,7 @@ def register(request):
         password_2 = request.POST.get('password_2')
         password_hash = bcrypt.hashpw(str(password_1).encode('utf-8'), bcrypt.gensalt())
         reCaptcha_response = str(request.POST.get('reCaptcha_response'))
-
+        
         # NAME check if empty
         if first_last_name == '':
             is_error = True
@@ -170,8 +100,8 @@ def register(request):
 
         # if no errors, register
         if not is_error:
-            auditors_ref = db.collection(u'auditors').document()
-            auditors_ref.set({
+            audytors_ref = db.collection(u'audytors').document()
+            audytors_ref.set({
                 u'name': first_last_name,
                 u'email': email,
                 u'password': password_hash,
@@ -183,101 +113,169 @@ def register(request):
                 'msg': 'Zarejestrowałeś się! Za chwilę zostaniesz zalogowany!',
             })
 
-        json_callback = json.dumps(callback)
-        return HttpResponse(json_callback)
     else:
-        return redirect('auditor:login')
+        return audytor_login_register(request)
+
+    json_callback = json.dumps(callback)
+    return HttpResponse(json_callback)
 
 
-def login_register(request):
-    if 'auditor' in request.session and request.session['auditor']['logged'] is True:
-        # logged
-        return redirect('auditor:panel')
+def audytor_login(request):
+    return HttpResponse('<h1>hi login here</h1>')
+    if request.method == 'POST':
+
+        callback = []
+
+        # requested data
+        email = str(request.POST.get('email')).strip()
+        password = request.POST.get('password')
+
+        # is only one audytor with mail & get audytor id
+        index = 0
+        audytor_id = None # audytor id to get user later on
+        audytors_ref = db.collection(u'audytors')
+        audytors_where_ref = audytors_ref.where(u'email', u'==', email)
+        audytors = audytors_where_ref.get()
+        for audytor in audytors:
+            index = index + 1
+            audytor_id = audytor.id
+
+        # is only one audytor
+        if index == 1:
+            audytor_ref = db.collection(u'audytors').document(audytor_id)
+            audytor = audytor_ref.get().to_dict()
+            match = bcrypt.checkpw(str(password).encode('utf-8'), audytor['password'])
+            if match: # passwords match, login
+                # add audytor to session
+                request.session['audytor'] = {
+                    'logged': True,
+                    'name': audytor['name'],
+                    'email': audytor['email'],
+                    'audytor_id': audytor_id,
+                }
+                # add 'last logged' to db
+                audytor_ref.update({
+                    u'last_logged': datetime.now(),
+                })
+                # return msg
+                callback.append({
+                    'place': 'callback-login-submit',
+                    'type': 'success',
+                    'msg': 'Zalogowałeś się, już cię przekierowujemy!',
+                })
+            else: # passwords doesn't match
+                callback.append({
+                    'place': 'callback-login-submit',
+                    'type': 'error',
+                    'msg': 'Email, lub hasło są błędne',
+                })
+        else:
+            callback.append({
+                'place': 'callback-login-submit',
+                'type': 'error',
+                'msg': 'Email, lub hasło są błędne',
+            })
     else:
-        # NOT logged
-        return render(request, 'auditor/login_register.html')
+        return HttpResponse('<h1>b hi</h1>')
+        return audytor_login_register(request)
+    json_callback = json.dumps(callback)
+    return HttpResponse(json_callback)
 
 
-def logout(request):
+def audytor_login_register(request):
+    return HttpResponse('<h1>hi login / register here</h1>')
+    # if 'audytor' in request.session and request.session['audytor']['logged'] is True:
+    #     # return redirect('audytor:panel')
+    #     return HttpResponse('<h1>C hi</h1>')
+    #     # return render(request, 'audytor/login_register.html')
+    # else:
+    #     return HttpResponse('<h1>D hi</h1>')
+    #     # return render(request, 'audytor/login_register.html')
+
+
+def audytor_logout(request):
     # add 'last logged' to db
-    auditor_ref = db.collection(u'auditors').document(request.session['auditor']['auditor_id'])
-    auditor_ref.update({
+    audytor_ref = db.collection(u'audytors').document(request.session['audytor']['audytor_id'])
+    audytor_ref.update({
         u'last_logged': datetime.now(),
     })
-    request.session['auditor'] = {
+    request.session['audytor'] = {
         'logged': False,
         'name': None,
         'email': None,
-        'auditor_id': None,
+        'audytor_id': None,
     }
     request.session.save()
-    return redirect('auditor:panel')
+    return redirect('audytor:panel')
 
 
-def presentations_list(request):
-    if 'auditor' in request.session and request.session['auditor']['logged'] is True:
-        # logged
-        return render(request, 'auditor/presentations_list.html')
+def panel(request):
+    if 'audytor' in request.session and request.session['audytor']['logged'] is True:
+        # return render(request, 'audytor/presentations.html')
+        return HttpResponse('<h1>A hi</h1>')
+        return redirect('audytor:panel_presentations')
     else:
-        # NOT logged
-        return redirect('auditor:panel')
+        # return HttpResponse('<h1>B hi</h1>')
+        # return render(request, 'audytor/presentations.html')
+        return redirect('audytor:login')
 
 
-def presentations_new(request):
-    if 'auditor' in request.session and request.session['auditor']['logged'] is True:
-        # logged
-        conv = convert.Convert()
-        short_id_dec = rand_short_id(4)
-        short_id_num = conv.dec2num_n_digit(short_id_dec, 4)
-
-        presentations_ref = db.collection(u'presentations').document()
-        new_id = presentations_ref.id
-        print('–––– id:', new_id, '––––')
-        presentation_ref = db.collection(u'presentations').document(new_id)
-        presentation_ref.set({
-            u'properties': {
-                u'name': 'Untitled',
-                u'qr-code-on-start': False,
-                u'short-id-dec': short_id_dec,
-                u'short-id-num': short_id_num,
-            },
-            u'slides': [
-                {
-                    u'type': '1_to_5_slider',
-                    u'title': 'Title',
-                }
-            ]
-        })
-        if 'auditor' in request.session and request.session['auditor']['logged'] is True:
-            return redirect('auditor:presentation_edit', short_id_num=short_id_num)
-        else:
-            return redirect('auditor:panel')
+def presentations(request):
+    if 'audytor' in request.session and request.session['audytor']['logged'] is True:
+        return render(request, 'audytor/presentations.html')
     else:
-        # NOT logged
-        return redirect('auditor:panel')
+        # return render(request, 'audytor/presentations.html')
+        return HttpResponse('<h1>gfd</h1>')
 
 
-def presentations_edit(request, short_id_num):
-    if 'auditor' in request.session and request.session['auditor']['logged'] is True:
-        # logged
-        return render(request, 'auditor/presentation_edit.html')
+def presentation_new(request):
+    convert = Convert.Convert()
+    short_id_dec = rand_short_id(4)
+    short_id_num = convert.dec2num_n_digit(short_id_dec, 4)
+
+    presentations_ref = db.collection(u'presentations').document()
+    new_id = presentations_ref.id
+    print('–––– id:', new_id, '––––')
+    presentation_ref = db.collection(u'presentations').document(new_id)
+    presentation_ref.set({
+        u'properties': {
+            u'name': 'Untitled',
+            u'qr-code-on-start': False,
+            u'short-id-dec': short_id_dec,
+            u'short-id-num': short_id_num,
+        },
+        u'slides': [
+            {
+                u'type': '1_to_5_slider',
+                u'title': 'Title',
+            }
+        ]
+    })
+    if 'audytor' in request.session and request.session['audytor']['logged'] is True:
+        return redirect('audytor:panel_presentation_edit', presentation_id=short_id_num)
     else:
-        # NOT logged
-        return redirect('auditor:panel')
+        return redirect('audytor:index')
 
 
-def settings(request):
-    if 'auditor' in request.session and request.session['auditor']['logged'] is True:
-        # logged
-        return render(request, 'auditor/settings.html')
+def presentation_edit(request, presentation_id):
+    if 'audytor' in request.session and request.session['audytor']['logged'] is True:
+        return render(request, 'audytor/presentation_edit.html')
     else:
-        # NOT logged
-        return redirect('auditor:panel')
+        return redirect('audytor:index')
+
+
+def user_settings(request):
+    if 'audytor' in request.session and request.session['audytor']['logged'] is True:
+        return render(request, 'audytor/usersettings.html')
+    else:
+        return redirect('audytor:panel')
 
 
 
 
-def settings_update_general(request):
+
+
+def user_settings_update_general(request):
     if request.method == 'POST':
 
         is_error = False
@@ -297,10 +295,10 @@ def settings_update_general(request):
 
         # if no errors, register
         if not is_error:
-            request.session['auditor']['name'] = name
+            request.session['audytor']['name'] = name
             request.session.save()
-            auditor_ref = db.collection(u'auditors').document(request.session['auditor']['auditor_id'])
-            auditor_ref.update({
+            audytor_ref = db.collection(u'audytors').document(request.session['audytor']['audytor_id'])
+            audytor_ref.update({
                 u'name': name,
             })
             callback = [{
@@ -316,7 +314,7 @@ def settings_update_general(request):
     return HttpResponse(json_callback)
 
 
-def settings_update_email(request):
+def user_settings_update_email(request):
     if request.method == 'POST':
 
         is_error = False
@@ -336,8 +334,8 @@ def settings_update_email(request):
             })
 
         # EMAIL check if email exist
-        print('request.session.auditor.email', request.session['auditor']['email'])
-        if not email_exist(email, request.session['auditor']['email']):
+        print('request.session.audytor.email', request.session['audytor']['email'])
+        if not email_exist(email, request.session['audytor']['email']):
             is_error = True
             callback.append({
                 'place': 'callback-user-settings-email-email',
@@ -345,15 +343,15 @@ def settings_update_email(request):
                 'msg': 'Podany email jest już w użyciu. Spróbuj inny',
             })
 
-        auditor_ref = db.collection(u'auditors').document(request.session['auditor']['auditor_id'])
-        auditor = auditor_ref.get().to_dict()
-        match = bcrypt.checkpw(str(password).encode('utf-8'), auditor['password'])
+        audytor_ref = db.collection(u'audytors').document(request.session['audytor']['audytor_id'])
+        audytor = audytor_ref.get().to_dict()
+        match = bcrypt.checkpw(str(password).encode('utf-8'), audytor['password'])
         if match:  # passwords match
             if not is_error:
-                request.session['auditor']['email'] = email
+                request.session['audytor']['email'] = email
                 request.session.save()
-                auditor_ref = db.collection(u'auditors').document(request.session['auditor']['auditor_id'])
-                auditor_ref.update({
+                audytor_ref = db.collection(u'audytors').document(request.session['audytor']['audytor_id'])
+                audytor_ref.update({
                     u'email': email,
                 })
         else:
@@ -370,7 +368,7 @@ def settings_update_email(request):
     return HttpResponse(json_callback)
 
 
-def settings_update_password(request):
+def user_settings_update_password(request):
     if request.method == 'POST':
 
         is_error = False
@@ -398,12 +396,12 @@ def settings_update_password(request):
                 'msg': 'Hasła muszą być identyczne',
             })
 
-        auditor_ref = db.collection(u'auditors').document(request.session['auditor']['auditor_id'])
-        auditor = auditor_ref.get().to_dict()
-        match = bcrypt.checkpw(str(password_old).encode('utf-8'), auditor['password'])
+        audytor_ref = db.collection(u'audytors').document(request.session['audytor']['audytor_id'])
+        audytor = audytor_ref.get().to_dict()
+        match = bcrypt.checkpw(str(password_old).encode('utf-8'), audytor['password'])
         if match:  # passwords match
             if not is_error:
-                auditor_ref.update({
+                audytor_ref.update({
                     u'password': password_hash,
                 })
                 callback.append({
@@ -426,6 +424,8 @@ def settings_update_password(request):
 
 
 
+
+
 def email_exist(email, email_cur=None):
     """
     :email: email to check
@@ -436,8 +436,8 @@ def email_exist(email, email_cur=None):
     """
 
     # EMAIL check if email exist
-    auditors_ref = db.collection(u'auditors')
-    email_ref = auditors_ref.where(u'email', u'==', email)
+    audytors_ref = db.collection(u'audytors')
+    email_ref = audytors_ref.where(u'email', u'==', email)
     email_content = email_ref.get()
     index = 0;
     for tmp in email_content:
@@ -449,17 +449,15 @@ def email_exist(email, email_cur=None):
     else:
         return False
 
-
 def password_correct_pattern(password):
     """
-    :password: - password to check
-    :return:bool
-        true if password is correct
+
+    :return:
     """
     # PASSWORD-1 check if correct
     min_8_chars = False
     at_last_1_digit = False
-    at_last_1_special_char = True
+    at_last_1_special_char = False
     at_last_1_uppercase = False
     at_last_1_lowercase = False
 
@@ -467,41 +465,35 @@ def password_correct_pattern(password):
     # PASSWORD-1 min 8 chars
     if password_lenght >= 8:
         min_8_chars = True
-
     # PASSWORD-1 at last 1 digit
     for i in range(password_lenght):
         if password[i] in string.digits:
             at_last_1_digit = True
             break
-
     # PASSWORD-1 at last 1 special char
-    # for i in range(password_lenght):
-    #     if password[i] in '`~!@#$%^&*()_-+={}[]\\|;;\'"<>,.?/':
-    #         at_last_1_special_char = True
-    #         break
-
+    for i in range(password_lenght):
+        if password[i] in '`~!@#$%^&*()_-+={}[]\\|;;\'"<>,.?/':
+            at_last_1_special_char = True
+            break
     # PASSWORD-1 at last 1 uppercase
     for i in range(password_lenght):
         if password[i] in string.ascii_uppercase:
             at_last_1_uppercase = True
             break
-
     # PASSWORD-1 at last 1 lowercase
     for i in range(password_lenght):
         if password[i] in string.ascii_lowercase:
             at_last_1_lowercase = True
             break
-
     # PASSWORD-1 final check
     if min_8_chars and at_last_1_digit and at_last_1_special_char and at_last_1_uppercase and at_last_1_lowercase:
         return True
     else:
         return False
 
-
 def rand_short_id(num_od_digit=4):
-    conv = convert.Convert()
-    max_dec = conv.max_dec_from_n_digit(num_od_digit)
+    convert = Convert.Convert()
+    max_dec = convert.max_dec_from_n_digit(num_od_digit)
     its_first_short_id = False
     random_short_id_dec = 0
     while not its_first_short_id:
@@ -515,3 +507,5 @@ def rand_short_id(num_od_digit=4):
             its_first_short_id = True
     return random_short_id_dec
 
+def create_qr_code_link():
+    pass

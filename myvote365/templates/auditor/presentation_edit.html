@@ -1,0 +1,40 @@
+
+<!doctype html>
+{% load staticfiles %}
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Untitled | myVote365</title>
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    <link rel="stylesheet" href="{% static 'css/presentation_edit.css' %}">
+    <link rel="shortcut icon" href="{% static 'favicon/Asset 3 copy.png' %}" type="image/x-icon">
+    <script src="{% static 'javascript/jquery-3.4.1.min.js' %}"></script>
+    <script src="{% static 'fontawesome-pro-5.10.2-web/js/all.js' %}"></script>
+</head>
+<body>
+
+    <nav class="navigation">
+        <a href="{% url 'auditor:presentations_list' %}" id="return-to-presentations">
+            <span class="ico far fa-chevron-left"></span>
+            <span class="label">Cofnij</span>
+        </a>
+        <span id="navigation-presentation-title">Untitled</span>
+        <div id="navigation-saved-notice">
+            <span class="label">Zapisano</span>
+            <span class="ico fas fa-check-circle"></span>
+        </div>
+        <div id="navigation-play-presentation"></div>
+    </nav>
+
+    <aside class="slides-panel">slides-panel</aside>
+
+    <main>main</main>
+
+    <aside class="properties">properties</aside>
+
+    <footer id="autor">Autor: <span>Krzysztof Kukiz</span> (<a href="mailto:kukizk@gmail.com">kukizk@gmail.com</a>) &copy; 2019</footer>
+
+</body>
+</html>

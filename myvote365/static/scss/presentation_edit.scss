@@ -1,0 +1,79 @@
+
+@import 'variables';
+
+body{
+
+    background: url('/static/img/planning-finance-business-presentation-businessman-sales-1584859-pxhere.com.jpg') no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: auto auto auto;
+    grid-template-rows: auto auto 41px;
+    grid-template-areas:
+        "navigation navigation navigation"
+        "slides-panel main properties"
+        "footer-autor footer-autor footer-autor";
+
+    &>nav.navigation{
+    
+        grid-area: navigation;
+        background: red;
+
+    }
+
+    &>aside.slides-panel{
+
+        grid-area: slides-panel;
+        background-color: blue;
+
+    }
+
+    &>main{
+
+        grid-area: main;
+        background-color: tan;
+
+    }
+
+    &>aside.properties{
+
+        grid-area: properties;
+        background-color: tomato;
+        
+    }
+
+    &>footer#autor{
+
+        grid-area: footer-autor;
+        background-color: rgba($color: $color-dark, $alpha: 1.0);
+        color: $color-light-2;
+        padding: 10px;
+
+        a{
+            
+            text-decoration: none;
+            color: $color-light-1;
+            cursor: pointer;
+            transition: color ease .5s;
+
+            &:active,
+            &:hover{
+
+                transition: color ease .1s;
+                color: $color-blue-1;
+
+            }
+
+        }
+
+    }
+
+}

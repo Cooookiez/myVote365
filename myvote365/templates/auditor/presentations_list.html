@@ -1,10 +1,10 @@
 
-{% extends 'audytor/main_panel_base.html' %}
+{% extends 'auditor/main_panel_base.html' %}
 
 {% block title %}Prezentacie{% endblock %}
 {% block menu_option_presentations %}True{% endblock %}
 
 {% block main %}
     <h1>Prezentacie</h1>
-    <a href="{% url 'audytor:panel_presentation_new' %}">Nowa</a>
+    <a href="{% url 'auditor:presentation_new' %}">Nowa</a>
 {% endblock %}

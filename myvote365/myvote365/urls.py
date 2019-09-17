@@ -18,7 +18,7 @@ from django.urls import path
 from django.conf.urls import url, include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    
-    url(r'', include('audytor.urls')),
+    # path('admin/', admin.site.urls),
+    url(r'panel/', include('audytor.urls')),
+    url(r'', include('spectator.urls')),
 ]

@@ -17,11 +17,11 @@
 <body>
     <nav id="menu">
         <article id="menu-options">
-            <a href="{% url 'audytor:panel_presentations' %}" class="menu-option" data-active="{% block menu_option_presentations %}{% endblock %}"><div class="ico far fa-presentation"></div><span class="label">Twoje prezentacje</span></a>
-            <a href="{% url 'audytor:panel_user_settings' %}" class="menu-option" data-active="{% block menu_option_user_settings %}{% endblock %}"><div class="ico far fa-user-cog"></div><span class="label">Ustawienia konta</span></a>
+            <a href="{% url 'auditor:presentations_list' %}" class="menu-option" data-active="{% block menu_option_presentations %}{% endblock %}"><div class="ico far fa-presentation"></div><span class="label">Twoje prezentacje</span></a>
+            <a href="{% url 'auditor:settings' %}" class="menu-option" data-active="{% block menu_option_user_settings %}{% endblock %}"><div class="ico far fa-user-cog"></div><span class="label">Ustawienia konta</span></a>
         </article>
         <article id="menu-logout">
-            <a href="{% url 'audytor:logout' %}" class="menu-option-element"><div class="ico far fa-sign-out-alt fa-rotate-180"></div><span class="label">Wyloguj się</span></a>
+            <a href="{% url 'auditor:logout' %}" class="menu-option-element"><div class="ico far fa-sign-out-alt fa-rotate-180"></div><span class="label">Wyloguj się</span></a>
         </article>
     </nav>
     <main>
