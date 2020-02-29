@@ -11,7 +11,7 @@
 
 ## 📚 Used libraries
 
-- ~~**[qrcode](https://pypi.org/project/qrcode/):** `pip install qrcode[pil]`~~ (not yet)
+- **[segno](https://pypi.org/project/segno/):** `pip install segno`
 - **[bcrypt](https://pypi.org/project/bcrypt/):** `pip install bcrypt`
 - **bcrypt:**
   - [github.com](https://github.com/firebase/firebase-admin-python): `pip install firebase-admin`

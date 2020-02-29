@@ -4,3 +4,9 @@ myVote365/\.vscode/
 *.DS_Store
 
 myVote365/static/__PRIVATE__/
+
+myvote365/audytor/__pycache__/
+
+myVote365/media/qr-codes/
+
+myvote365/.idea/
