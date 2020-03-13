@@ -24,7 +24,7 @@ body{
     grid-template-rows: auto 41px;
     grid-template-areas:
         "menu  main"
-        "footer-hide-extend-menu  footer-autor";
+        "footer-hide-extend-menu  footer-author";
 
     
     &>nav#menu{
@@ -159,10 +159,10 @@ body{
 
     }
 
-    &>footer#autor{
+    &>footer#author{
 
-        grid-area: footer-autor;
-        background-color: rgba($color: $color-dark, $alpha: 0.6);
+        grid-area: footer-author;
+        background-color: rgba($color: $color-dark, $alpha: 1.0);
         color: $color-light-2;
         padding: 10px;
 

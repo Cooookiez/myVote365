@@ -1,10 +1,25 @@
 
 {% extends 'auditor/main_panel_base.html' %}
+{% load staticfiles %}
 
 {% block title %}Prezentacie{% endblock %}
 {% block menu_option_presentations %}True{% endblock %}
 
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/main_panel_presentations.css' %}">
+{% endblock %}
+
 {% block main %}
-    <h1>Prezentacie</h1>
-    <a href="{% url 'auditor:presentation_new' %}">Nowa</a>
+
+    {% for presentation in presentations %}
+    <a class="presentation" href="../presentacja/{{presentation.short_id_num}}">
+        <span class="title">{{presentation.title}}</span>
+        <span class="short_id_num">{{presentation.short_id_num}}</span>
+    </a>
+    {% endfor %}
+    <a class="presentation" href="../presentacja/nowa/{{presentation.short_id_num}}">
+        <span class="title">{% if presentations %}Nowa{% else %}Nie masz jeszcze prezentacji, stwórz ją.{% endif %}</span>
+        <span class="short_id_num"></span>
+    </a>
+
 {% endblock %}

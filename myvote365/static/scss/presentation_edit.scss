@@ -15,24 +15,178 @@ body{
     width: 100%;
     height: 100%;
     display: grid;
-    grid-template-columns: auto auto auto;
-    grid-template-rows: auto auto 41px;
+    grid-template-columns: 310px auto 200px;
+    grid-template-rows: 41px auto 41px;
     grid-template-areas:
         "navigation navigation navigation"
         "slides-panel main properties"
-        "footer-autor footer-autor footer-autor";
+        "footer-author footer-author footer-author";
 
     &>nav.navigation{
     
         grid-area: navigation;
-        background: red;
+        background: rgba($color: $color-dark, $alpha: 1.0);
+        display: grid;
+        grid-template-columns: auto 1fr auto auto;
+        grid-template-rows: 100%;
+        grid-template-areas: "return-to-presentations navigation-presentation-title navigation-saved-notice navigation-presentation-play";
+        gap: 5px;
+        padding: 5px;
+
+        &>*{
+
+            height: 100%;
+            display: grid;
+            grid-template-columns: auto auto;
+            grid-template-rows: 100%;
+            gap: 5px;
+            padding: 5px;
+            border-radius: 5px;
+            color: $color-light-1;
+
+            &>.ico{
+
+                height: 100%;
+
+            }
+
+        }
+        
+        &>a#return-to-presentations{
+
+            grid-area: return-to-presentations;
+            color: $color-blue-1;
+            text-decoration: none;
+
+            &:hover{
+
+                color: darken($color-blue-1, 10%)
+
+            }
+
+        }
+        
+        &>#navigation-presentation-title{
+
+            grid-area: navigation-presentation-title;
+            display: block;
+            text-align: center;
+
+        }
+        
+        &>#navigation-saved-notice{
+
+            grid-area: navigation-saved-notice;
+            color: rgba($color: $color-green-2, $alpha: 1.0);
+
+        }
+        
+        &>#navigation-presentation-play{
+
+            grid-area: navigation-presentation-play;
+            background-color: rgba($color: $color-green-2, $alpha: 1.0);
+            color: rgba($color: black, $alpha: 1.0);
+            cursor: pointer;
+
+            &:hover{
+
+                background-color: rgba($color: $color-green-1, $alpha: 1.0);
+
+            }
+
+        }
 
     }
 
     &>aside.slides-panel{
 
         grid-area: slides-panel;
-        background-color: blue;
+        background-color: rgba($color: $color-light-1, $alpha: 0.8);
+        padding: 5px;
+
+        &>.slides-panel-presentation{
+            // background-color: red !important;
+            color: blue !important;
+            margin-bottom: 5px;
+            display: grid;
+            gap: 5px;
+            grid-template-columns: 50px auto;
+            grid-template-areas: "presentation-cointener-info presentation-panels";
+
+            &>.presentation-cointener-info{
+                grid-area: presentation-cointener-info;
+                background-color: #565656;
+                color: #D8D8D8;
+                text-align: center;
+                line-height: 40px;
+            }
+
+            &>.presentation-panels{
+                grid-area: presentation-panels;
+
+                &>.slide{
+                    border: #565656 solid 2px;
+                    background-color: #565656;
+                    color: #D8D8D8;
+                    margin-bottom: 5px;
+                    width: 245px;
+                    height: 138px;
+                    cursor: pointer;
+                    &:hover{
+                        background-color: #8C8C8C;
+                        color: #565656;
+                    }
+                }
+
+                &>.slide-add{
+                    border: #565656 solid 2px;
+                    color: #565656;
+                    display: grid;
+                    grid-template-columns: 1fr auto 1fr;
+                    grid-template-rows: 1fr auto 1fr;
+                    grid-template-areas:
+                        ". . ."
+                        ". slide-add-ico ."
+                        ". . .";
+                    width: 100%;
+                    height: 50px;
+                    cursor: pointer;
+                    &:hover{
+                        background-color: #565656;
+                        color: #D8D8D8;
+                    }
+                    &>.ico{
+                        grid-area: slide-add-ico;
+                        height: 30px;
+                        width: 30px;
+                    }
+                }
+            }
+        }
+
+        &>.slides-panel-presentation-add{
+            display: grid;
+            width: 100%;
+            height: 50px;
+            grid-template-columns: 1fr auto 1fr;
+            grid-template-rows: 1fr auto 1fr;
+            grid-template-areas:
+                ". . ."
+                ". slides-panel-presentation-add-ico ."
+                ". . .";
+            border: #565656 solid 2px;
+            color: #565656;
+            cursor: pointer;
+            &:hover{
+                background-color: #565656;
+                color: #D8D8D8;
+            }
+            &>.ico{
+                grid-area: slides-panel-presentation-add-ico;
+                height: 30px;
+                width: 30px;
+            }
+        }
 
     }
 
@@ -50,9 +204,9 @@ body{
         
     }
 
-    &>footer#autor{
+    &>footer#author{
 
-        grid-area: footer-autor;
+        grid-area: footer-author;
         background-color: rgba($color: $color-dark, $alpha: 1.0);
         color: $color-light-2;
         padding: 10px;

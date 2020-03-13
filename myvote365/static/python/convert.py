@@ -35,14 +35,14 @@ class Convert:
                 return i
         return -1
 
-    def dec2num_n_digit(self, dec, n):
+    def dec2num_n_digit(self, dec, n=4):
         num = self.dec2num(dec)
         n = int(n)
         while len(num) < n:
             num = "0" + num
         return num
 
-    def max_dec_from_n_digit(self, n):
+    def max_dec_from_n_digit(self, n=4):
         return pow(self.chars_len, int(n))
 
     # def check(self):

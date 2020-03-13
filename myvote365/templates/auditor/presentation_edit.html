@@ -12,29 +12,55 @@
     <link rel="shortcut icon" href="{% static 'favicon/Asset 3 copy.png' %}" type="image/x-icon">
     <script src="{% static 'javascript/jquery-3.4.1.min.js' %}"></script>
     <script src="{% static 'fontawesome-pro-5.10.2-web/js/all.js' %}"></script>
+
 </head>
-<body>
+<body data-short-id-num="{{ properties.short_id_num }}"
+      data-short-id-dec="{{ properties.short_id_dec }}">
 
     <nav class="navigation">
         <a href="{% url 'auditor:presentations_list' %}" id="return-to-presentations">
             <span class="ico far fa-chevron-left"></span>
             <span class="label">Cofnij</span>
         </a>
-        <span id="navigation-presentation-title">Untitled</span>
+        <span id="navigation-presentation-title" contenteditable="true">{{ properties.title }}</span>
         <div id="navigation-saved-notice">
             <span class="label">Zapisano</span>
             <span class="ico fas fa-check-circle"></span>
         </div>
-        <div id="navigation-play-presentation"></div>
+        <div id="navigation-presentation-play">
+            <span class="label">Start</span>
+            <span class="ico far fa-play"></span>
+        </div>
     </nav>
 
-    <aside class="slides-panel">slides-panel</aside>
+    <aside class="slides-panel">
+        <article class="slides-panel-presentation">
+            <section class="presentation-cointener-info">
+                W1
+            </section>
+            <section class="presentation-panels">
+                <section class="slide">
+                    <header class="title">Twój slide jest niesamowity</header>
+
+                </section>
+                <section class="slide">
+                    d
+                </section>
+                <section class="slide-add">
+                    <span class="ico far fa-plus"></span>
+                </section>
+            </section>
+        </article>
+        <article class="slides-panel-presentation-add">
+            <span class="ico far fa-plus"></span>
+        </article>
+    </aside>
 
     <main>main</main>
 
     <aside class="properties">properties</aside>
 
-    <footer id="autor">Autor: <span>Krzysztof Kukiz</span> (<a href="mailto:kukizk@gmail.com">kukizk@gmail.com</a>) &copy; 2019</footer>
+    <footer id="author">Autor: <span>Krzysztof Kukiz</span> (<a href="mailto:kukizk@gmail.com">kukizk@gmail.com</a>) &copy; 2019</footer>
 
 </body>
 </html>

@@ -9,6 +9,7 @@ import requests
 import bcrypt
 import static.python.convert as convert
 import random
+import static.python.save_qr as save_qr
 
 cred = credentials.Certificate('static/__PRIVATE__/myvote365-aa6f5-firebase-adminsdk-ipqcy-ce6c711131.json')
 firebase_admin.initialize_app(cred)
@@ -217,7 +218,23 @@ def logout(request):
 def presentations_list(request):
     if 'auditor' in request.session and request.session['auditor']['logged'] is True:
         # logged
-        return render(request, 'auditor/presentations_list.html')
+        presentations = []
+        presentations_ref = db.collection(u'presentations')\
+            .where(u'properties.auditor_id', u'==', request.session['auditor']['auditor_id'])\
+            .get()
+        for presentation_ref in presentations_ref:
+            presentation = presentation_ref.to_dict()
+            print(presentation['properties'])
+            presentation_tmp = {
+                'title': presentation['properties']['title'],
+                'short_id_num': presentation['properties']['short_id_num'],
+            }
+            presentations.append(presentation_tmp)
+
+        context = {
+            'presentations': presentations,
+        }
+        return render(request, 'auditor/presentations_list.html', context=context)
     else:
         # NOT logged
         return redirect('auditor:panel')
@@ -230,24 +247,67 @@ def presentations_new(request):
         short_id_dec = rand_short_id(4)
         short_id_num = conv.dec2num_n_digit(short_id_dec, 4)
 
-        presentations_ref = db.collection(u'presentations').document()
-        new_id = presentations_ref.id
-        print('–––– id:', new_id, '––––')
-        presentation_ref = db.collection(u'presentations').document(new_id)
+        # save qr
+        qr = save_qr.save_qr(short_id_num)
+
+        # new presentation
+        presentation_id = db.collection(u'presentations').document().id
+        presentation_ref = db.collection(u'presentations').document(presentation_id)
         presentation_ref.set({
             u'properties': {
-                u'name': 'Untitled',
-                u'qr-code-on-start': False,
-                u'short-id-dec': short_id_dec,
-                u'short-id-num': short_id_num,
+                u'title': 'Untitled',
+                u'qr_code_on_start': False,
+                u'short_id_dec': short_id_dec,
+                u'short_id_num': short_id_num,
+                u'auditor_id': request.session['auditor']['auditor_id'],
+                u'presentation_url': 'web_url',
+                u'presentation_qr_code': 'qr_url',
             },
-            u'slides': [
-                {
-                    u'type': '1_to_5_slider',
-                    u'title': 'Title',
-                }
-            ]
         })
+
+        lecture_id = presentation_ref.collection(u'lectures').document().id
+        lecture_ref = presentation_ref.collection(u'lectures').document(lecture_id)
+        lecture_ref.set({
+            'properties': {
+                'title': 'W1',
+            }
+        })
+
+        slide_id = lecture_ref.collection(u'slides').document().id
+        slide_ref = lecture_ref.collection(u'slides').document(slide_id)
+        slide_ref.set({
+            'properties': {
+                'title': 'Czy się podobało?',
+                'type': 'yesno',
+            }
+        })
+
+        slide_id = lecture_ref.collection(u'slides').document().id
+        slide_ref = lecture_ref.collection(u'slides').document(slide_id)
+        slide_ref.set({
+            'properties': {
+                'title': 'Jakie są szanse, że polecisz wykład?',
+                'type': 'slider_1to5',
+            }
+        })
+
+        lecture_id = presentation_ref.collection(u'lectures').document().id
+        lecture_ref = presentation_ref.collection(u'lectures').document(lecture_id)
+        lecture_ref.set({
+            'properties': {
+                'title': 'W2',
+            }
+        })
+
+        slide_id = lecture_ref.collection(u'slides').document().id
+        slide_ref = lecture_ref.collection(u'slides').document(slide_id)
+        slide_ref.set({
+            'properties': {
+                'title': 'Co byś zmienił?',
+                'type': 'text',
+            }
+        })
+
         if 'auditor' in request.session and request.session['auditor']['logged'] is True:
             return redirect('auditor:presentation_edit', short_id_num=short_id_num)
         else:
@@ -259,8 +319,42 @@ def presentations_new(request):
 
 def presentations_edit(request, short_id_num):
     if 'auditor' in request.session and request.session['auditor']['logged'] is True:
+        print('\n\n-----------------------------\n\n')
+
+        # wyszukanie prezentacji
+        print(f'short_id_num: "{short_id_num}"')
+        presentations_id = None
+        presentations_ref = db.collection(u'presentations')
+        presentations_ref = presentations_ref.where(u'properties.short_id_num', u'==', short_id_num)
+        presentations = presentations_ref.get()
+        index = 0
+        for presentation in presentations:
+            index = index + 1
+            presentations_id = presentation.id
+        # print(f'index: "{index}"')
+        # print(f'presentations_id: "{presentations_id}"')
+
+        # pobranie prezentaci
+        presentation_ref = db.collection(u'presentations').document(presentations_id)
+        presentation = presentation_ref.get().to_dict()
+        print(presentation)
+
+        # lectures
+        lectures_ref = presentation_ref.collection('lectures')
+        lectures = lectures_ref.get()
+        print(f'\n\n---------------\nlectures:')
+        for lecture_ref in lectures:
+            print(lecture_ref)
+            print(lecture_ref.to_dict())
+            print('- - -')
+
+
         # logged
-        return render(request, 'auditor/presentation_edit.html')
+        conv = convert.Convert()
+        context = {
+            'properties': presentation['properties'],
+        }
+        return render(request, 'auditor/presentation_edit.html', context=context)
     else:
         # NOT logged
         return redirect('auditor:panel')
@@ -281,7 +375,7 @@ def settings_update_general(request):
     if request.method == 'POST':
 
         is_error = False
-        callback = [];
+        callback = []
 
         # requested data
         name = str(request.POST.get('name')).strip()
