@@ -7,7 +7,7 @@
    - "Jakie są szanse, że polecisz wykład?" [slider od 1 do 5]
    - "Co byś zmienił?" [Pole tekstowe]
 2. **Widzowie mogą zeskanować kod qr / wpisać w przeglądarce link (np. myVote365.com/7HC0) i odpowiada na pytania.** (w jak najbardziej prosty dla nich sposób (Brak wymogu logowania dla nich i ¿inne?))
-3. **Będzie działało na django + google firebase**
+3. **Będzie działało na [django](https://www.djangoproject.com/) + [google firebase](https://firebase.google.com/).**
 
 ## 📝 To Do List (for now)
 
