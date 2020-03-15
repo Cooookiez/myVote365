@@ -342,11 +342,20 @@ def presentations_edit(request, short_id_num):
         # lectures
         lectures_ref = presentation_ref.collection('lectures')
         lectures = lectures_ref.get()
+        # print(lectures_ref)
         print(f'\n\n---------------\nlectures:')
         for lecture_ref in lectures:
-            print(lecture_ref)
+            # print(lecture_ref)
+            # print(lecture_ref.id)
             print(lecture_ref.to_dict())
-            print('- - -')
+            slides_ref = presentation_ref.collection('lectures').document(lecture_ref.id).collection('slides')
+            slides = slides_ref.get()
+            for slide_ref in slides:
+                # print(f'\t{slide_ref}')
+                # print(f'\t{slide_ref.id}')
+                print(f'\t{slide_ref.to_dict()}')
+                print(f'\t- - - -')
+            print('- - - - - - -')
 
 
         # logged
