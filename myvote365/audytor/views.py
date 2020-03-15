@@ -270,6 +270,7 @@ def presentations_new(request):
         lecture_ref.set({
             'properties': {
                 'title': 'W1',
+                'position': 0,
             }
         })
 
@@ -279,6 +280,7 @@ def presentations_new(request):
             'properties': {
                 'title': 'Czy się podobało?',
                 'type': 'yesno',
+                'position': 0,
             }
         })
 
@@ -288,6 +290,7 @@ def presentations_new(request):
             'properties': {
                 'title': 'Jakie są szanse, że polecisz wykład?',
                 'type': 'slider_1to5',
+                'position': 1,
             }
         })
 
@@ -296,6 +299,7 @@ def presentations_new(request):
         lecture_ref.set({
             'properties': {
                 'title': 'W2',
+                'position': 1,
             }
         })
 
@@ -305,6 +309,7 @@ def presentations_new(request):
             'properties': {
                 'title': 'Co byś zmienił?',
                 'type': 'text',
+                'position': 0,
             }
         })
 
@@ -317,12 +322,12 @@ def presentations_new(request):
         return redirect('auditor:panel')
 
 
-def presentations_edit(request, short_id_num):
+def presentations_edit(request, short_id_num, lecture_=None):
     if 'auditor' in request.session and request.session['auditor']['logged'] is True:
-        print('\n\n-----------------------------\n\n')
+        # print('\n\n-----------------------------\n\n')
 
         # wyszukanie prezentacji
-        print(f'short_id_num: "{short_id_num}"')
+        # print(f'short_id_num: "{short_id_num}"')
         presentations_id = None
         presentations_ref = db.collection(u'presentations')
         presentations_ref = presentations_ref.where(u'properties.short_id_num', u'==', short_id_num)
@@ -337,31 +342,51 @@ def presentations_edit(request, short_id_num):
         # pobranie prezentaci
         presentation_ref = db.collection(u'presentations').document(presentations_id)
         presentation = presentation_ref.get().to_dict()
-        print(presentation)
+        # print(presentation)
 
         # lectures
         lectures_ref = presentation_ref.collection('lectures')
         lectures = lectures_ref.get()
         # print(lectures_ref)
-        print(f'\n\n---------------\nlectures:')
+        # print(f'\n\n---------------\nlectures:')
+        lectures_data = {}
         for lecture_ref in lectures:
+            slides_data = {}
             # print(lecture_ref)
             # print(lecture_ref.id)
-            print(lecture_ref.to_dict())
+            lecture_data = lecture_ref.to_dict()
+            lecture_position = lecture_data["properties"]["position"]
+            # print(lecture_data)
+            # print(lecture_position)
             slides_ref = presentation_ref.collection('lectures').document(lecture_ref.id).collection('slides')
             slides = slides_ref.get()
             for slide_ref in slides:
                 # print(f'\t{slide_ref}')
                 # print(f'\t{slide_ref.id}')
-                print(f'\t{slide_ref.to_dict()}')
-                print(f'\t- - - -')
-            print('- - - - - - -')
+                slide_data = slide_ref.to_dict()
+                slide_position = slide_data["properties"]["position"]
+                slides_data[slide_position] = slide_data
+                # print(f'\t{slide_data}')
+                # print(f'\t{slide_position}')
+                # print(f'\t- - - -')
+            lectures_data[lecture_position] = {
+                'properties': lecture_data['properties'],
+                'slides': slides_data,
+            }
+
+        # print('- - - - - - -')
+        # print('- - - - - - -')
+        # print('- - - - - - -')
+        # js = json.dumps(lectures_data)
+        # print(js)
+
 
 
         # logged
         conv = convert.Convert()
         context = {
             'properties': presentation['properties'],
+            'lectures': lectures_data,
         }
         return render(request, 'auditor/presentation_edit.html', context=context)
     else:

@@ -6,7 +6,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Untitled | myVote365</title>
+    <title>Untitled –– {{ properties.short_id_num }} | myVote365</title>
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/presentation_edit.css' %}">
     <link rel="shortcut icon" href="{% static 'favicon/Asset 3 copy.png' %}" type="image/x-icon">
@@ -34,23 +34,26 @@
     </nav>
 
     <aside class="slides-panel">
-        <article class="slides-panel-presentation">
-            <section class="presentation-cointener-info">
-                W1
-            </section>
-            <section class="presentation-panels">
-                <section class="slide">
-                    <header class="title">Twój slide jest niesamowity</header>
+        {% for lecture_id, lecture in lectures.items %}
+            <article class="slides-panel-presentation">
+                <section class="presentation-cointener-info">
+                    {{ lecture.properties.title }}
+                </section>
+                <section class="presentation-panels">
+                    {% for slide_id, slide in lecture.slides.items %}
+                        <section class="slide">
+                            <header class="tittle">
+                                {{ slide.properties.title }}
+                            </header>
+                        </section>
+                    {% endfor %}
 
+                    <section class="slide-add">
+                        <span class="ico far fa-plus"></span>
+                    </section>
                 </section>
-                <section class="slide">
-                    d
-                </section>
-                <section class="slide-add">
-                    <span class="ico far fa-plus"></span>
-                </section>
-            </section>
-        </article>
+            </article>
+        {% endfor %}
         <article class="slides-panel-presentation-add">
             <span class="ico far fa-plus"></span>
         </article>
