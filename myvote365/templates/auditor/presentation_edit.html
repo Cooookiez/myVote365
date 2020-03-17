@@ -12,7 +12,61 @@
     <link rel="shortcut icon" href="{% static 'favicon/Asset 3 copy.png' %}" type="image/x-icon">
     <script src="{% static 'javascript/jquery-3.4.1.min.js' %}"></script>
     <script src="{% static 'fontawesome-pro-5.10.2-web/js/all.js' %}"></script>
+    <script>
+        var lectures_js = {{ lectures_js | safe }}
 
+        $(function(){
+
+            // put lectures form received json to html
+            let lectures = make_lectures(lectures_js);
+            $('aside#slides-panel').html(lectures);
+
+        }); // jQ end
+
+        function make_slide(slide){
+            let str2return = "";
+
+            str2return += ' <section class="slide" data-position="' + slide.properties.position + '" data-type="' + slide.properties.type + '">';
+            str2return += '     <header>' + slide.properties.title + '<header>';
+            str2return += ' </section>';
+
+            return str2return;
+        }
+
+        function make_lecture(lecture){
+            let str2return = '';
+
+            str2return += ' <article class="slides-panel-presentation" data-positi="' + lecture.properties.position + '">';
+            str2return += '     <section class="presentation-cointener-info">' + lecture.properties.title + '</section>';
+            str2return += '     <section class="presentation-panels">';
+            Object.keys(lecture.slides).forEach(function(i){
+                str2return += make_slide(lecture.slides[i])
+            });
+            str2return += '         <section class="slide-add">';
+            str2return += '             <span class="ico far fa-plus"></span>';
+            str2return += '         </section>';
+            str2return += '     </section>';
+            str2return += ' </article>';
+
+            return str2return;
+        }
+        
+        function make_lectures(lectures){
+
+            let str2return = ''
+
+            Object.keys(lectures).forEach(function(i){
+                str2return += make_lecture(lectures[i])
+            });
+
+            str2return += ' <article class="slides-panel-presentation-add">';
+            str2return += '     <span class="ico far fa-plus"></span>';
+            str2return += ' </article>';
+
+            return str2return;
+        }
+
+    </script>
 </head>
 <body data-short-id-num="{{ properties.short_id_num }}"
       data-short-id-dec="{{ properties.short_id_dec }}">
@@ -33,37 +87,13 @@
         </div>
     </nav>
 
-    <aside class="slides-panel">
-        {% for lecture_id, lecture in lectures.items %}
-            <article class="slides-panel-presentation">
-                <section class="presentation-cointener-info">
-                    {{ lecture.properties.title }}
-                </section>
-                <section class="presentation-panels">
-                    {% for slide_id, slide in lecture.slides.items %}
-                        <section class="slide">
-                            <header class="tittle">
-                                {{ slide.properties.title }}
-                            </header>
-                        </section>
-                    {% endfor %}
-
-                    <section class="slide-add">
-                        <span class="ico far fa-plus"></span>
-                    </section>
-                </section>
-            </article>
-        {% endfor %}
-        <article class="slides-panel-presentation-add">
-            <span class="ico far fa-plus"></span>
-        </article>
-    </aside>
+    <aside id="slides-panel"></aside>
 
     <main>main</main>
 
     <aside class="properties">properties</aside>
 
-    <footer id="author">Autor: <span>Krzysztof Kukiz</span> (<a href="mailto:kukizk@gmail.com">kukizk@gmail.com</a>) &copy; 2019</footer>
+    <footer id="author">Autor: <span>Krzysztof Kukiz</span> (<a href="mailto:kukizk@gmail.com">kukizk@gmail.com</a>) &copy; 2020</footer>
 
 </body>
 </html>

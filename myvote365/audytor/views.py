@@ -324,10 +324,8 @@ def presentations_new(request):
 
 def presentations_edit(request, short_id_num, lecture_=None):
     if 'auditor' in request.session and request.session['auditor']['logged'] is True:
-        # print('\n\n-----------------------------\n\n')
 
         # wyszukanie prezentacji
-        # print(f'short_id_num: "{short_id_num}"')
         presentations_id = None
         presentations_ref = db.collection(u'presentations')
         presentations_ref = presentations_ref.where(u'properties.short_id_num', u'==', short_id_num)
@@ -336,49 +334,31 @@ def presentations_edit(request, short_id_num, lecture_=None):
         for presentation in presentations:
             index = index + 1
             presentations_id = presentation.id
-        # print(f'index: "{index}"')
-        # print(f'presentations_id: "{presentations_id}"')
 
         # pobranie prezentaci
         presentation_ref = db.collection(u'presentations').document(presentations_id)
         presentation = presentation_ref.get().to_dict()
-        # print(presentation)
 
         # lectures
         lectures_ref = presentation_ref.collection('lectures')
         lectures = lectures_ref.get()
-        # print(lectures_ref)
-        # print(f'\n\n---------------\nlectures:')
         lectures_data = {}
         for lecture_ref in lectures:
             slides_data = {}
-            # print(lecture_ref)
-            # print(lecture_ref.id)
             lecture_data = lecture_ref.to_dict()
             lecture_position = lecture_data["properties"]["position"]
-            # print(lecture_data)
-            # print(lecture_position)
             slides_ref = presentation_ref.collection('lectures').document(lecture_ref.id).collection('slides')
             slides = slides_ref.get()
             for slide_ref in slides:
-                # print(f'\t{slide_ref}')
-                # print(f'\t{slide_ref.id}')
                 slide_data = slide_ref.to_dict()
                 slide_position = slide_data["properties"]["position"]
                 slides_data[slide_position] = slide_data
-                # print(f'\t{slide_data}')
-                # print(f'\t{slide_position}')
-                # print(f'\t- - - -')
             lectures_data[lecture_position] = {
                 'properties': lecture_data['properties'],
                 'slides': slides_data,
             }
 
-        # print('- - - - - - -')
-        # print('- - - - - - -')
-        # print('- - - - - - -')
-        # js = json.dumps(lectures_data)
-        # print(js)
+        lectures_js = json.dumps(lectures_data)
 
 
 
@@ -386,7 +366,8 @@ def presentations_edit(request, short_id_num, lecture_=None):
         conv = convert.Convert()
         context = {
             'properties': presentation['properties'],
-            'lectures': lectures_data,
+            'lectures_data': lectures_data,
+            'lectures_js': lectures_js,
         }
         return render(request, 'auditor/presentation_edit.html', context=context)
     else:
