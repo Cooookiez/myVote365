@@ -15,7 +15,7 @@ body{
     width: 100%;
     height: 100%;
     display: grid;
-    grid-template-columns: 310px auto 200px;
+    grid-template-columns: 310px auto 300px;
     grid-template-rows: 41px auto 41px;
     grid-template-areas:
         "navigation navigation navigation"
@@ -193,14 +193,70 @@ body{
     &>main{
 
         grid-area: main;
-        background-color: tan;
+        // background-color: tan;
 
     }
 
     &>aside.properties{
 
         grid-area: properties;
-        background-color: tomato;
+        background-color: rgba($color: $color-dark, $alpha: .8);
+
+        &>article.properties-section{
+            
+            // background-color: $color-dark;
+            margin: 10px;
+
+            &>header{
+
+                background-color: rgba($color: $color-light-1, $alpha: .75);
+                padding: 10px;
+                margin-bottom: 3px;
+                font-size: 1.2rem;
+                font-weight: 900;
+
+            }
+
+            &>section.property{
+
+                background-color: rgba($color: $color-light-1, $alpha: .75);
+                display: grid;
+                grid-template-rows: auto auto;
+                grid-template-columns: 100%;
+                grid-template-areas:
+                    "label"
+                    "input";
+                gap: 2px;
+                padding: 10px;
+
+                &>label,
+                &>input,
+                &>select{
+
+                    padding: 4px;
+                    font-size: 1rem;
+
+                }
+
+                &>label{
+
+                    grid-area: label;
+
+                }
+
+                &>input,
+                &>select{
+                    
+                    background-color: transparent;
+                    grid-area: input;
+                    border: 3px solid $color-dark;
+                    border-radius: 0px !important; //todo zrobić by select nie był zaokrąglony
+
+                }
+
+            }
+
+        }
         
     }
 

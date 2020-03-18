@@ -17,6 +17,9 @@
 - [ ] [PANEL] – **hide / extend left menu**
 - [ ] [PANEL] – **footer with alpha looking bad when something is scrollable in main**
 - [ ] [LOGIN] – **if wrong email, wrong error**
+- [x] [SLIDE EDIT] – **Pokazuje właściwości slajdu po naciśnieciu na jeden**
+- [ ] [SLIDE EDIT] – **Updatuje tytuł projektu**
+- [ ] [SLIDE EDIT] – **Wysyła zupdatowane właściwości slidu**
 
 ## 📚 Used libraries
 
