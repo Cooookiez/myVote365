@@ -18,16 +18,16 @@
 - [ ] [PANEL] – **footer with alpha looking bad when something is scrollable in main**
 - [ ] [LOGIN] – **if wrong email, wrong error**
 - [x] [SLIDE EDIT] – **Pokazuje właściwości slajdu po naciśnieciu na jeden**
-- [ ] [SLIDE EDIT] – **Updatuje tytuł projektu**
+- [x] [SLIDE EDIT] – **Updatuje tytuł projektu**
 - [ ] [SLIDE EDIT] – **Wysyła zupdatowane właściwości slidu**
 
-## 📆 Harmonogram
+## 📆 Timetable
 
-| tydzień         | nazwa                               | status |
+| Week (deadline) | Description                         | status |
 | --------------: | ----------------------------------- | :----: |
 | 3 (12.03.2020)  | Raport I (Plan projektu)            | ✅     |
 | 8 (16.04.2020)  | Raport II (Stan projektu)           | 📝     |
-| 11 (07.05.2020) | Prototyp                            | 🕐     |
+| 11 (07.05.2020) | Prototype                           | 🕐     |
 | 13 (21.05.2020) | Raport III (Aktualizacja prototypu) | 🕒     |
 | 14 (28.05.2020) | Oddanie projektu                    | 🕔     |
 | 15 (03.06.2020) | Prezentacja projektu                | 🕖     |

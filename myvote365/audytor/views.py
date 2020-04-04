@@ -324,52 +324,92 @@ def presentations_new(request):
 
 def presentations_edit(request, short_id_num, lecture_=None):
     if 'auditor' in request.session and request.session['auditor']['logged'] is True:
+        # LOGGED
 
-        # wyszukanie prezentacji
-        presentations_id = None
-        presentations_ref = db.collection(u'presentations')
-        presentations_ref = presentations_ref.where(u'properties.short_id_num', u'==', short_id_num)
-        presentations = presentations_ref.get()
-        index = 0
-        for presentation in presentations:
-            index = index + 1
-            presentations_id = presentation.id
+        if request.method == 'POST': # updates to database
+            option = str(request.POST.get('option')).strip()
+            callback = []
 
-        # pobranie prezentaci
-        presentation_ref = db.collection(u'presentations').document(presentations_id)
-        presentation = presentation_ref.get().to_dict()
+            if option == 'update_presentation_title':
+                new_title = str(request.POST.get('new_title')).strip()
 
-        # lectures
-        lectures_ref = presentation_ref.collection('lectures')
-        lectures = lectures_ref.get()
-        lectures_data = {}
-        for lecture_ref in lectures:
-            slides_data = {}
-            lecture_data = lecture_ref.to_dict()
-            lecture_position = lecture_data["properties"]["position"]
-            slides_ref = presentation_ref.collection('lectures').document(lecture_ref.id).collection('slides')
-            slides = slides_ref.get()
-            for slide_ref in slides:
-                slide_data = slide_ref.to_dict()
-                slide_position = slide_data["properties"]["position"]
-                slides_data[slide_position] = slide_data
-            lectures_data[lecture_position] = {
-                'properties': lecture_data['properties'],
-                'slides': slides_data,
+                # check if short_id_num is created by logged user
+                # find presentation
+                presentations_id = None
+                presentations_ref = db.collection(u'presentations')
+                presentations_ref = presentations_ref.where(u'properties.short_id_num', u'==', short_id_num)
+                presentations = presentations_ref.get()
+                index = 0
+                for presentation in presentations:
+                    index = index + 1
+                    presentations_id = presentation.id
+
+                # pobranie prezentaci
+                presentation_ref = db.collection(u'presentations').document(presentations_id)
+                presentation = presentation_ref.get().to_dict()
+
+                # if yes, update title
+                if presentation['properties']['auditor_id'] == request.session['auditor']['auditor_id']:
+                    # mozna updatowac
+                    presentation_ref.update({
+                        'properties.title': new_title,
+                    })
+                    pass
+                else:
+                    callback.append({
+                        'error': 'info',
+                        'msg': 'wrong option'
+                    })
+            else:
+                callback = dont_be_hacekr;
+
+            json_callback = json.dumps(callback)
+            return HttpResponse(json_callback)
+
+        else: # show web page
+
+            # wyszukanie prezentacji
+            presentations_id = None
+            presentations_ref = db.collection(u'presentations')
+            presentations_ref = presentations_ref.where(u'properties.short_id_num', u'==', short_id_num)
+            presentations = presentations_ref.get()
+            index = 0
+            for presentation in presentations:
+                index = index + 1
+                presentations_id = presentation.id
+
+            # pobranie prezentaci
+            presentation_ref = db.collection(u'presentations').document(presentations_id)
+            presentation = presentation_ref.get().to_dict()
+
+            # lectures
+            lectures_ref = presentation_ref.collection('lectures')
+            lectures = lectures_ref.get()
+            lectures_data = {}
+            for lecture_ref in lectures:
+                slides_data = {}
+                lecture_data = lecture_ref.to_dict()
+                lecture_position = lecture_data["properties"]["position"]
+                slides_ref = presentation_ref.collection('lectures').document(lecture_ref.id).collection('slides')
+                slides = slides_ref.get()
+                for slide_ref in slides:
+                    slide_data = slide_ref.to_dict()
+                    slide_position = slide_data["properties"]["position"]
+                    slides_data[slide_position] = slide_data
+                lectures_data[lecture_position] = {
+                    'properties': lecture_data['properties'],
+                    'slides': slides_data,
+                }
+
+            lectures_js = json.dumps(lectures_data)
+
+            context = {
+                'properties': presentation['properties'],
+                'lectures_data': lectures_data,
+                'lectures_js': lectures_js,
             }
+            return render(request, 'auditor/presentation_edit.html', context=context)
 
-        lectures_js = json.dumps(lectures_data)
-
-
-
-        # logged
-        conv = convert.Convert()
-        context = {
-            'properties': presentation['properties'],
-            'lectures_data': lectures_data,
-            'lectures_js': lectures_js,
-        }
-        return render(request, 'auditor/presentation_edit.html', context=context)
     else:
         # NOT logged
         return redirect('auditor:panel')
