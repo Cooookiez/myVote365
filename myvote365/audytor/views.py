@@ -344,13 +344,12 @@ def presentations_edit(request, short_id_num, lecture_=None):
                     index = index + 1
                     presentations_id = presentation.id
 
-                # pobranie prezentaci
+                # download presentation
                 presentation_ref = db.collection(u'presentations').document(presentations_id)
                 presentation = presentation_ref.get().to_dict()
 
                 # if yes, update title
                 if presentation['properties']['auditor_id'] == request.session['auditor']['auditor_id']:
-                    # mozna updatowac
                     presentation_ref.update({
                         'properties.title': new_title,
                     })
