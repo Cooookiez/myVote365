@@ -13,11 +13,17 @@
     <script src="{% static 'javascript/jquery-3.4.1.min.js' %}"></script>
     <script src="{% static 'fontawesome-pro-5.10.2-web/js/all.js' %}"></script>
     <script>
-        var lectures_js = {{ lectures_js | safe }}
+        var lectures_js = {{ lectures_js | safe }};
+        var GLOBAL_save_counter = {
+            'in_edits': 0,
+            'warnings': [],
+            'errors': [],
+        }
 
         $(function(){
 
             update_web_title('{{ properties.title }}');
+            change_save_status();
 
             // put lectures form received json to html
             let lectures = make_lectures(lectures_js);
@@ -41,6 +47,8 @@
             // UPDATES
             // update presentation title
             $('#navigation-presentation-title > input').keyup(function(){
+                GLOBAL_save_counter.in_edits++;
+                change_save_status();
                 let new_title = $(this).val();
                 let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
                 update_web_title(new_title);
@@ -49,17 +57,72 @@
                     new_title: new_title,
                     csrfmiddlewaretoken: csrfmiddlewaretoken,
                 }).done(function(response_raw){
-                    console.log(response_raw);
-                    response_json = JSON.parse(response_raw);
-                    console.log(response_json)
+                    let response_json = JSON.parse(response_raw);
+                    save_response_to_status_change(response_json);
+                    change_save_status();
+                }).fail(function(){
+                    GLOBAL_save_counter.errors.push({
+                        'error_type': 'post fail',
+                    })
                 })
             })
 
         }); // jQ end
 
+        function save_response_to_status_change(response){
+            for(let i = 0; i < response.length; i++){
+                switch (response[i].type) {
+                    case 'success':
+                        GLOBAL_save_counter.in_edits--;
+                        break;
+                    case 'error':
+                        GLOBAL_save_counter.errors.push(response[i].msg);
+                        break;
+                    case 'warning':
+                        GLOBAL_save_counter.warnings.push(response[i].msg);
+                        break;
+                    default: break;
+                }
+            }
+        }
+
+        function change_save_status(){
+            let msg = '';
+            let type = '';
+            let html_class = '';
+            if( GLOBAL_save_counter.errors.length !== 0 ){
+                // errors
+                msg = 'Some error';
+                type = 'error';
+                html_class = 'ico fas fa-exclamation-circle';
+            }else if( GLOBAL_save_counter.warnings.length !== 0 ){
+                // warnings
+                msg = 'Some Warning';
+                type = 'warning';
+                html_class = 'ico fas fa-exclamation-triangle';
+            }else if( GLOBAL_save_counter.in_edits === 0 ){
+                // saved
+                msg = 'Zapisano';
+                type = 'saved';
+                html_class = 'ico fas fa-check-circle';
+            }else{
+                msg = 'Zapisuje...';
+                type = 'in_progress';
+                html_class = 'ico fas fa-spinner fa-pulse';
+                // not saved
+            }
+            let prv_type = $('#navigation-saved-notice').attr('data-type');
+            if( prv_type !== type){
+                console.log(prv_type);
+                console.log(type);
+                $('#navigation-saved-notice > label').text(msg);
+                $('#navigation-saved-notice').attr('data-type', type);
+                $('#navigation-saved-notice > .ico').attr('class', html_class);
+            }
+        }
+
         function update_web_title(presentation_title){
             str = presentation_title + ' –– {{ properties.short_id_num }} | myVote365';
-            console.log(str);
             $('head > title').text(str)
         }
 
@@ -133,12 +196,12 @@
         <span id="navigation-presentation-title">
             <input type="text" value="{{ properties.title }}" placeholder="Tytuł prezentacji">
         </span>
-        <div id="navigation-saved-notice">
-            <span class="label">Zapisano</span>
+        <div id="navigation-saved-notice" data-type="saved">
+            <label class="label">Zapisano</label>
             <span class="ico fas fa-check-circle"></span>
         </div>
         <div id="navigation-presentation-play">
-            <span class="label">Start</span>
+            <label class="label">Start</label>
             <span class="ico far fa-play"></span>
         </div>
     </nav>

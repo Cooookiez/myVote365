@@ -13,24 +13,27 @@
 
 - [ ] [REGISTER & USER SETTINGS] – **update hints**
 - [ ] [REGISTER & USER SETTINGS] – **live check if email exist**
-- [ ] [REGISTER & USER SETTINGS] – **"Co Najmniej 1 znak specjalny (!, @, #, $, …)" Zrobione ale usunąć❗️**
+- [ ] [REGISTER & USER SETTINGS] – "Co Najmniej 1 znak specjalny (!, @, #, $, …)" **Done, to delete❗️**
 - [ ] [PANEL] – **hide / extend left menu**
 - [ ] [PANEL] – **footer with alpha looking bad when something is scrollable in main**
 - [ ] [LOGIN] – **if wrong email, wrong error**
-- [x] [SLIDE EDIT] – **Pokazuje właściwości slajdu po naciśnieciu na jeden**
-- [x] [SLIDE EDIT] – **Updatuje tytuł projektu**
-- [ ] [SLIDE EDIT] – **Wysyła zupdatowane właściwości slidu**
+- [x] [SLIDE EDIT] – **Shows slide properties, after click on one**
+- [x] [SLIDE EDIT] – **Update project title**
+- [ ] [SLIDE EDIT] – **Update slide properties**
+- [ ] [SLIDE EDIT] – **Update status**
+  - [x] status itself
+  - [ ] colors
 
 ## 📆 Timetable
 
-| Week (deadline) | Description                         | status |
-| --------------: | ----------------------------------- | :----: |
-| 3 (12.03.2020)  | Raport I (Plan projektu)            | ✅     |
-| 8 (16.04.2020)  | Raport II (Stan projektu)           | 📝     |
-| 11 (07.05.2020) | Prototype                           | 🕐     |
-| 13 (21.05.2020) | Raport III (Aktualizacja prototypu) | 🕒     |
-| 14 (28.05.2020) | Oddanie projektu                    | 🕔     |
-| 15 (03.06.2020) | Prezentacja projektu                | 🕖     |
+| Week (deadline) | Description                   | status |
+| --------------: | ----------------------------- | :----: |
+| 3 (12.03.2020)  | Raport I (Project plan)       | ✅     |
+| 8 (16.04.2020)  | Raport II (Project status)    | 📝     |
+| 11 (07.05.2020) | Prototype                     | 🕐     |
+| 13 (21.05.2020) | Raport III (Prototype update) | 🕒     |
+| 14 (28.05.2020) | Submission of the project     | 🕔     |
+| 15 (03.06.2020) | Project presentation          | 🕖     |
 
 ## 📚 Used libraries
 

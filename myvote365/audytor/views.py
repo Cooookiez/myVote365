@@ -353,14 +353,16 @@ def presentations_edit(request, short_id_num, lecture_=None):
                     presentation_ref.update({
                         'properties.title': new_title,
                     })
-                    pass
+                    callback.append({
+                        'type': 'success',
+                    })
                 else:
                     callback.append({
-                        'error': 'info',
-                        'msg': 'wrong option'
+                        'type': 'error',
+                        'msg': 'wrong option',
                     })
             else:
-                callback = dont_be_hacekr;
+                callback = dont_be_hacekr
 
             json_callback = json.dumps(callback)
             return HttpResponse(json_callback)
