@@ -111,13 +111,11 @@
                 html_class = 'ico fas fa-spinner fa-pulse';
                 // not saved
             }
-            let prv_type = $('#navigation-saved-notice').attr('data-type');
+            let prv_type = $('#navigation-saved-status').attr('data-type');
             if( prv_type !== type){
-                console.log(prv_type);
-                console.log(type);
-                $('#navigation-saved-notice > label').text(msg);
-                $('#navigation-saved-notice').attr('data-type', type);
-                $('#navigation-saved-notice > .ico').attr('class', html_class);
+                $('#navigation-saved-status > label').text(msg);
+                $('#navigation-saved-status').attr('data-type', type);
+                $('#navigation-saved-status > .ico').attr('class', html_class);
             }
         }
 
@@ -196,7 +194,7 @@
         <span id="navigation-presentation-title">
             <input type="text" value="{{ properties.title }}" placeholder="Tytuł prezentacji">
         </span>
-        <div id="navigation-saved-notice" data-type="saved">
+        <div id="navigation-saved-status" data-type="saved">
             <label class="label">Zapisano</label>
             <span class="ico fas fa-check-circle"></span>
         </div>

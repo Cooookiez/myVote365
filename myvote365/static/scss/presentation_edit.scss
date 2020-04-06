@@ -29,7 +29,7 @@ body{
         display: grid;
         grid-template-columns: auto 1fr auto 1fr auto auto;
         grid-template-rows: 100%;
-        grid-template-areas: "return-to-presentations . navigation-presentation-title . navigation-saved-notice navigation-presentation-play";
+        grid-template-areas: "return-to-presentations . navigation-presentation-title . navigation-saved-status navigation-presentation-play";
         gap: 5px;
         padding: 5px;
 
@@ -86,10 +86,23 @@ body{
 
         }
         
-        &>#navigation-saved-notice{
+        &>#navigation-saved-status{
 
-            grid-area: navigation-saved-notice;
+            grid-area: navigation-saved-status;
             color: rgba($color: $color-green-2, $alpha: 1.0);
+
+            &[data-type=error]{
+                color: rgba($color: $color-error-light, $alpha: 1.0);
+            }
+            &[data-type=warning]{
+                color: rgba($color: $color-warning-1, $alpha: 1.0);
+            }
+            &[data-type=saved]{
+                color: rgba($color: $color-green-2, $alpha: 1.0);
+            }
+            &[data-type=in_progress]{
+                color: rgba($color: $color-light-2, $alpha: 1.0);
+            }
 
         }
         

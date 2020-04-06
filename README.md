@@ -20,9 +20,7 @@
 - [x] [SLIDE EDIT] – **Shows slide properties, after click on one**
 - [x] [SLIDE EDIT] – **Update project title**
 - [ ] [SLIDE EDIT] – **Update slide properties**
-- [ ] [SLIDE EDIT] – **Update status**
-  - [x] status itself
-  - [ ] colors
+- [x] [SLIDE EDIT] – **Update status**
 
 ## 📆 Timetable
 
