@@ -21,7 +21,7 @@
 - [x] [SLIDE EDIT] – **Update project title**
 - [ ] [SLIDE EDIT] – **Update slide properties**
   - [x] title
-  - [ ] type
+  - [x] type
   - [ ] position
 - [ ] [SLIDE EDIT] – **Update lecture properties**
   - [x] title

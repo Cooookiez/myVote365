@@ -98,6 +98,22 @@
             });
 
             // update slide type
+            $('#property_slide_type').change(function(){
+                GLOBAL_save_counter.in_edits++;
+                change_save_status();
+                let new_type = $(this).val();
+                let lecture_id = $(this).parent().parent().attr('data-lecture-id');
+                let slide_id = $(this).parent().parent().attr('data-slide-id');
+                let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+                let data = {
+                    option: 'update_slide_type',
+                    new_type: new_type,
+                    lecture_id: lecture_id,
+                    slide_id: slide_id,
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+                };
+                update_to_db(data, 'update slide type post fail');
+            });
 
             // update slide position
 
