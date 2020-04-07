@@ -24,6 +24,7 @@
 
             update_web_title('{{ properties.title }}');
             change_save_status();
+            update_properties(lectures_js[0], lectures_js[0]['slides'][0])
 
             // put lectures form received json to html
             let lectures = make_lectures(lectures_js);
@@ -34,7 +35,9 @@
                 let $this = $(this);
 
                 let lecture_position = parseInt( $this.parent().parent().attr('data-position') );
+                let lecture_id = parseInt( $this.parent().parent().attr('data-id') );
                 let slide_position = parseInt( $this.attr('data-position') );
+                let slide_id = parseInt( $this.attr('data-id') );
                 let slide_title = $this.children('header').text().trim();
 
                 let lecture = lectures_js[lecture_position];
@@ -45,11 +48,12 @@
             });
 
             // UPDATES
+
             // update presentation title
             $('#navigation-presentation-title > input').keyup(function(){
                 GLOBAL_save_counter.in_edits++;
                 change_save_status();
-                let new_title = $(this).val();
+                let new_title = $(this).val().trim();
                 let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
                 update_web_title(new_title);
                 $.post('{% url 'auditor:presentation_edit' properties.short_id_num %}',{
@@ -62,10 +66,41 @@
                     change_save_status();
                 }).fail(function(){
                     GLOBAL_save_counter.errors.push({
-                        'error_type': 'post fail',
+                        'error_type': 'update presentation title post fail',
                     })
-                })
-            })
+                });
+            });
+
+            // update lecture title
+            $('#property_lecture_title').keyup(function(){
+                GLOBAL_save_counter.in_edits++;
+                change_save_status();
+                let new_title = $(this).val().trim();
+                let lecture_id = $(this).parent().parent().attr('data-id');
+                let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+                $.post('{% url 'auditor:presentation_edit' properties.short_id_num %}',{
+                    option: 'update_lecture_title',
+                    new_title: new_title,
+                    lecture_id: lecture_id,
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+                }).done(function(response_raw){
+                    let response_json = JSON.parse(response_raw);
+                    save_response_to_status_change(response_json);
+                    change_save_status();
+                }).fail(function(){
+                    GLOBAL_save_counter.errors.push({
+                        'error_type': 'update lecture title post fail',
+                    })
+                });
+            });
+
+            // update lecture position
+
+            // update slide title
+
+            // update slide type
+
+            // update slide position
 
         }); // jQ end
 
@@ -100,16 +135,16 @@
                 msg = 'Some Warning';
                 type = 'warning';
                 html_class = 'ico fas fa-exclamation-triangle';
-            }else if( GLOBAL_save_counter.in_edits === 0 ){
+            }else if( GLOBAL_save_counter.in_edits !== 0 ){
+                // not saved
+                msg = 'Zapisuje...';
+                type = 'in_progress';
+                html_class = 'ico fas fa-spinner fa-pulse';
+            }else{
                 // saved
                 msg = 'Zapisano';
                 type = 'saved';
                 html_class = 'ico fas fa-check-circle';
-            }else{
-                msg = 'Zapisuje...';
-                type = 'in_progress';
-                html_class = 'ico fas fa-spinner fa-pulse';
-                // not saved
             }
             let prv_type = $('#navigation-saved-status').attr('data-type');
             if( prv_type !== type){
@@ -129,18 +164,20 @@
             // lecture
             $('#property_lecture_title').val(lecture.properties.title);
             $('#property_lecture_position').val(parseInt(lecture.properties.position)+1);
+            $('#properties-lecture').attr('data-id', lecture.id);
 
             // slide
             $('#property_slide_title').val(slide.properties.title);
             $('#property_slide_type').val(slide.properties.type);
             $('#property_slide_position').val(parseInt(slide.properties.position)+1);
+            $('#properties-slide').attr('data-id', slide.id);
 
         }
 
         function make_slide(slide){
             let str2return = "";
 
-            str2return += ' <section class="slide" data-position="' + slide.properties.position + '" data-type="' + slide.properties.type + '">';
+            str2return += ' <section class="slide" data-position="' + slide.properties.position + '" data-type="' + slide.properties.type + '" data-id="' + slide.id + '">';
             str2return += '     <header>' + slide.properties.title + '<header>';
             str2return += ' </section>';
 
@@ -150,7 +187,7 @@
         function make_lecture(lecture){
             let str2return = '';
 
-            str2return += ' <article class="slides-panel-presentation" data-position="' + lecture.properties.position + '">';
+            str2return += ' <article class="slides-panel-presentation" data-position="' + lecture.properties.position + '" data-id="' + lecture.id + '">';
             str2return += '     <section class="presentation-cointener-info">' + lecture.properties.title + '</section>';
             str2return += '     <section class="presentation-panels">';
             Object.keys(lecture.slides).forEach(function(i){
@@ -209,23 +246,23 @@
     <main>main</main>
 
     <aside class="properties">
-        <article class="properties-section">
+        <article class="properties-section" id="properties-lecture">
             <header>Wykład</header>
             <hr>
             <section class="property">
                 <label for="property_lecture_title">Tytuł</label>
-                <input type="text" value="W1" id="property_lecture_title">
+                <input type="text" value="" id="property_lecture_title">
             </section>
             <section class="property">
                 <label for="property_lecture_position">Pozycja</label>
-                <input type="number" value="1" id="property_lecture_position">
+                <input type="number" value="" id="property_lecture_position">
             </section>
         </article>
-        <article class="properties-section">
+        <article class="properties-section" id="properties-slide">
             <header>Slajd</header>
             <section class="property">
                 <label for="property_slide_title">Tytuł</label>
-                <input type="text" value="W1" id="property_slide_title">
+                <input type="text" value="" id="property_slide_title">
             </section>
             <section class="property">
                 <label for="property_slide_type">Typ</label>
@@ -237,7 +274,7 @@
             </section>
             <section class="property">
                 <label for="property_slide_position">Pozycja</label>
-                <input type="number" value="1" id="property_slide_position">
+                <input type="number" value="" id="property_slide_position">
             </section>
         </article>
     </aside>

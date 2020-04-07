@@ -330,11 +330,7 @@ def presentations_edit(request, short_id_num, lecture_=None):
             option = str(request.POST.get('option')).strip()
             callback = []
 
-            if option == 'update_presentation_title':
-                new_title = str(request.POST.get('new_title')).strip()
-
-                # check if short_id_num is created by logged user
-                # find presentation
+            def get_ids_by_short_id_num():
                 presentations_id = None
                 presentations_ref = db.collection(u'presentations')
                 presentations_ref = presentations_ref.where(u'properties.short_id_num', u'==', short_id_num)
@@ -348,8 +344,19 @@ def presentations_edit(request, short_id_num, lecture_=None):
                 presentation_ref = db.collection(u'presentations').document(presentations_id)
                 presentation = presentation_ref.get().to_dict()
 
+                return {
+                    'auditor_id': presentation['properties']['auditor_id'],
+                    'presentation_id': presentations_id,
+                }
+
+            if option == 'update_presentation_title':
+                new_title = str(request.POST.get('new_title')).strip()
+
+                # check if short_id_num is created by logged user
                 # if yes, update title
-                if presentation['properties']['auditor_id'] == request.session['auditor']['auditor_id']:
+                if get_ids_by_short_id_num()['auditor_id'] == request.session['auditor']['auditor_id']:
+                    presentation_ref = db.collection(u'presentations')\
+                        .document(get_ids_by_short_id_num()['presentation_id'])
                     presentation_ref.update({
                         'properties.title': new_title,
                     })
@@ -361,13 +368,42 @@ def presentations_edit(request, short_id_num, lecture_=None):
                         'type': 'error',
                         'msg': 'wrong option',
                     })
+
+            elif option == 'update_lecture_title':
+                new_title = str(request.POST.get('new_title')).strip()
+                lecture_id = str(request.POST.get('lecture_id')).strip()
+                print(new_title, lecture_id)
+
+                # check if short_id_num is created by logged user
+                # if yes, update title
+                if get_ids_by_short_id_num()['auditor_id'] == request.session['auditor']['auditor_id']:
+                    try:
+                        presentation_ref = db.collection(u'presentations')\
+                            .document(get_ids_by_short_id_num()['presentation_id'])
+                        lecture_ref = presentation_ref.collection('lectures').document(lecture_id)
+                        lecture_ref.update({
+                            'properties.title': new_title,
+                        })
+                        callback.append({
+                            'type': 'success',
+                        })
+                    except:
+                        callback.append({
+                            'type': 'error',
+                            'msg': 'lecture doesn\'t exists',
+                        })
+                else:
+                    callback.append({
+                        'type': 'error',
+                        'msg': 'wrong option',
+                    })
             else:
                 callback = dont_be_hacekr
 
             json_callback = json.dumps(callback)
             return HttpResponse(json_callback)
 
-        else: # show web page
+        else:  # show web page
 
             # wyszukanie prezentacji
             presentations_id = None
@@ -375,6 +411,7 @@ def presentations_edit(request, short_id_num, lecture_=None):
             presentations_ref = presentations_ref.where(u'properties.short_id_num', u'==', short_id_num)
             presentations = presentations_ref.get()
             index = 0
+
             for presentation in presentations:
                 index = index + 1
                 presentations_id = presentation.id
@@ -388,17 +425,24 @@ def presentations_edit(request, short_id_num, lecture_=None):
             lectures = lectures_ref.get()
             lectures_data = {}
             for lecture_ref in lectures:
+
                 slides_data = {}
+                lecture_id = lecture_ref.id
                 lecture_data = lecture_ref.to_dict()
                 lecture_position = lecture_data["properties"]["position"]
                 slides_ref = presentation_ref.collection('lectures').document(lecture_ref.id).collection('slides')
                 slides = slides_ref.get()
+
                 for slide_ref in slides:
+                    slide_id = slide_ref.id
                     slide_data = slide_ref.to_dict()
+                    slide_data['id'] = slide_id
                     slide_position = slide_data["properties"]["position"]
                     slides_data[slide_position] = slide_data
+
                 lectures_data[lecture_position] = {
                     'properties': lecture_data['properties'],
+                    'id': lecture_id,
                     'slides': slides_data,
                 }
 
@@ -409,6 +453,7 @@ def presentations_edit(request, short_id_num, lecture_=None):
                 'lectures_data': lectures_data,
                 'lectures_js': lectures_js,
             }
+
             return render(request, 'auditor/presentation_edit.html', context=context)
 
     else:
