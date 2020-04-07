@@ -20,7 +20,12 @@
 - [x] [SLIDE EDIT] – **Shows slide properties, after click on one**
 - [x] [SLIDE EDIT] – **Update project title**
 - [ ] [SLIDE EDIT] – **Update slide properties**
+  - [x] title
+  - [ ] type
+  - [ ] position
 - [ ] [SLIDE EDIT] – **Update lecture properties**
+  - [x] title
+  - [ ] position
 - [x] [SLIDE EDIT] – **Update status**
 - [ ] [SLIDE EDIT] – **Add/Remove lectures**
 - [ ] [SLIDE EDIT] – **Add/Remove slides**

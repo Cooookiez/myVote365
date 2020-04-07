@@ -372,7 +372,6 @@ def presentations_edit(request, short_id_num, lecture_=None):
             elif option == 'update_lecture_title':
                 new_title = str(request.POST.get('new_title')).strip()
                 lecture_id = str(request.POST.get('lecture_id')).strip()
-                print(new_title, lecture_id)
 
                 # check if short_id_num is created by logged user
                 # if yes, update title
@@ -397,6 +396,47 @@ def presentations_edit(request, short_id_num, lecture_=None):
                         'type': 'error',
                         'msg': 'wrong option',
                     })
+
+            elif option == 'update_lecture_position':
+                pass
+
+            elif option == 'update_slide_title':
+                new_title = str(request.POST.get('new_title')).strip()
+                lecture_id = str(request.POST.get('lecture_id')).strip()
+                slide_id = str(request.POST.get('slide_id')).strip()
+                print(lecture_id, slide_id)
+
+                # check if short_id_num is created by logged user
+                # if yes, update title
+                if get_ids_by_short_id_num()['auditor_id'] == request.session['auditor']['auditor_id']:
+                    try:
+                        presentation_ref = db.collection(u'presentations')\
+                            .document(get_ids_by_short_id_num()['presentation_id'])
+                        lecture_ref = presentation_ref.collection('lectures').document(lecture_id)
+                        slide_ref = lecture_ref.collection('slides').document(slide_id)
+                        slide_ref.update({
+                            'properties.title': new_title,
+                        })
+                        callback.append({
+                            'type': 'success',
+                        })
+                    except:
+                        callback.append({
+                            'type': 'error',
+                            'msg': 'lecture or slide doesn\'t exists',
+                        })
+                else:
+                    callback.append({
+                        'type': 'error',
+                        'msg': 'wrong option',
+                    })
+
+            elif option == 'update_slide_type':
+                pass
+
+            elif option == 'update_slide_position':
+                pass
+
             else:
                 callback = dont_be_hacekr
 
