@@ -23,12 +23,16 @@
   - [x] title
   - [x] type
   - [ ] position
+  - [ ] max and min position input
 - [ ] [SLIDE EDIT] – **Update lecture properties**
   - [x] title
-  - [ ] position
+  - [x] position
+  - [ ] max and min position input
 - [x] [SLIDE EDIT] – **Update status**
 - [ ] [SLIDE EDIT] – **Add/Remove lectures**
 - [ ] [SLIDE EDIT] – **Add/Remove slides**
+- [ ] [SLIDE EDIT] – **slide preview**
+- [ ] [PRESENTATION] – **start**
 
 ## 📆 Timetable
 

@@ -322,156 +322,11 @@ def presentations_new(request):
         return redirect('auditor:panel')
 
 
-def presentations_edit(request, short_id_num, lecture_=None):
+def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
     if 'auditor' in request.session and request.session['auditor']['logged'] is True:
         # LOGGED
 
-        if request.method == 'POST': # updates to database
-            option = str(request.POST.get('option')).strip()
-            callback = []
-
-            def get_ids_by_short_id_num():
-                presentations_id = None
-                presentations_ref = db.collection(u'presentations')
-                presentations_ref = presentations_ref.where(u'properties.short_id_num', u'==', short_id_num)
-                presentations = presentations_ref.get()
-                index = 0
-                for presentation in presentations:
-                    index = index + 1
-                    presentations_id = presentation.id
-
-                # download presentation
-                presentation_ref = db.collection(u'presentations').document(presentations_id)
-                presentation = presentation_ref.get().to_dict()
-
-                return {
-                    'auditor_id': presentation['properties']['auditor_id'],
-                    'presentation_id': presentations_id,
-                }
-
-            if option == 'update_presentation_title':
-                new_title = str(request.POST.get('new_title')).strip()
-
-                # check if short_id_num is created by logged user
-                # if yes, update title
-                if get_ids_by_short_id_num()['auditor_id'] == request.session['auditor']['auditor_id']:
-                    presentation_ref = db.collection(u'presentations')\
-                        .document(get_ids_by_short_id_num()['presentation_id'])
-                    presentation_ref.update({
-                        'properties.title': new_title,
-                    })
-                    callback.append({
-                        'type': 'success',
-                    })
-                else:
-                    callback.append({
-                        'type': 'error',
-                        'msg': 'wrong option',
-                    })
-
-            elif option == 'update_lecture_title':
-                new_title = str(request.POST.get('new_title')).strip()
-                lecture_id = str(request.POST.get('lecture_id')).strip()
-
-                # check if short_id_num is created by logged user
-                # if yes, update title
-                if get_ids_by_short_id_num()['auditor_id'] == request.session['auditor']['auditor_id']:
-                    try:
-                        presentation_ref = db.collection(u'presentations')\
-                            .document(get_ids_by_short_id_num()['presentation_id'])
-                        lecture_ref = presentation_ref.collection('lectures').document(lecture_id)
-                        lecture_ref.update({
-                            'properties.title': new_title,
-                        })
-                        callback.append({
-                            'type': 'success',
-                        })
-                    except:
-                        callback.append({
-                            'type': 'error',
-                            'msg': 'lecture doesn\'t exists',
-                        })
-                else:
-                    callback.append({
-                        'type': 'error',
-                        'msg': 'wrong option',
-                    })
-
-            elif option == 'update_lecture_position':
-                pass
-
-            elif option == 'update_slide_title':
-                new_title = str(request.POST.get('new_title')).strip()
-                lecture_id = str(request.POST.get('lecture_id')).strip()
-                slide_id = str(request.POST.get('slide_id')).strip()
-
-                # check if short_id_num is created by logged user
-                # if yes, update title
-                if get_ids_by_short_id_num()['auditor_id'] == request.session['auditor']['auditor_id']:
-                    try:
-                        presentation_ref = db.collection(u'presentations')\
-                            .document(get_ids_by_short_id_num()['presentation_id'])
-                        lecture_ref = presentation_ref.collection('lectures').document(lecture_id)
-                        slide_ref = lecture_ref.collection('slides').document(slide_id)
-                        slide_ref.update({
-                            'properties.title': new_title,
-                        })
-                        callback.append({
-                            'type': 'success',
-                        })
-                    except:
-                        callback.append({
-                            'type': 'error',
-                            'msg': 'lecture or slide doesn\'t exists',
-                        })
-                else:
-                    callback.append({
-                        'type': 'error',
-                        'msg': 'wrong option',
-                    })
-
-            elif option == 'update_slide_type':
-                new_type = str(request.POST.get('new_type')).strip()
-                lecture_id = str(request.POST.get('lecture_id')).strip()
-                slide_id = str(request.POST.get('slide_id')).strip()
-
-                # check if short_id_num is created by logged user
-                # if yes, update title
-                if get_ids_by_short_id_num()['auditor_id'] == request.session['auditor']['auditor_id']:
-                    try:
-                        presentation_ref = db.collection(u'presentations')\
-                            .document(get_ids_by_short_id_num()['presentation_id'])
-                        lecture_ref = presentation_ref.collection('lectures').document(lecture_id)
-                        slide_ref = lecture_ref.collection('slides').document(slide_id)
-                        slide_ref.update({
-                            'properties.type': new_type,
-                        })
-                        callback.append({
-                            'type': 'success',
-                        })
-                    except:
-                        callback.append({
-                            'type': 'error',
-                            'msg': 'lecture or slide doesn\'t exists',
-                        })
-                else:
-                    callback.append({
-                        'type': 'error',
-                        'msg': 'wrong option',
-                    })
-
-            elif option == 'update_slide_position':
-                pass
-
-            else:
-                callback = dont_be_hacekr
-
-            json_callback = json.dumps(callback)
-            return HttpResponse(json_callback)
-
-        else:  # show web page
-
-            # wyszukanie prezentacji
+        def get_lectures():  # wyszukanie prezentacji
             presentations_id = None
             presentations_ref = db.collection(u'presentations')
             presentations_ref = presentations_ref.where(u'properties.short_id_num', u'==', short_id_num)
@@ -512,12 +367,244 @@ def presentations_edit(request, short_id_num, lecture_=None):
                     'slides': slides_data,
                 }
 
-            lectures_js = json.dumps(lectures_data)
+            return {
+                'presentation': presentation,
+                'lectures_data': lectures_data,
+                'lectures_json': json.dumps(lectures_data),
+            }
+
+        if request.method == 'POST': # updates to database
+            option = str(request.POST.get('option')).strip()
+            callback = []
+
+            def get_ids_by_short_id_num():
+                presentations_id = None
+                presentations_ref = db.collection(u'presentations')
+                presentations_ref = presentations_ref.where(u'properties.short_id_num', u'==', short_id_num)
+                presentations = presentations_ref.get()
+                index = 0
+                for presentation in presentations:
+                    index = index + 1
+                    presentations_id = presentation.id
+
+                # download presentation
+                presentation_ref = db.collection(u'presentations').document(presentations_id)
+                presentation = presentation_ref.get().to_dict()
+
+                return {
+                    'auditor_id': presentation['properties']['auditor_id'],
+                    'presentation_id': presentations_id,
+                }
+
+            def user_presentation_verification():
+                return get_ids_by_short_id_num()['auditor_id'] == request.session['auditor']['auditor_id']
+
+            if option == 'update_presentation_title':
+                new_title = str(request.POST.get('new_title')).strip()
+
+                # check if short_id_num is created by logged user
+                # if yes, update title
+                if user_presentation_verification():
+                    presentation_ref = db.collection(u'presentations')\
+                        .document(get_ids_by_short_id_num()['presentation_id'])
+                    presentation_ref.update({
+                        'properties.title': new_title,
+                    })
+                    callback.append({
+                        'type': 'success',
+                    })
+                else:
+                    callback.append({
+                        'type': 'error',
+                        'msg': 'wrong option',
+                    })
+
+            elif option == 'update_lecture_title':
+                new_title = str(request.POST.get('new_title')).strip()
+                lecture_id = str(request.POST.get('lecture_id')).strip()
+
+                # check if short_id_num is created by logged user
+                # if yes, update title
+                if user_presentation_verification():
+                    try:
+                        presentation_ref = db.collection(u'presentations')\
+                            .document(get_ids_by_short_id_num()['presentation_id'])
+                        lecture_ref = presentation_ref.collection('lectures').document(lecture_id)
+                        lecture_ref.update({
+                            'properties.title': new_title,
+                        })
+                        callback.append({
+                            'type': 'success',
+                        })
+                    except:
+                        callback.append({
+                            'type': 'error',
+                            'msg': 'lecture doesn\'t exists',
+                        })
+                else:
+                    callback.append({
+                        'type': 'error',
+                        'msg': 'wrong option',
+                    })
+
+            elif option == 'update_lecture_position':
+                cur_position = int(request.POST.get('cur_position'))-1
+                new_position = int(request.POST.get('new_position'))-1
+                lecture_id = str(request.POST.get('lecture_id')).strip()
+                print('pozycje', cur_position, '->', new_position, '\t|', lecture_id)  # check if short_id_num is created by logged user
+                # if yes, update title
+                print(user_presentation_verification())
+                if user_presentation_verification():
+
+                    try:
+
+                        # how many lectures? (is new position between 0 and max?)
+                        presentation_ref = db.collection(u'presentations')\
+                            .document(get_ids_by_short_id_num()['presentation_id'])
+
+                        # how many
+                        how_many_presentations = 0
+                        positions = []
+                        lectures_ref = presentation_ref.collection('lectures').get()
+                        for _ in lectures_ref:
+                            how_many_presentations += 1
+                            positions.append("")
+
+                        # download presentations position
+                        lectures_ref = presentation_ref.collection('lectures').get()
+                        for lecture_ref in lectures_ref:
+                            position = int(lecture_ref.to_dict()['properties']['position'])
+                            positions[position] = lecture_ref.id
+
+                        if 0 <= new_position < how_many_presentations:  # is between 0 and max
+
+                            # update new position for changed element
+                            lecture_ref = presentation_ref.collection('lectures').document(positions[cur_position])
+                            lecture_ref.update({
+                                'properties.position': int(new_position)
+                            })
+
+                            # is new position greater then old one
+                            if new_position > cur_position:  # yes, it is greater
+                                # for each element between old one and new one change position to -1
+                                for i in range(cur_position+1, new_position+1):
+                                    lecture_ref = presentation_ref.collection('lectures').document(positions[i])
+                                    lecture_ref.update({
+                                        'properties.position': (int(lecture_ref.get().to_dict()['properties']['position'])-1)
+                                    })
+
+                            elif new_position < cur_position:  # no, it is lesser
+                                # for each element between old one and new one change position to +1
+                                for i in range(new_position, cur_position):
+                                    lecture_ref = presentation_ref.collection('lectures').document(positions[i])
+                                    lecture_ref.update({
+                                        'properties.position': (int(lecture_ref.get().to_dict()['properties']['position'])+1)
+                                    })
+
+                            else:  # is the same
+                                pass
+
+                            lectures = get_lectures()
+                            callback.append({
+                                'type': 'success',
+                                'msg': '',
+                                'lectures_json': lectures['lectures_json'],
+                            })
+
+                        else:
+                            callback.append({
+                                'type': 'error',
+                                'msg': 'wrong new position',
+                            })
+
+                    except:
+                        callback.append({
+                            'type': 'error',
+                            'msg': 'lecture doesn\'t exists',
+                        })
+                else:
+                    callback.append({
+                        'type': 'error',
+                        'msg': 'wrong option',
+                    })
+
+            elif option == 'update_slide_title':
+                new_title = str(request.POST.get('new_title')).strip()
+                lecture_id = str(request.POST.get('lecture_id')).strip()
+                slide_id = str(request.POST.get('slide_id')).strip()
+
+                # check if short_id_num is created by logged user
+                # if yes, update title
+                if user_presentation_verification():
+                    try:
+                        presentation_ref = db.collection(u'presentations')\
+                            .document(get_ids_by_short_id_num()['presentation_id'])
+                        lecture_ref = presentation_ref.collection('lectures').document(lecture_id)
+                        slide_ref = lecture_ref.collection('slides').document(slide_id)
+                        slide_ref.update({
+                            'properties.title': new_title,
+                        })
+                        callback.append({
+                            'type': 'success',
+                        })
+                    except:
+                        callback.append({
+                            'type': 'error',
+                            'msg': 'lecture or slide doesn\'t exists',
+                        })
+                else:
+                    callback.append({
+                        'type': 'error',
+                        'msg': 'wrong option',
+                    })
+
+            elif option == 'update_slide_type':
+                new_type = str(request.POST.get('new_type')).strip()
+                lecture_id = str(request.POST.get('lecture_id')).strip()
+                slide_id = str(request.POST.get('slide_id')).strip()
+
+                # check if short_id_num is created by logged user
+                # if yes, update title
+                if user_presentation_verification():
+                    try:
+                        presentation_ref = db.collection(u'presentations')\
+                            .document(get_ids_by_short_id_num()['presentation_id'])
+                        lecture_ref = presentation_ref.collection('lectures').document(lecture_id)
+                        slide_ref = lecture_ref.collection('slides').document(slide_id)
+                        slide_ref.update({
+                            'properties.type': new_type,
+                        })
+                        callback.append({
+                            'type': 'success',
+                        })
+                    except:
+                        callback.append({
+                            'type': 'error',
+                            'msg': 'lecture or slide doesn\'t exists',
+                        })
+                else:
+                    callback.append({
+                        'type': 'error',
+                        'msg': 'wrong option',
+                    })
+
+            elif option == 'update_slide_position':
+                pass
+
+            else:
+                callback = dont_be_hacekr
+
+            json_callback = json.dumps(callback)
+            return HttpResponse(json_callback)
+
+        else:  # show web page
+
+            lectures = get_lectures()
 
             context = {
-                'properties': presentation['properties'],
-                'lectures_data': lectures_data,
-                'lectures_js': lectures_js,
+                'properties': lectures['presentation']['properties'],
+                'lectures_data': lectures['lectures_data'],
+                'lectures_json': lectures['lectures_json'],
             }
 
             return render(request, 'auditor/presentation_edit.html', context=context)
