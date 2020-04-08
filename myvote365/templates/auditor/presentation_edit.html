@@ -248,6 +248,7 @@
             $('#property_lecture_title').val(lecture.properties.title);
             $('#property_lecture_position').val(parseInt(lecture.properties.position)+1);
             $('#property_lecture_position').attr('data-cur-position', parseInt(lecture.properties.position)+1);
+            $('#properties-lecture').attr('data-lecture-id', lecture.id);
             $('#property_lecture_position').attr('max', max_lectures);
             $('#property_lecture_position').attr('min', 1);
 
@@ -257,6 +258,7 @@
             $('#property_slide_position').val(parseInt(slide.properties.position)+1);
             $('#property_slide_position').attr('data-cur-position', parseInt(slide.properties.position)+1);
             $('#properties-slide').attr('data-lecture-id', lecture.id);
+            $('#properties-slide').attr('data-slide-id', slide.id);
             $('#property_slide_position').attr('max', max_slides);
             $('#property_slide_position').attr('min', 1);
 
