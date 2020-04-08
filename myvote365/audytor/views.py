@@ -450,19 +450,16 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
             elif option == 'update_lecture_position':
                 cur_position = int(request.POST.get('cur_position'))-1
                 new_position = int(request.POST.get('new_position'))-1
-                lecture_id = str(request.POST.get('lecture_id')).strip()
-                print('pozycje', cur_position, '->', new_position, '\t|', lecture_id)  # check if short_id_num is created by logged user
+                print(f'LECTURE {cur_position} -> {new_position}')
                 # if yes, update title
-                print(user_presentation_verification())
                 if user_presentation_verification():
 
                     try:
 
-                        # how many lectures? (is new position between 0 and max?)
                         presentation_ref = db.collection(u'presentations')\
                             .document(get_ids_by_short_id_num()['presentation_id'])
 
-                        # how many
+                        # how many presentations? (is new position between 0 and max?)
                         how_many_presentations = 0
                         positions = []
                         lectures_ref = presentation_ref.collection('lectures').get()
@@ -476,6 +473,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                             position = int(lecture_ref.to_dict()['properties']['position'])
                             positions[position] = lecture_ref.id
 
+                        # update presentation
                         if 0 <= new_position < how_many_presentations:  # is between 0 and max
 
                             # update new position for changed element
@@ -501,7 +499,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                                         'properties.position': (int(lecture_ref.get().to_dict()['properties']['position'])+1)
                                     })
 
-                            else:  # is the same
+                            else:  # is the same, do nothing
                                 pass
 
                             lectures = get_lectures()
@@ -522,6 +520,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                             'type': 'error',
                             'msg': 'lecture doesn\'t exists',
                         })
+
                 else:
                     callback.append({
                         'type': 'error',
@@ -589,7 +588,88 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                     })
 
             elif option == 'update_slide_position':
-                pass
+                cur_position = int(request.POST.get('cur_position'))-1
+                new_position = int(request.POST.get('new_position'))-1
+                print(f'SLIDE {cur_position} -> {new_position}')
+                lecture_id = str(request.POST.get('lecture_id')).strip()
+
+                # if yes, update title
+                if user_presentation_verification():
+                    try:
+
+                        presentation_ref = db.collection(u'presentations')\
+                            .document(get_ids_by_short_id_num()['presentation_id'])
+
+                        # how many slides? (is new position between 0 and max?)
+                        lectures_ref = presentation_ref.collection('lectures').document(lecture_id)
+                        how_many_slides = 0
+                        positions = []
+                        slides_ref = lectures_ref.collection('slides').get()
+                        for _ in slides_ref:
+                            how_many_slides += 1
+                            positions.append("")
+
+                        # download slides position
+                        slides_ref = lectures_ref.collection('slides').get()
+                        for slide_ref in slides_ref:
+                            position = int(slide_ref.to_dict()['properties']['position'])
+                            positions[position] = slide_ref.id
+
+                        # update slides
+                        if 0 <= new_position < how_many_slides:
+                            # update new position for changed element
+                            slide_ref = lectures_ref.collection('slides').document(positions[cur_position])
+                            slide_ref.update({
+                                'properties.position': int(new_position)
+                            })
+
+                            # is new position greater then old one
+                            if new_position > cur_position:  # yes, it is greater
+                                # for each element between old one and new one change position to -1
+                                for i in range(cur_position + 1, new_position + 1):
+                                    slide_ref = lectures_ref.collection('slides').document(positions[i])
+                                    slide_ref.update({
+                                        'properties.position': (
+                                                    int(slide_ref.get().to_dict()['properties']['position']) - 1)
+                                    })
+
+                            elif new_position < cur_position:  # no, it is lesser
+                                # for each element between old one and new one change position to +1
+                                for i in range(new_position, cur_position):
+                                    slide_ref = lectures_ref.collection('slides').document(positions[i])
+                                    slide_ref.update({
+                                        'properties.position': (
+                                                    int(slide_ref.get().to_dict()['properties']['position']) + 1)
+                                    })
+
+                            else:  # is the same, do nothing
+                                pass
+
+                            lectures = get_lectures()
+                            callback.append({
+                                'type': 'success',
+                                'msg': '',
+                                'lectures_json': lectures['lectures_json'],
+                            })
+
+                        else:
+                            callback.append({
+                                'type': 'error',
+                                'msg': 'wrong new position',
+                            })
+
+
+                    except:
+                        callback.append({
+                            'type': 'error',
+                            'msg': 'lecture doesn\'t exists',
+                        })
+
+                else:
+                    callback.append({
+                        'type': 'error',
+                        'msg': 'wrong option',
+                    })
 
             else:
                 callback = dont_be_hacekr

@@ -30,7 +30,7 @@
             make_lectures(lectures_json);
 
             // click slide
-            $('aside#slides-panel > article.slides-panel-presentation > section.presentation-panels > section.slide').click(function(){
+            $('#slides-panel').on('click', 'section.presentation-panels > section.slide', function(){
                 let $this = $(this);
 
                 let lecture_position = parseInt( $this.parent().parent().attr('data-position') );
@@ -40,7 +40,6 @@
                 let slide = lecture.slides[slide_position];
 
                 update_properties(lecture, slide)
-
             });
 
             // UPDATES
@@ -80,23 +79,23 @@
             $('#property_lecture_position').change(function(){
                 GLOBAL_save_counter.in_edits++;
                 change_save_status();
-                let cur_position = $(this).attr('data-cur-position');
-                let new_position = $(this).val();
-                let lecture_id = $(this).parent().parent().attr('data-lecture-id');
+                $this = $(this);
+                let cur_position = $this.attr('data-cur-position');
+                let new_position = $this.val();
                 let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
                 let data = {
                     option: 'update_lecture_position',
                     cur_position: cur_position,
                     new_position: new_position,
-                    lecture_id: lecture_id,
                     csrfmiddlewaretoken: csrfmiddlewaretoken,
                 };
                 $.post('{% url 'auditor:presentation_edit' properties.short_id_num %}', data).done(function(response_raw){
+                    $this.attr('data-cur-position', new_position);
                     let response_json_tmp = JSON.parse(response_raw);
                     save_response_to_status_change(response_json_tmp);
                     change_save_status();
                     lectures_json = JSON.parse(response_json_tmp[0].lectures_json);
-                    make_lectures(lectures_json)
+                    make_lectures(lectures_json);
                 }).fail(function(){
                     GLOBAL_save_counter.errors.push({
                         'error_type': 'update lecture position post fail',
@@ -141,6 +140,34 @@
             });
 
             // update slide position
+            $('#property_slide_position').change(function(){
+                GLOBAL_save_counter.in_edits++;
+                change_save_status();
+                let $this = $(this);
+                let cur_position = $this.attr('data-cur-position');
+                let new_position = $this.val();
+                let lecture_id = $this.parent().parent().attr('data-lecture-id');
+                let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+                let data = {
+                    option: 'update_slide_position',
+                    cur_position: cur_position,
+                    new_position: new_position,
+                    lecture_id: lecture_id,
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+                };
+                $.post('{% url 'auditor:presentation_edit' properties.short_id_num %}', data).done(function(response_raw){
+                    $this.attr('data-cur-position', new_position);
+                    let response_json_tmp = JSON.parse(response_raw);
+                    save_response_to_status_change(response_json_tmp);
+                    change_save_status();
+                    lectures_json = JSON.parse(response_json_tmp[0].lectures_json);
+                    make_lectures(lectures_json);
+                }).fail(function(){
+                    GLOBAL_save_counter.errors.push({
+                        'error_type': 'update slide position post fail',
+                    })
+                });
+            });
 
         }); // jQ end
 
@@ -214,19 +241,68 @@
 
         function update_properties(lecture, slide){
 
+            let max_lectures = Object.keys(lectures_json).length;
+            let max_slides = Object.keys(lectures_json[lecture.properties.position].slides).length;
+
             // lecture
             $('#property_lecture_title').val(lecture.properties.title);
             $('#property_lecture_position').val(parseInt(lecture.properties.position)+1);
             $('#property_lecture_position').attr('data-cur-position', parseInt(lecture.properties.position)+1);
-            $('#properties-lecture').attr('data-lecture-id', lecture.id);
+            $('#property_lecture_position').attr('max', max_lectures);
+            $('#property_lecture_position').attr('min', 1);
 
             // slide
             $('#property_slide_title').val(slide.properties.title);
             $('#property_slide_type').val(slide.properties.type);
             $('#property_slide_position').val(parseInt(slide.properties.position)+1);
             $('#property_slide_position').attr('data-cur-position', parseInt(slide.properties.position)+1);
-            $('#properties-slide').attr('data-slide-id', slide.id);
             $('#properties-slide').attr('data-lecture-id', lecture.id);
+            $('#property_slide_position').attr('max', max_slides);
+            $('#property_slide_position').attr('min', 1);
+
+            // lecture
+            /*
+            $('#property_lecture_title').promise().done(function(){
+                $(this).val(lecture.properties.title);
+            });
+            $('#property_lecture_position').promise().done(function(){
+                $(this).val(parseInt(lecture.properties.position)+1);
+            });
+            $('#property_lecture_position').promise().done(function(){
+                $(this).attr('data-cur-position', parseInt(lecture.properties.position)+1);
+            });
+            $('#property_lecture_position').promise().done(function(){
+                $(this).attr('max', max_lectures);
+            });
+            $('#property_lecture_position').promise().done(function(){
+                $(this).attr('min', 1);
+            });
+            */
+
+            // slide
+            /*
+            $('#property_slide_title').promise().done(function(){
+                $(this).val(slide.properties.title);
+            });
+            $('#property_slide_type').promise().done(function(){
+                $(this).val(slide.properties.type);
+            });
+            $('#property_slide_position').promise().done(function(){
+                $(this).val(parseInt(slide.properties.position)+1);
+            });
+            $('#property_slide_position').promise().done(function(){
+                $(this).attr('data-cur-position', parseInt(slide.properties.position)+1);
+            });
+            $('#properties-slide').promise().done(function(){
+                $(this).attr('data-lecture-id', lecture.id);
+            });
+            $('#property_slide_position').promise().done(function(){
+                $(this).attr('max', max_slides);
+            });
+            $('#property_slide_position').promise().done(function(){
+                $(this).attr('min', 1);
+            });
+            */
 
         }
 
@@ -311,7 +387,7 @@
             </section>
             <section class="property">
                 <label for="property_lecture_position">Pozycja</label>
-                <input type="number" value="" id="property_lecture_position">
+                <input type="number" value="" id="property_lecture_position" min="1" max="0">
             </section>
         </article>
         <article class="properties-section" id="properties-slide">
@@ -330,7 +406,7 @@
             </section>
             <section class="property">
                 <label for="property_slide_position">Pozycja</label>
-                <input type="number" value="" id="property_slide_position">
+                <input type="number" value="" id="property_slide_position" min="1" max="0">
             </section>
         </article>
     </aside>

@@ -19,15 +19,15 @@
 - [ ] [LOGIN] – **if wrong email, wrong error**
 - [x] [SLIDE EDIT] – **Shows slide properties, after click on one**
 - [x] [SLIDE EDIT] – **Update project title**
-- [ ] [SLIDE EDIT] – **Update slide properties**
+- [x] [SLIDE EDIT] – **Update slide properties**
   - [x] title
   - [x] type
-  - [ ] position
-  - [ ] max and min position input
-- [ ] [SLIDE EDIT] – **Update lecture properties**
+  - [x] position
+  - [x] max and min position input
+- [x] [SLIDE EDIT] – **Update lecture properties**
   - [x] title
   - [x] position
-  - [ ] max and min position input
+  - [x] max and min position input
 - [x] [SLIDE EDIT] – **Update status**
 - [ ] [SLIDE EDIT] – **Add/Remove lectures**
 - [ ] [SLIDE EDIT] – **Add/Remove slides**
