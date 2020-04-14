@@ -399,6 +399,9 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
             def user_presentation_verification():
                 return get_ids_by_short_id_num()['auditor_id'] == request.session['auditor']['auditor_id']
 
+            # UPDATES
+
+            # update presentation title
             if option == 'update_presentation_title':
                 new_title = str(request.POST.get('new_title')).strip()
 
@@ -418,7 +421,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                         'type': 'error',
                         'msg': 'wrong option',
                     })
-
+            # update lecture title
             elif option == 'update_lecture_title':
                 new_title = str(request.POST.get('new_title')).strip()
                 lecture_id = str(request.POST.get('lecture_id')).strip()
@@ -446,7 +449,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                         'type': 'error',
                         'msg': 'wrong option',
                     })
-
+            # update lecture position
             elif option == 'update_lecture_position':
                 cur_position = int(request.POST.get('cur_position'))-1
                 new_position = int(request.POST.get('new_position'))-1
@@ -526,7 +529,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                         'type': 'error',
                         'msg': 'wrong option',
                     })
-
+            # update slide title
             elif option == 'update_slide_title':
                 new_title = str(request.POST.get('new_title')).strip()
                 lecture_id = str(request.POST.get('lecture_id')).strip()
@@ -556,7 +559,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                         'type': 'error',
                         'msg': 'wrong option',
                     })
-
+            # update slide type
             elif option == 'update_slide_type':
                 new_type = str(request.POST.get('new_type')).strip()
                 lecture_id = str(request.POST.get('lecture_id')).strip()
@@ -586,7 +589,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                         'type': 'error',
                         'msg': 'wrong option',
                     })
-
+            # update slide position
             elif option == 'update_slide_position':
                 cur_position = int(request.POST.get('cur_position'))-1
                 new_position = int(request.POST.get('new_position'))-1
@@ -670,6 +673,61 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                         'type': 'error',
                         'msg': 'wrong option',
                     })
+
+            # add new slide to end of lecture
+            elif option == 'append_slide':
+                lecture_position = int(request.POST.get('lecture_position'))
+                if user_presentation_verification():
+                    try:
+                        presentation_ref = db.collection(u'presentations')\
+                            .document(get_ids_by_short_id_num()['presentation_id'])
+                        print('mieli 1')
+                        lectures_ref = presentation_ref.collection('lectures').where('properties.position', '==', lecture_position)
+                        lectures = lectures_ref.get()
+                        ids = []
+                        for lecture in lectures:
+                            ids.append(lecture.id)
+                        print('mili id:', len(ids), ids)
+
+                        if len(ids) != 1:  # too many or too less lectures with given position
+                            callback.append({
+                                'type': 'error',
+                                'msg': 'too many or too less lectures with given position',
+                            })
+                        else:
+                            new_position = 0
+                            lecture_ref = presentation_ref.collection('lectures').document(ids[0])
+                            slides_ref = lecture_ref.collection('slides').get()
+                            print('mieli 2')
+                            for _ in slides_ref:
+                                new_position += 1
+                                print(f'new_position += 1 = {new_position}')
+                            print('mieli ile slide ', new_position)
+
+                            slides_ref = lecture_ref.collection('slides').document()
+                            slides_ref.set({
+                                'properties': {
+                                    'title': 'Nazsa slidu',
+                                    'type': 'text',
+                                    'position': new_position,
+                                }
+                            })
+                            print('zmielilo')
+                            callback.append({
+                                'type': 'success',
+                                'lectures_json': get_lectures()['lectures_json'],
+                            })
+                    except:
+                        callback.append({
+                            'type': 'error',
+                            'msg': 'lecture doesn\'t exists',
+                        })
+                else:
+                    callback.append({
+                        'type': 'error',
+                        'msg': 'wrong option',
+                    })
+
 
             else:
                 callback = dont_be_hacekr

@@ -169,6 +169,15 @@
                 });
             });
 
+
+            // ADD SLIDE
+            $('#slides-panel').on('click', '.slide-add', function(){
+                let lecture_position = parseInt( $(this).parent().parent().attr('data-position') );
+                console.log(lectures_json[lecture_position].slides);
+                append_slide(lecture_position);
+                console.log(lectures_json[lecture_position].slides);
+            });
+
         }); // jQ end
 
         function update_to_db(data, error_msg = 'unknown error'){
@@ -349,6 +358,34 @@
             str2return += ' </article>';
 
             $('aside#slides-panel').html(str2return);
+        }
+
+        function append_slide(lecture_position){
+            GLOBAL_save_counter.in_edits++;
+            change_save_status();
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'auditor:presentation_edit' properties.short_id_num %}',{
+                    option: 'append_slide',
+                    lecture_position: lecture_position,
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done(function(response_raw){
+                let response_json_tmp = JSON.parse(response_raw);
+                save_response_to_status_change(response_json_tmp);
+                change_save_status();
+                if(response_json_tmp[0]['type'] === 'success'){
+                    lectures_json = JSON.parse(response_json_tmp[0]['lectures_json']);
+                    make_lectures(lectures_json)
+                }
+            }).fail(function(){
+                GLOBAL_save_counter.errors.push({
+                    'error_type': 'append slide post error',
+                })
+            })
+
+        }
+
+        function append_lecture(){
+
         }
 
     </script>

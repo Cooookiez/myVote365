@@ -30,7 +30,12 @@
   - [x] max and min position input
 - [x] [SLIDE EDIT] – **Update status**
 - [ ] [SLIDE EDIT] – **Add/Remove lectures**
+  - [ ] Add
+  - [ ] Remove
 - [ ] [SLIDE EDIT] – **Add/Remove slides**
+  - [x] Add
+  - [ ] Remove
+- [ ] [SLIDE EDIT] – **scrolable slides/lectures left panel**
 - [ ] [SLIDE EDIT] – **slide preview**
 - [ ] [PRESENTATION] – **start**
 
