@@ -399,6 +399,8 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
             def user_presentation_verification():
                 return get_ids_by_short_id_num()['auditor_id'] == request.session['auditor']['auditor_id']
 
+            presentation_ref = db.collection(u'presentations').document(get_ids_by_short_id_num()['presentation_id'])
+
             # UPDATES
 
             # update presentation title
@@ -408,8 +410,6 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                 # check if short_id_num is created by logged user
                 # if yes, update title
                 if user_presentation_verification():
-                    presentation_ref = db.collection(u'presentations')\
-                        .document(get_ids_by_short_id_num()['presentation_id'])
                     presentation_ref.update({
                         'properties.title': new_title,
                     })
@@ -425,13 +425,10 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
             elif option == 'update_lecture_title':
                 new_title = str(request.POST.get('new_title')).strip()
                 lecture_id = str(request.POST.get('lecture_id')).strip()
-
                 # check if short_id_num is created by logged user
                 # if yes, update title
                 if user_presentation_verification():
                     try:
-                        presentation_ref = db.collection(u'presentations')\
-                            .document(get_ids_by_short_id_num()['presentation_id'])
                         lecture_ref = presentation_ref.collection('lectures').document(lecture_id)
                         lecture_ref.update({
                             'properties.title': new_title,
@@ -456,12 +453,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                 print(f'LECTURE {cur_position} -> {new_position}')
                 # if yes, update title
                 if user_presentation_verification():
-
                     try:
-
-                        presentation_ref = db.collection(u'presentations')\
-                            .document(get_ids_by_short_id_num()['presentation_id'])
-
                         # how many presentations? (is new position between 0 and max?)
                         how_many_presentations = 0
                         positions = []
@@ -539,8 +531,6 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                 # if yes, update title
                 if user_presentation_verification():
                     try:
-                        presentation_ref = db.collection(u'presentations')\
-                            .document(get_ids_by_short_id_num()['presentation_id'])
                         lecture_ref = presentation_ref.collection('lectures').document(lecture_id)
                         slide_ref = lecture_ref.collection('slides').document(slide_id)
                         slide_ref.update({
@@ -569,8 +559,6 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                 # if yes, update title
                 if user_presentation_verification():
                     try:
-                        presentation_ref = db.collection(u'presentations')\
-                            .document(get_ids_by_short_id_num()['presentation_id'])
                         lecture_ref = presentation_ref.collection('lectures').document(lecture_id)
                         slide_ref = lecture_ref.collection('slides').document(slide_id)
                         slide_ref.update({
@@ -599,10 +587,6 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                 # if yes, update title
                 if user_presentation_verification():
                     try:
-
-                        presentation_ref = db.collection(u'presentations')\
-                            .document(get_ids_by_short_id_num()['presentation_id'])
-
                         # how many slides? (is new position between 0 and max?)
                         lectures_ref = presentation_ref.collection('lectures').document(lecture_id)
                         how_many_slides = 0
@@ -679,8 +663,6 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                 lecture_position = int(request.POST.get('lecture_position'))
                 if user_presentation_verification():
                     try:
-                        presentation_ref = db.collection(u'presentations')\
-                            .document(get_ids_by_short_id_num()['presentation_id'])
                         lectures_ref = presentation_ref.collection('lectures').where('properties.position', '==', lecture_position)
                         lectures = lectures_ref.get()
                         ids = []
@@ -730,8 +712,6 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                 slide_position = int(request.POST.get('slide_position'))
                 if user_presentation_verification():
                     try:
-                        presentation_ref = db.collection(u'presentations')\
-                            .document(get_ids_by_short_id_num()['presentation_id'])
                         lectures_ref = presentation_ref.collection('lectures').where('properties.position', '==', lecture_position)
                         lectures = lectures_ref.get()
 
