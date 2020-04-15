@@ -176,13 +176,16 @@
                 append_slide(lecture_position);
             });
             // REMOVE SLIDE
-            $('#slides-panel').on('click', '.delete', function(){
+            $('#slides-panel').on('click', '.delete-slide', function(){
                 let slide_position = parseInt( $(this).parent().attr('data-position') );
                 let lecture_position = parseInt( $(this).parent().parent().parent().attr('data-position') );
                 remove_slide(lecture_position, slide_position);
             });
 
             // ADD LECTURE
+            $('#slides-panel').on('click', '.slides-panel-lecture-add', function(){
+                append_lecture();
+            });
             // REMOVE LECTURE
 
         }); // jQ end
@@ -329,7 +332,7 @@
 
             str2return += ' <section class="slide" data-position="' + slide.properties.position + '" data-type="' + slide.properties.type + '" data-id="' + slide.id + '">';
             str2return += '     <header>' + slide.properties.title + '</header>';
-            str2return += '     <span class="delete ico far fa-trash-alt"></span>';
+            str2return += '     <span class="delete-slide ico far fa-trash-alt"></span>';
             str2return += ' </section>';
 
             return str2return;
@@ -339,7 +342,10 @@
             let str2return = '';
 
             str2return += ' <article class="slides-panel-presentation" data-position="' + lecture.properties.position + '" data-id="' + lecture.id + '">';
-            str2return += '     <section class="presentation-cointener-info">' + lecture.properties.title + '</section>';
+            str2return += '     <section class="presentation-cointener-info">';
+            str2return += '         <header>' + lecture.properties.title + '</header>';
+            str2return += '         <span class="delete-lecture ico far fa-trash-alt"></span>';
+            str2return += '     </section>';
             str2return += '     <section class="presentation-panels">';
             Object.keys(lecture.slides).forEach(function(i){
                 str2return += make_slide(lecture.slides[i])
@@ -361,7 +367,7 @@
                 str2return += make_lecture(lectures[i])
             });
 
-            str2return += ' <article class="slides-panel-presentation-add">';
+            str2return += ' <article class="slides-panel-lecture-add">';
             str2return += '     <span class="ico far fa-plus"></span>';
             str2return += ' </article>';
 
@@ -388,8 +394,7 @@
                 GLOBAL_save_counter.errors.push({
                     'error_type': 'append slide post error',
                 })
-            })
-
+            });
         }
 
         function remove_slide(lecture_position, slide_position){
@@ -419,7 +424,25 @@
         }
 
         function append_lecture(){
-
+            GLOBAL_save_counter.in_edits++;
+            change_save_status();
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'auditor:presentation_edit' properties.short_id_num %}',{
+                    option: 'append_lecture',
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done(function(response_raw){
+                let response_json_tmp = JSON.parse(response_raw);
+                save_response_to_status_change(response_json_tmp);
+                change_save_status();
+                if(response_json_tmp[0]['type'] === 'success'){
+                    lectures_json = JSON.parse(response_json_tmp[0]['lectures_json']);
+                    make_lectures(lectures_json)
+                }
+            }).fail(function(){
+                GLOBAL_save_counter.errors.push({
+                    'error_type': 'append slide post error',
+                })
+            });
         }
 
         function remove_lecture(lecture_position){

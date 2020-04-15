@@ -675,23 +675,21 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                                 'msg': 'too many or too less lectures with given position',
                             })
                         else:  # only one lecture find, go on
+                            # how many slides already exists
                             new_position = 0
                             lecture_ref = presentation_ref.collection('lectures').document(ids[0])
                             slides_ref = lecture_ref.collection('slides').get()
                             for _ in slides_ref:
                                 new_position += 1
-                                print(f'new_position += 1 = {new_position}')
-                            print('mieli ile slide ', new_position)
 
                             slides_ref = lecture_ref.collection('slides').document()
                             slides_ref.set({
                                 'properties': {
-                                    'title': 'Nazsa slidu',
+                                    'title': 'Nowy slide',
                                     'type': 'text',
                                     'position': new_position,
                                 }
                             })
-                            print('zmielilo')
                             callback.append({
                                 'type': 'success',
                                 'lectures_json': get_lectures()['lectures_json'],
@@ -789,7 +787,51 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                     })
             # add new lecture to end of presentation
             elif option == 'append_lecture':
-                pass
+                if user_presentation_verification():
+                    try:
+                        # how many lectures already exists
+                        lectures_count = 0
+                        lectures_ref = presentation_ref.collection('lectures').get()
+                        for _ in lectures_ref:
+                            lectures_count += 1
+
+                        # add new lecture
+                        lectures_ref = presentation_ref.collection('lectures')
+                        lecture_id = lectures_ref.document().id
+                        lecture_ref = lectures_ref.document(lecture_id)
+                        lecture_ref.set({
+                            'properties': {
+                                'position': lectures_count,
+                                'title': f'W{lectures_count+1}',
+                            }
+                        })
+
+                        # add one slide to lecture
+                        slide_id = lecture_ref.collection('slides').document().id
+                        slide_ref = lecture_ref.collection('slides').document(slide_id)
+                        slide_ref.set({
+                            'properties': {
+                                'title': 'Nowy slide',
+                                'type': 'text',
+                                'position': 0,
+                                }
+                        })
+                        # return
+                        callback.append({
+                            'type': 'success',
+                            'lectures_json': get_lectures()['lectures_json'],
+                        })
+                        
+                    except:
+                        callback.append({
+                            'type': 'error',
+                            'msg': 'lecture doesn\'t exists',
+                        })
+                else:
+                    callback.append({
+                        'type': 'error',
+                        'msg': 'wrong option',
+                    })
             # remove lecture
             elif option == 'remove_lecture':
                 pass
