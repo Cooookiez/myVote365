@@ -187,6 +187,10 @@
                 append_lecture();
             });
             // REMOVE LECTURE
+            $('#slides-panel').on('click', '.delete-lecture', function(){
+                let lecture_position = $(this).parent().parent().attr('data-position');
+                remove_lecture(lecture_position)
+            })
 
         }); // jQ end
 
@@ -399,7 +403,6 @@
 
         function remove_slide(lecture_position, slide_position){
             GLOBAL_save_counter.in_edits++;
-            console.log(lecture_position, slide_position);
             change_save_status();
             let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
             $.post('{% url 'auditor:presentation_edit' properties.short_id_num %}',{
@@ -409,7 +412,7 @@
                 csrfmiddlewaretoken: csrfmiddlewaretoken,
             }).done(function(response_raw){
                 let response_json_tmp = JSON.parse(response_raw);
-                console.log(response_json_tmp)
+                console.log(response_json_tmp);
                 save_response_to_status_change(response_json_tmp);
                 change_save_status();
                 if(response_json_tmp[0]['type'] === 'success'){
@@ -446,7 +449,28 @@
         }
 
         function remove_lecture(lecture_position){
-
+            GLOBAL_save_counter.in_edits++;
+            change_save_status();
+            console.log('lecture_position', lecture_position);
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'auditor:presentation_edit' properties.short_id_num %}',{
+                option: 'remove_lecture',
+                lecture_position: lecture_position,
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done(function(response_raw){
+                let response_json_tmp = JSON.parse(response_raw);
+                console.log(response_json_tmp);
+                save_response_to_status_change(response_json_tmp);
+                change_save_status();
+                if(response_json_tmp[0]['type'] === 'success'){
+                    lectures_json = JSON.parse(response_json_tmp[0]['lectures_json']);
+                    make_lectures(lectures_json)
+                }
+            }).fail(function(){
+                GLOBAL_save_counter.errors.push({
+                    'error_type': 'append slide post error',
+                })
+            });
         }
 
     </script>

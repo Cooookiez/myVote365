@@ -283,35 +283,35 @@ def presentations_new(request):
                 'position': 0,
             }
         })
-
-        slide_id = lecture_ref.collection(u'slides').document().id
-        slide_ref = lecture_ref.collection(u'slides').document(slide_id)
-        slide_ref.set({
-            'properties': {
-                'title': 'Jakie są szanse, że polecisz wykład?',
-                'type': 'slider_1to5',
-                'position': 1,
-            }
-        })
-
-        lecture_id = presentation_ref.collection(u'lectures').document().id
-        lecture_ref = presentation_ref.collection(u'lectures').document(lecture_id)
-        lecture_ref.set({
-            'properties': {
-                'title': 'W2',
-                'position': 1,
-            }
-        })
-
-        slide_id = lecture_ref.collection(u'slides').document().id
-        slide_ref = lecture_ref.collection(u'slides').document(slide_id)
-        slide_ref.set({
-            'properties': {
-                'title': 'Co byś zmienił?',
-                'type': 'text',
-                'position': 0,
-            }
-        })
+        #
+        # slide_id = lecture_ref.collection(u'slides').document().id
+        # slide_ref = lecture_ref.collection(u'slides').document(slide_id)
+        # slide_ref.set({
+        #     'properties': {
+        #         'title': 'Jakie są szanse, że polecisz wykład?',
+        #         'type': 'slider_1to5',
+        #         'position': 1,
+        #     }
+        # })
+        #
+        # lecture_id = presentation_ref.collection(u'lectures').document().id
+        # lecture_ref = presentation_ref.collection(u'lectures').document(lecture_id)
+        # lecture_ref.set({
+        #     'properties': {
+        #         'title': 'W2',
+        #         'position': 1,
+        #     }
+        # })
+        #
+        # slide_id = lecture_ref.collection(u'slides').document().id
+        # slide_ref = lecture_ref.collection(u'slides').document(slide_id)
+        # slide_ref.set({
+        #     'properties': {
+        #         'title': 'Co byś zmienił?',
+        #         'type': 'text',
+        #         'position': 0,
+        #     }
+        # })
 
         if 'auditor' in request.session and request.session['auditor']['logged'] is True:
             return redirect('auditor:presentation_edit', short_id_num=short_id_num)
@@ -398,6 +398,18 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
 
             def user_presentation_verification():
                 return get_ids_by_short_id_num()['auditor_id'] == request.session['auditor']['auditor_id']
+
+            def delete_collection(coll_ref, batch_size):
+                docs = coll_ref.limit(batch_size).stream()
+                deleted = 0
+
+                for doc in docs:
+                    print(u'Deleting doc {} => {}'.format(doc.id, doc.to_dict()))
+                    doc.reference.delete()
+                    deleted = deleted + 1
+
+                if deleted >= batch_size:
+                    return delete_collection(coll_ref, batch_size)
 
             presentation_ref = db.collection(u'presentations').document(get_ids_by_short_id_num()['presentation_id'])
 
@@ -759,7 +771,6 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                                     position = int(slide_ref.to_dict()['properties']['position'])
                                     positions[position] = slide_ref.id
 
-                                print(f'slides: ({slide_position+1}, {how_many_slides})')
                                 for slide_position_tmp in range(slide_position+1, how_many_slides):
                                     slide_ref = lecture_ref.collection('slides').document(positions[slide_position_tmp])
                                     slide_ref.update({
@@ -814,14 +825,14 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                                 'title': 'Nowy slide',
                                 'type': 'text',
                                 'position': 0,
-                                }
+                            }
                         })
                         # return
                         callback.append({
                             'type': 'success',
                             'lectures_json': get_lectures()['lectures_json'],
                         })
-                        
+
                     except:
                         callback.append({
                             'type': 'error',
@@ -834,8 +845,73 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                     })
             # remove lecture
             elif option == 'remove_lecture':
-                pass
+                lecture_position = int(request.POST.get('lecture_position'))
+                print(f'lecture_position: {lecture_position}')
+                if user_presentation_verification():
+                    try:
+                        lectures_ref = presentation_ref.collection('lectures').where('properties.position', '==', lecture_position)
+                        lectures = lectures_ref.get()
 
+                        lct_ids = []
+                        for lecture_ref in lectures:
+                            lct_ids.append(lecture_ref.id)
+
+                        # too many or too less lectures with given position
+                        if len(lct_ids) != 1:
+                            callback.append({
+                                'type': 'error',
+                                'msg': 'too many or too less lectures with given position',
+                            })
+
+                        # only one lecture find, go on
+                        else:
+
+                            # CHANGE POSITION OF LATER SLIDES
+                            lectures_count = 0
+                            lectures_position = []
+                            lectures_ref = presentation_ref.collection('lectures').get()
+                            for _ in lectures_ref:
+                                lectures_position.append('')
+                                lectures_count += 1
+
+                            # download lectures position
+                            lectures_ref = presentation_ref.collection('lectures').get()
+                            for lecture_ref_tmp in lectures_ref:
+                                position = int(lecture_ref_tmp.to_dict()['properties']['position'])
+                                lectures_position[position] = lecture_ref_tmp.id
+
+                            # chane other lecture positions
+                            for lecture_position_tmp in range(lecture_position + 1, lectures_count):
+                                lecture_ref = presentation_ref.collection('lectures').document(lectures_position[lecture_position_tmp])
+                                lecture_ref.update({
+                                    'properties.position': (
+                                            int(lecture_ref.get().to_dict()['properties']['position']) - 1)
+                                })
+
+                            # delete lectures subcollection
+                            lecture_ref = presentation_ref.collection('lectures').document(lct_ids[0])
+                            slides_collection_ref = lecture_ref.collection('slides')
+                            print(slides_collection_ref)
+                            delete_collection(slides_collection_ref, 50)
+
+                            # delete lecture document
+                            lecture_ref.delete()
+
+                            callback.append({
+                                'type': 'success',
+                                'lectures_json': get_lectures()['lectures_json'],
+                            })
+
+                    except:
+                        callback.append({
+                            'type': 'error',
+                            'msg': 'lecture doesn\'t exists',
+                        })
+                else:
+                    callback.append({
+                        'type': 'error',
+                        'msg': 'wrong option',
+                    })
             else:
                 callback = dont_be_hacekr
 
