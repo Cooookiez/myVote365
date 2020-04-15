@@ -173,10 +173,17 @@
             // ADD SLIDE
             $('#slides-panel').on('click', '.slide-add', function(){
                 let lecture_position = parseInt( $(this).parent().parent().attr('data-position') );
-                console.log(lectures_json[lecture_position].slides);
                 append_slide(lecture_position);
-                console.log(lectures_json[lecture_position].slides);
             });
+            // REMOVE SLIDE
+            $('#slides-panel').on('click', '.delete', function(){
+                let slide_position = parseInt( $(this).parent().attr('data-position') );
+                let lecture_position = parseInt( $(this).parent().parent().parent().attr('data-position') );
+                remove_slide(lecture_position, slide_position);
+            });
+
+            // ADD LECTURE
+            // REMOVE LECTURE
 
         }); // jQ end
 
@@ -321,7 +328,8 @@
             let str2return = "";
 
             str2return += ' <section class="slide" data-position="' + slide.properties.position + '" data-type="' + slide.properties.type + '" data-id="' + slide.id + '">';
-            str2return += '     <header>' + slide.properties.title + '<header>';
+            str2return += '     <header>' + slide.properties.title + '</header>';
+            str2return += '     <span class="delete ico far fa-trash-alt"></span>';
             str2return += ' </section>';
 
             return str2return;
@@ -384,7 +392,37 @@
 
         }
 
+        function remove_slide(lecture_position, slide_position){
+            GLOBAL_save_counter.in_edits++;
+            console.log(lecture_position, slide_position);
+            change_save_status();
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'auditor:presentation_edit' properties.short_id_num %}',{
+                option: 'remove_slide',
+                lecture_position: lecture_position,
+                slide_position: slide_position,
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done(function(response_raw){
+                let response_json_tmp = JSON.parse(response_raw);
+                console.log(response_json_tmp)
+                save_response_to_status_change(response_json_tmp);
+                change_save_status();
+                if(response_json_tmp[0]['type'] === 'success'){
+                    lectures_json = JSON.parse(response_json_tmp[0]['lectures_json']);
+                    make_lectures(lectures_json)
+                }
+            }).fail(function(){
+                GLOBAL_save_counter.errors.push({
+                    'error_type': 'append slide post error',
+                })
+            });
+        }
+
         function append_lecture(){
+
+        }
+
+        function remove_lecture(lecture_position){
 
         }
 

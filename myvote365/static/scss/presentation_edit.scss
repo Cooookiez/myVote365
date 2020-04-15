@@ -156,11 +156,24 @@ body{
                     margin-bottom: 5px;
                     width: 245px;
                     height: 138px;
+                    padding: 5px;
                     cursor: pointer;
+
                     &:hover{
                         background-color: #8C8C8C;
                         color: #565656;
                     }
+
+                    &>.ico{
+
+                        &:hover{
+
+                            color: $color-error-light;
+
+                        }
+
+                    }
+
                 }
 
                 &>.slide-add{

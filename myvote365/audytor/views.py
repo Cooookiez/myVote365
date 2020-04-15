@@ -681,24 +681,21 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                     try:
                         presentation_ref = db.collection(u'presentations')\
                             .document(get_ids_by_short_id_num()['presentation_id'])
-                        print('mieli 1')
                         lectures_ref = presentation_ref.collection('lectures').where('properties.position', '==', lecture_position)
                         lectures = lectures_ref.get()
                         ids = []
                         for lecture in lectures:
                             ids.append(lecture.id)
-                        print('mili id:', len(ids), ids)
 
                         if len(ids) != 1:  # too many or too less lectures with given position
                             callback.append({
                                 'type': 'error',
                                 'msg': 'too many or too less lectures with given position',
                             })
-                        else:
+                        else:  # only one lecture find, go on
                             new_position = 0
                             lecture_ref = presentation_ref.collection('lectures').document(ids[0])
                             slides_ref = lecture_ref.collection('slides').get()
-                            print('mieli 2')
                             for _ in slides_ref:
                                 new_position += 1
                                 print(f'new_position += 1 = {new_position}')
@@ -727,7 +724,95 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                         'type': 'error',
                         'msg': 'wrong option',
                     })
+            # remove slide
+            elif option == 'remove_slide':
+                lecture_position = int(request.POST.get('lecture_position'))
+                slide_position = int(request.POST.get('slide_position'))
+                if user_presentation_verification():
+                    try:
+                        presentation_ref = db.collection(u'presentations')\
+                            .document(get_ids_by_short_id_num()['presentation_id'])
+                        lectures_ref = presentation_ref.collection('lectures').where('properties.position', '==', lecture_position)
+                        lectures = lectures_ref.get()
 
+                        lct_ids = []
+                        for lecture in lectures:
+                            lct_ids.append(lecture.id)
+
+                        # too many or too less lectures with given position
+                        if len(lct_ids) != 1:
+                            callback.append({
+                                'type': 'error',
+                                'msg': 'too many or too less lectures with given position',
+                            })
+
+                        # only one lecture find, go on
+                        else:
+                            # find slide with given position
+                            lecture_ref = presentation_ref.collection('lectures').document(lct_ids[0])
+                            slides_ref = lecture_ref.collection('slides').where('properties.position', '==', slide_position)
+                            slides = slides_ref.get()
+
+                            sld_ids = []
+                            for slide_ref in slides:
+                                sld_ids.append(slide_ref.id)
+
+                            # too many or too less slides with given position
+                            if len(sld_ids) != 1:
+                                callback.append({
+                                    'type': 'error',
+                                    'msg': 'too many or too less lectures with given position',
+                                })
+
+                            # only one slide find, go on
+                            else:
+                                # CHANGE POSITION OF LATER SLIDES
+                                # download slides position
+                                how_many_slides = 0
+                                positions = []
+                                # add as many position fields as needed
+                                slides_ref = lecture_ref.collection('slides').get()
+                                for _ in slides_ref:
+                                    how_many_slides += 1
+                                    positions.append("")
+                                # assign id to position in array
+                                slides_ref = lecture_ref.collection('slides').get()
+                                for slide_ref in slides_ref:
+                                    position = int(slide_ref.to_dict()['properties']['position'])
+                                    positions[position] = slide_ref.id
+
+                                print(f'slides: ({slide_position+1}, {how_many_slides})')
+                                for slide_position_tmp in range(slide_position+1, how_many_slides):
+                                    slide_ref = lecture_ref.collection('slides').document(positions[slide_position_tmp])
+                                    slide_ref.update({
+                                        'properties.position': (
+                                                    int(slide_ref.get().to_dict()['properties']['position']) - 1)
+                                    })
+
+                                # delete slide
+                                slide_ref = lecture_ref.collection('slides').document(sld_ids[0])
+                                slide_ref.delete()
+
+                                callback.append({
+                                    'type': 'success',
+                                    'lectures_json': get_lectures()['lectures_json'],
+                                })
+                    except:
+                        callback.append({
+                            'type': 'error',
+                            'msg': 'lecture doesn\'t exists',
+                        })
+                else:
+                    callback.append({
+                        'type': 'error',
+                        'msg': 'wrong option',
+                    })
+            # add new lecture to end of presentation
+            elif option == 'append_lecture':
+                pass
+            # remove lecture
+            elif option == 'remove_lecture':
+                pass
 
             else:
                 callback = dont_be_hacekr

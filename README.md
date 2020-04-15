@@ -32,9 +32,9 @@
 - [ ] [SLIDE EDIT] – **Add/Remove lectures**
   - [ ] Add
   - [ ] Remove
-- [ ] [SLIDE EDIT] – **Add/Remove slides**
+- [x] [SLIDE EDIT] – **Add/Remove slides**
   - [x] Add
-  - [ ] Remove
+  - [x] Remove
 - [ ] [SLIDE EDIT] – **scrolable slides/lectures left panel**
 - [ ] [SLIDE EDIT] – **slide preview**
 - [ ] [PRESENTATION] – **start**
