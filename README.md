@@ -35,7 +35,7 @@
 - [x] [SLIDE EDIT] – **Add/Remove slides**
   - [x] Add
   - [x] Remove
-- [ ] [SLIDE EDIT] – **scrolable slides/lectures left panel**
+- [x] [SLIDE EDIT] – **scrolable slides/lectures left panel**
 - [ ] [SLIDE EDIT] – **slide preview**
 - [ ] [SLIDE EDIT] – **With Add/Remove change active slide/lecture properties edit**
 - [ ] [PRESENTATION] – **start**

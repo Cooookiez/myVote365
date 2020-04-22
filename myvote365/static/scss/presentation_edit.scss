@@ -16,7 +16,7 @@ body{
     height: 100%;
     display: grid;
     grid-template-columns: 310px auto 300px;
-    grid-template-rows: 41px auto 41px;
+    grid-template-rows: 41px calc(100% - 41px - 41px) 41px;
     grid-template-areas:
         "navigation navigation navigation"
         "slides-panel main properties"
@@ -128,6 +128,8 @@ body{
         grid-area: slides-panel;
         background-color: rgba($color: $color-light-1, $alpha: 0.8);
         padding: 5px;
+        overflow-y: auto;
+        overflow-x: hidden;
 
         &>.slides-panel-presentation{
             // background-color: red !important;
@@ -252,6 +254,8 @@ body{
 
         grid-area: properties;
         background-color: rgba($color: $color-dark, $alpha: .8);
+        overflow-y: auto;
+        overflow-x: hidden;
 
         &>article.properties-section{
             
