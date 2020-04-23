@@ -13,7 +13,7 @@
 
 Lista zrobionych rzeczy jest w [To Do List](#-to-do-list)
 
-Video podglądowe co jusz jest zrobione:
+Video podglądowe co jest już zrobione:
 
 [![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/hm9VYDDarjA/0.jpg)](http://www.youtube.com/watch?v=hm9VYDDarjA)
 
