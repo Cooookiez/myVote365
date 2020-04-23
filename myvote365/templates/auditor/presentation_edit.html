@@ -491,15 +491,29 @@
             <label class="label">Zapisano</label>
             <span class="ico fas fa-check-circle"></span>
         </div>
-        <div id="navigation-presentation-play">
+        <a id="navigation-presentation-play" href="{% url 'auditor:presentation_play' properties.short_id_num %}">
             <label class="label">Start</label>
             <span class="ico far fa-play"></span>
-        </div>
+        </a>
     </nav>
 
     <aside id="slides-panel"></aside>
 
-    <main>main</main>
+    <main>
+
+        <article id="slide-preview">
+
+            <header>
+                <span class="title">Tytuł slidu</span>
+            </header>
+
+            <section>
+
+            </section>
+
+        </article>
+
+    </main>
 
     <aside class="properties">
         <article class="properties-section" id="properties-lecture">

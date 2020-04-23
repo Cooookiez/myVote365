@@ -935,6 +935,13 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
         return redirect('auditor:panel')
 
 
+def presentation_play(request, short_id_num):
+    if 'auditor' in request.session and request.session['auditor']['logged'] is True:
+        pass
+    else:
+        return redirect('auditor:panel')
+
+
 def settings(request):
     if 'auditor' in request.session and request.session['auditor']['logged'] is True:
         # logged

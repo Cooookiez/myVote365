@@ -10,6 +10,7 @@ urlpatterns = [
     url(r'^presentacje/$', views.presentations_list, name='presentations_list'),
     url(r'^presentacja/nowa/$', views.presentations_new, name='presentation_new'),
     url(r'^presentacja/(?P<short_id_num>[a-zA-Z0-9]{4})/$', views.presentations_edit, name='presentation_edit'),
+    url(r'^presentacja/(?P<short_id_num>[a-zA-Z0-9]{4})/play/$', views.presentation_play, name='presentation_play'),
     # url(r'^presentacja/(?P<short_id_num>[a-zA-Z0-9]{4})/ustawienia/$', views.presentations_edit_settings, name='presentation_edit_settings'),
     url(r'^ustawienia/$', views.settings, name='settings'),
     url(r'^settings/update/general/$', views.settings_update_general, name='update_general'),
