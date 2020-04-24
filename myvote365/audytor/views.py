@@ -937,7 +937,13 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
 
 def presentation_play(request, short_id_num):
     if 'auditor' in request.session and request.session['auditor']['logged'] is True:
-        pass
+        if request.method == 'POST':
+            pass
+        else:
+            context = {
+                'short_id_num': short_id_num
+            }
+            return render(request, 'auditor/presentation_play.html', context=context)
     else:
         return redirect('auditor:panel')
 

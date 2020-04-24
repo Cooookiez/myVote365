@@ -20,3 +20,5 @@ myvote365/static/css/
 terminy.pdf
 
 PRIVATE/
+
+myvote365/__pycache__/

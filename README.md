@@ -15,7 +15,7 @@ Lista zrobionych rzeczy jest w [To Do List](#-to-do-list)
 
 Video podglądowe co jest już zrobione:
 
-[![IMAGE ALT TEXT HERE](http://img.youtube.com/vi/hm9VYDDarjA/0.jpg)](http://www.youtube.com/watch?v=hm9VYDDarjA)
+[![myVote365 – youtube video – raport II](http://img.youtube.com/vi/hm9VYDDarjA/0.jpg)](http://www.youtube.com/watch?v=hm9VYDDarjA)
 
 ## 📝 To Do List
 
@@ -54,6 +54,13 @@ Video podglądowe co jest już zrobione:
 - [ ] [SLIDE EDIT] – **slide preview**
 - [ ] [SLIDE EDIT] – **With Add/Remove change active slide/lecture properties edit**
 - [ ] [PRESENTATION] – **start**
+- [ ] [PRESENTATION] – **UI**
+- [ ] [PRESENTATION] – **qr slide**
+- [ ] [PRESENTATION] – **other slides**
+  - [ ] TAK / NIE
+  - [ ] 1-2-3-4-5 (slider)
+  - [ ] Text
+- [ ] [PRESENTATION] – **is open**
 
 ## 📆 Timetable
 
