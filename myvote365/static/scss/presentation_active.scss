@@ -8,7 +8,7 @@ body{
     position: absolute;
     top: 0;
     left: 0;
-    grid-template-columns: auto 250px;
+    grid-template-columns: auto 300px;
     grid-template-rows: auto 50px;
     grid-template-areas: 
         "main aside"
@@ -32,6 +32,7 @@ body{
             &>*{
                 padding: 0;
                 margin: 0;
+                margin-bottom: 20px;
             }
 
             &>p,
@@ -43,15 +44,21 @@ body{
             }
 
             &>p{
-
+                font-weight: 300;
+                font-size: 28px;
+                text-shadow: 0 2px 4px rgba($color: #000000, $alpha: .5);
             }
             
             &>h1{
-
+                font-weight: 400;
+                font-size: 59px;
+                text-shadow: 0 6px 12px rgba($color: #000000, $alpha: .5);
             }
 
             &>h2{
-
+                font-weight: 500;
+                font-size: 32px;
+                text-shadow: 0 6px 12px rgba($color: #000000, $alpha: .5);
             }
 
             &>img{
