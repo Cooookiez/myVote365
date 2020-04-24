@@ -940,10 +940,14 @@ def presentation_play(request, short_id_num):
         if request.method == 'POST':
             pass
         else:
+
+            # re-save qr
+            qr = save_qr.save_qr(short_id_num)
+
             context = {
                 'short_id_num': short_id_num
             }
-            return render(request, 'auditor/presentation_play.html', context=context)
+            return render(request, 'auditor/presentation_active.html', context=context)
     else:
         return redirect('auditor:panel')
 
