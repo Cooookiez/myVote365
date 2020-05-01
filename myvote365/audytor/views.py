@@ -941,12 +941,53 @@ def presentation_play(request, short_id_num):
             pass
         else:
 
-            # re-save qr
-            qr = save_qr.save_qr(short_id_num)
+            def get_ids_by_short_id_num():
+                presentations_id = None
+                presentations_ref = db.collection(u'presentations')
+                presentations_ref = presentations_ref.where(u'properties.short_id_num', u'==', short_id_num)
+                presentations = presentations_ref.get()
+                index = 0
+                for presentation in presentations:
+                    index = index + 1
+                    presentations_id = presentation.id
 
-            context = {
-                'short_id_num': short_id_num
-            }
+                # download presentation
+                presentation_ref = db.collection(u'presentations').document(presentations_id)
+                presentation = presentation_ref.get().to_dict()
+
+                return {
+                    'auditor_id': presentation['properties']['auditor_id'],
+                    'presentation_id': presentations_id,
+                }
+
+            def user_presentation_verification():
+                return get_ids_by_short_id_num()['auditor_id'] == request.session['auditor']['auditor_id']
+
+            if user_presentation_verification():
+
+                # re-save qr
+                qr = save_qr.save_qr(short_id_num)
+
+                # count how many slides in whole presentation
+                count_slides = 0
+                presentations_ref = db.collection(u'presentations').document(get_ids_by_short_id_num()['presentation_id'])
+                lectures_ref = presentations_ref.collection('lectures')
+                for lecture in lectures_ref.get():
+                    slides_ref = lectures_ref.document(lecture.id).collection('slides')
+                    for slide in slides_ref.get():
+                        count_slides += 1
+
+
+
+                context = {
+                    'short_id_num': short_id_num,
+                    'name': request.session['auditor']['name'],
+                    'count_slides': count_slides,
+                }
+
+            else:
+                context = dont_be_hacekr
+
             return render(request, 'auditor/presentation_active.html', context=context)
     else:
         return redirect('auditor:panel')

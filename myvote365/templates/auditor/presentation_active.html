@@ -30,11 +30,33 @@
 
     <footer>
 
-        <article id="views"></article>
+        <article id="viewers">
+            <span class="viewers_ico">
+                <i class="far fa-users"></i>
+            </span>
+            <span class="viewers_count">12</span>
+        </article>
 
-        <article id="autor"></article>
+        <article id="autor">
+            Prezentacja stworzona przez: {{ name }}
+        </article>
 
-        <article id="controls"></article>
+        <article id="controls">
+            <div id="controls-right">
+                <i class="far fa-chevron-right"></i>
+            </div>
+            <div id="controls-slide-no">
+                <div id="slide-no-current">1</div>
+                <div id="controls-slide-no-separator">/</div>
+                <div id="slide-no-all">{{ count_slides }}</div>
+            </div>
+            <div id="controls-left">
+                <i class="far fa-chevron-left"></i>
+            </div>
+            <div id="controls-full-screen-toggle">
+                <i class="far fa-expand-wide"></i>
+            </div>
+        </article>
 
     </footer>
 

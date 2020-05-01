@@ -29,7 +29,7 @@ Video podglądowe co jest już zrobione:
   - [x] change name
   - [x] change email
   - [x] change password
-- [ ] [PANEL] – logout
+- [x] [PANEL] – logout
 - [ ] [PANEL] – **hide / extend left menu**
 - [ ] [PANEL] – **footer with alpha looking bad when something is scrollable in main**
 - [x] [SLIDE EDIT] – **Shows slide properties, after click on one**
@@ -53,14 +53,17 @@ Video podglądowe co jest już zrobione:
 - [x] [SLIDE EDIT] – **scrolable slides/lectures left panel**
 - [ ] [SLIDE EDIT] – **slide preview**
 - [ ] [SLIDE EDIT] – **With Add/Remove change active slide/lecture properties edit**
-- [ ] [PRESENTATION] – **start**
+- [x] [PRESENTATION] – **start**
 - [ ] [PRESENTATION] – **UI**
-- [ ] [PRESENTATION] – **qr slide**
+  - [x] footer
+  - [x] qr section
+  - [ ] slide section
+- [ ] [PRESENTATION] – **qr slide❓**
 - [ ] [PRESENTATION] – **other slides**
   - [ ] TAK / NIE
   - [ ] 1-2-3-4-5 (slider)
   - [ ] Text
-- [ ] [PRESENTATION] – **is open**
+- [ ] [PRESENTATION] – **is open** (so other can join)
 
 ## 📆 Timetable
 
