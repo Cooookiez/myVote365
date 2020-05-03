@@ -971,6 +971,7 @@ def presentation_play(request, short_id_num):
                 # count how many slides in whole presentation
                 count_slides = 0
                 presentations_ref = db.collection(u'presentations').document(get_ids_by_short_id_num()['presentation_id'])
+                properties = presentations_ref.get().to_dict()['properties']
                 lectures_ref = presentations_ref.collection('lectures')
                 for lecture in lectures_ref.get():
                     slides_ref = lectures_ref.document(lecture.id).collection('slides')
@@ -983,6 +984,7 @@ def presentation_play(request, short_id_num):
                     'short_id_num': short_id_num,
                     'name': request.session['auditor']['name'],
                     'count_slides': count_slides,
+                    'title': properties['title'],
                 }
 
             else:

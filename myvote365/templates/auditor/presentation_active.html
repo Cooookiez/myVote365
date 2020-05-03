@@ -5,13 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>{% block title %}{% endblock %} | myVote365</title>
+    <title>[PLAY] {{ title }} –– {{ short_id_num }} | myVote365</title>
     <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/presentation_active.css' %}">
-    <link rel="shortcut icon" href="{% static 'favicon/Asset 3 copy.png' %}" type="image/x-icon">
+    <link rel="shortcut icon" href="{% static 'favicon/ico_play.png' %}" type="image/x-icon">
     <script src="{% static 'javascript/jquery-3.4.1.min.js' %}"></script>
     <script src="{% static 'fontawesome-pro-5.10.2-web/js/all.js' %}"></script>
-    {% block head %}{% endblock %}
     <script>
 
         let slide_no = {
