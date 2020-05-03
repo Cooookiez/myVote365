@@ -12,6 +12,115 @@
     <script src="{% static 'javascript/jquery-3.4.1.min.js' %}"></script>
     <script src="{% static 'fontawesome-pro-5.10.2-web/js/all.js' %}"></script>
     {% block head %}{% endblock %}
+    <script>
+
+        let slide_no = {
+            'cur': 1,
+            'min': 1,
+            'max': {{ count_slides }},
+        };
+
+        let is_full_screen = false;
+
+        $(function(){
+
+            // slides control
+            // by keybord arrows
+            $(document).keydown(function (e) {
+                console.log(e.key);
+                switch (e.key) {
+                    // next slide
+                    case 'ArrowUp':
+                    case 'ArrowRight':
+                        nextSlide();
+                        break;
+                    // prev slide
+                    case 'ArrowDown':
+                    case 'ArrowLeft':
+                        prevSlide();
+                        break;
+                    default:
+                        break
+                }
+            });
+            // by dom element
+            $('#controls-right').click(function(){ nextSlide(); });
+            $('#controls-left').click(function(){ prevSlide(); });
+
+            $('#controls-full-screen-toggle').click(function(){ toggleFulscreen(); })
+
+        }); // jQ END
+
+        function nextSlide(){
+
+            if( parseInt(slide_no.cur) + 1 <= parseInt(slide_no.max)){
+                slide_no.cur = parseInt(slide_no.cur) + 1
+            }
+
+            show_slide_numbers()
+        }
+
+        function prevSlide(){
+
+            if( parseInt(slide_no.cur) - 1 >= parseInt(slide_no.min)){
+                slide_no.cur = parseInt(slide_no.cur) - 1
+            }
+
+            show_slide_numbers()
+        }
+
+        function show_slide_numbers(){
+
+            $('#slide-no-all').text(slide_no.max);
+            $('#slide-no-current').text(slide_no.cur);
+
+        }
+
+        function toggleFulscreen(){
+
+            if( is_full_screen ){
+                is_full_screen = false;
+                closeFullscreen();
+                $('#controls-full-screen-toggle > .ico').removeClass('fa-compress-wide');
+                $('#controls-full-screen-toggle > .ico').addClass('fa-expand-wide');
+            }else{
+                is_full_screen = true;
+                openFullscreen();
+                $('#controls-full-screen-toggle > .ico').removeClass('fa-expand-wide');
+                $('#controls-full-screen-toggle > .ico').addClass('fa-compress-wide');
+            }
+
+        }
+
+        var elem = document.documentElement;
+
+        /* View in fullscreen */
+        function openFullscreen() {
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.mozRequestFullScreen) { /* Firefox */
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE/Edge */
+                elem.msRequestFullscreen();
+            }
+        }
+
+        /* Close fullscreen */
+        function closeFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+            }
+        }
+
+    </script>
 </head>
 <body>
 
@@ -32,7 +141,7 @@
 
         <article id="viewers">
             <span class="viewers_ico">
-                <i class="far fa-users"></i>
+                <i class="ico far fa-users"></i>
             </span>
             <span class="viewers_count">12</span>
         </article>
@@ -43,7 +152,7 @@
 
         <article id="controls">
             <div id="controls-right">
-                <i class="far fa-chevron-right"></i>
+                <i class="ico far fa-chevron-right"></i>
             </div>
             <div id="controls-slide-no">
                 <div id="slide-no-current">1</div>
@@ -51,10 +160,10 @@
                 <div id="slide-no-all">{{ count_slides }}</div>
             </div>
             <div id="controls-left">
-                <i class="far fa-chevron-left"></i>
+                <i class="ico far fa-chevron-left"></i>
             </div>
             <div id="controls-full-screen-toggle">
-                <i class="far fa-expand-wide"></i>
+                <i class="ico far fa-expand-wide"></i>
             </div>
         </article>
 
