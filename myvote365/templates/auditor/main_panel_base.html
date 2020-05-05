@@ -3,14 +3,9 @@
 {% load staticfiles %}
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    {% include "head.html" %}
     <title>{% block title %}{% endblock %} | myVote365</title>
-    <link rel="stylesheet" href="{% static 'css/main.css' %}">
     <link rel="stylesheet" href="{% static 'css/main_panel_base.css' %}">
-    <link rel="shortcut icon" href="{% static 'favicon/ico_main.png' %}" type="image/x-icon">
-    <script src="{% static 'javascript/jquery-3.4.1.min.js' %}"></script>
     <script src="{% static 'fontawesome-pro-5.10.2-web/js/all.js' %}"></script>
     {% block head %}{% endblock %}
 </head>

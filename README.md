@@ -63,7 +63,7 @@ Video podglądowe co jest już zrobione:
   - [ ] TAK / NIE
   - [ ] 1-2-3-4-5 (slider)
   - [ ] Text
-- [ ] [PRESENTATION] – **is open** (so other can join)
+- [ ] [PRESENTATION] – **is open** (so other can join to watch)
 
 ## 📆 Timetable
 
