@@ -64,6 +64,14 @@ Video podglądowe co jest już zrobione:
   - [ ] 1-2-3-4-5 (slider)
   - [ ] Text
 - [ ] [PRESENTATION] – **is open** (so other can join to watch)
+- [ ] [PRESENTATION] – **recive views**
+- [x] [SPECTATOR] – **Front page** (to write id)
+- [ ] [SPECTATOR] – **slide page**
+  - [ ] TAK / NIE
+  - [ ] 1-2-3-4-5 (slider)
+  - [ ] Text
+- [ ] [SPECTATOR] – **Send views**
+- [ ] [SPECTATOR] – **waiting screen** (for next slide after voted)
 
 ## 📆 Timetable
 

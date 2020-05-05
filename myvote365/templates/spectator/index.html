@@ -24,13 +24,11 @@
             });
 
             $('#find_presentation > form').submit(function(){
-                console.log('halo?')
                 short_id = $('#presentation_short_id_num').val();
                 redirect_to__if_id_valid(short_id);
                 return false;
             });
             $('label[for=input_and_go_submit]').click(function(){
-                console.log('halo?')
                 short_id = $('#presentation_short_id_num').val();
                 redirect_to__if_id_valid(short_id);
                 return false;
@@ -54,10 +52,7 @@
 
         function redirect_to__if_id_valid(short_id){
             if( $('#presentation_short_id_num').attr('data-valid') == 'true' ){
-                console.log('go for it')
                 window.location.href = "/" + short_id + "/";
-            }else{
-                console.log('and gone')
             }
         }
 
