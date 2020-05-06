@@ -79,10 +79,10 @@ Video podglądowe co jest już zrobione:
 | ------------------------------------: | ----------------------------- | :----: |
 | 3 (12.03.2020)                        | Raport I (Project plan)       | ✅     |
 | ~~8 (16.04.2020)~~<br>9 (23.04.2020)  | Raport II (Project status)    | ✅     |
-| 11 (07.05.2020)                       | Prototype                     | 📝     |
-| 13 (21.05.2020)                       | Raport III (Prototype update) | 🕐     |
-| 14 (28.05.2020)                       | Submission of the project     | 🕒     |
-| 15 (03.06.2020)                       | Project presentation          | 🕔     |
+| 11 (14.05.2020)                       | Prototype                     | 📝     |
+| 13 (28.05.2020)                       | Raport III (Prototype update) | 🕐     |
+| 14 (04.06.2020)                       | Submission of the project     | 🕒     |
+| 15 (11.06.2020)                       | Project presentation          | 🕔     |
 
 ## 📚 Used libraries
 
