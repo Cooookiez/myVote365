@@ -17,12 +17,12 @@
 
         let is_full_screen = false;
 
+
         $(function(){
 
             // slides control
             // by keybord arrows
             $(document).keydown(function (e) {
-                console.log(e.key);
                 switch (e.key) {
                     // next slide
                     case 'ArrowUp':
@@ -43,6 +43,10 @@
             $('#controls-left').click(function(){ prevSlide(); });
 
             $('#controls-full-screen-toggle').click(function(){ toggleFulscreen(); })
+
+            // send active slide every 5s to db
+            send_active_slide_to_db();
+            every_n_seconds_send_active_slide_to_db(2);
 
         }); // jQ END
 
@@ -68,6 +72,8 @@
 
             $('#slide-no-all').text(slide_no.max);
             $('#slide-no-current').text(slide_no.cur);
+            console.log(slide_no.cur)
+            send_active_slide_to_db(slide_no.cur)
 
         }
 
@@ -115,9 +121,32 @@
             }
         }
 
+        function every_n_seconds_send_active_slide_to_db(n=5){
+            setTimeout(function(){
+                send_active_slide_to_db()
+                every_n_seconds_send_active_slide_to_db(n)
+            }, n*1000)
+        }
+
+        function send_active_slide_to_db(){
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'auditor:presentation_play' short_id_num %}',{
+                option: 'update_active_slide',
+                active_slide: slide_no.cur,
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done(function(data_raw){
+                data_json = JSON.parse(data_raw)
+                console.log(data_json);
+            }).fail(function(){
+                console.log('send active slide failed');
+            })
+        }
+
     </script>
 </head>
 <body>
+
+    {% csrf_token %}
 
     <main>{{ short_id_num }}</main>
 

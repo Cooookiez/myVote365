@@ -377,28 +377,6 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
             option = str(request.POST.get('option')).strip()
             callback = []
 
-            def get_ids_by_short_id_num():
-                presentations_id = None
-                presentations_ref = db.collection(u'presentations')
-                presentations_ref = presentations_ref.where(u'properties.short_id_num', u'==', short_id_num)
-                presentations = presentations_ref.get()
-                index = 0
-                for presentation in presentations:
-                    index = index + 1
-                    presentations_id = presentation.id
-
-                # download presentation
-                presentation_ref = db.collection(u'presentations').document(presentations_id)
-                presentation = presentation_ref.get().to_dict()
-
-                return {
-                    'auditor_id': presentation['properties']['auditor_id'],
-                    'presentation_id': presentations_id,
-                }
-
-            def user_presentation_verification():
-                return get_ids_by_short_id_num()['auditor_id'] == request.session['auditor']['auditor_id']
-
             def delete_collection(coll_ref, batch_size):
                 docs = coll_ref.limit(batch_size).stream()
                 deleted = 0
@@ -411,7 +389,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                 if deleted >= batch_size:
                     return delete_collection(coll_ref, batch_size)
 
-            presentation_ref = db.collection(u'presentations').document(get_ids_by_short_id_num()['presentation_id'])
+            presentation_ref = db.collection(u'presentations').document(get_ids_by_short_id_num(short_id_num)['presentation_id'])
 
             # UPDATES
 
@@ -421,7 +399,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
 
                 # check if short_id_num is created by logged user
                 # if yes, update title
-                if user_presentation_verification():
+                if user_presentation_verification(short_id_num, request):
                     presentation_ref.update({
                         'properties.title': new_title,
                     })
@@ -439,7 +417,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                 lecture_id = str(request.POST.get('lecture_id')).strip()
                 # check if short_id_num is created by logged user
                 # if yes, update title
-                if user_presentation_verification():
+                if user_presentation_verification(short_id_num, request):
                     try:
                         lecture_ref = presentation_ref.collection('lectures').document(lecture_id)
                         lecture_ref.update({
@@ -464,7 +442,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                 new_position = int(request.POST.get('new_position'))-1
                 print(f'LECTURE {cur_position} -> {new_position}')
                 # if yes, update title
-                if user_presentation_verification():
+                if user_presentation_verification(short_id_num, request):
                     try:
                         # how many presentations? (is new position between 0 and max?)
                         how_many_presentations = 0
@@ -541,7 +519,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
 
                 # check if short_id_num is created by logged user
                 # if yes, update title
-                if user_presentation_verification():
+                if user_presentation_verification(short_id_num, request):
                     try:
                         lecture_ref = presentation_ref.collection('lectures').document(lecture_id)
                         slide_ref = lecture_ref.collection('slides').document(slide_id)
@@ -569,7 +547,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
 
                 # check if short_id_num is created by logged user
                 # if yes, update title
-                if user_presentation_verification():
+                if user_presentation_verification(short_id_num, request):
                     try:
                         lecture_ref = presentation_ref.collection('lectures').document(lecture_id)
                         slide_ref = lecture_ref.collection('slides').document(slide_id)
@@ -597,7 +575,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                 lecture_id = str(request.POST.get('lecture_id')).strip()
 
                 # if yes, update title
-                if user_presentation_verification():
+                if user_presentation_verification(short_id_num, request):
                     try:
                         # how many slides? (is new position between 0 and max?)
                         lectures_ref = presentation_ref.collection('lectures').document(lecture_id)
@@ -673,7 +651,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
             # add new slide to end of lecture
             elif option == 'append_slide':
                 lecture_position = int(request.POST.get('lecture_position'))
-                if user_presentation_verification():
+                if user_presentation_verification(short_id_num, request):
                     try:
                         lectures_ref = presentation_ref.collection('lectures').where('properties.position', '==', lecture_position)
                         lectures = lectures_ref.get()
@@ -720,7 +698,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
             elif option == 'remove_slide':
                 lecture_position = int(request.POST.get('lecture_position'))
                 slide_position = int(request.POST.get('slide_position'))
-                if user_presentation_verification():
+                if user_presentation_verification(short_id_num, request):
                     try:
                         lectures_ref = presentation_ref.collection('lectures').where('properties.position', '==', lecture_position)
                         lectures = lectures_ref.get()
@@ -798,7 +776,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                     })
             # add new lecture to end of presentation
             elif option == 'append_lecture':
-                if user_presentation_verification():
+                if user_presentation_verification(short_id_num, request):
                     try:
                         # how many lectures already exists
                         lectures_count = 0
@@ -847,7 +825,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
             elif option == 'remove_lecture':
                 lecture_position = int(request.POST.get('lecture_position'))
                 print(f'lecture_position: {lecture_position}')
-                if user_presentation_verification():
+                if user_presentation_verification(short_id_num, request):
                     try:
                         lectures_ref = presentation_ref.collection('lectures').where('properties.position', '==', lecture_position)
                         lectures = lectures_ref.get()
@@ -938,39 +916,70 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
 def presentation_play(request, short_id_num):
     if 'auditor' in request.session and request.session['auditor']['logged'] is True:
         if request.method == 'POST':
-            pass
+            option = str(request.POST.get('option')).strip()
+            callback = []
+
+            if option == 'update_active_slide':
+                if user_presentation_verification(short_id_num, request):
+
+                    # get presentation ID, the same id will be as presentation_active id
+                    ids = get_ids_by_short_id_num(short_id_num)
+
+                    # prepare to send: time, active slide
+                    presentation_id = ids['presentation_id']
+                    log_time = datetime.now()
+                    active_slide = request.POST.get('active_slide')
+
+                    # UPDATE DB
+                    try:
+                        presentation_ref = db.collection('presentations_active').document(presentation_id)
+                        # does presentation_active exist
+                        presentation = presentation_ref.get().to_dict()
+                        # if no - set
+                        if presentation is None:
+                            presentation_ref.set({
+                                'last_log': {
+                                    'int': int(log_time.timestamp()),
+                                    'timestamp': log_time,
+                                },
+                                'short_id_num': short_id_num,
+                            })
+                        # if yes - update
+                        else:
+                            presentation_ref.update({
+                                'last_log.int': int(log_time.timestamp()),
+                                'last_log.timestamp': log_time,
+                                'active_slide': active_slide,
+                            })
+
+                        callback = {
+                            'type': 'success',
+                        }
+                    except:
+                        callback = {
+                            'type': 'error',
+                            'msg': 'Set / Update error',
+                        }
+
+                else:
+                    callback = dont_be_hacekr
+            else:
+                callback = dont_be_hacekr
+
+            callback = json.dumps(callback)
+            return HttpResponse(callback)
+
+        # show web page
         else:
 
-            def get_ids_by_short_id_num():
-                presentations_id = None
-                presentations_ref = db.collection(u'presentations')
-                presentations_ref = presentations_ref.where(u'properties.short_id_num', u'==', short_id_num)
-                presentations = presentations_ref.get()
-                index = 0
-                for presentation in presentations:
-                    index = index + 1
-                    presentations_id = presentation.id
-
-                # download presentation
-                presentation_ref = db.collection(u'presentations').document(presentations_id)
-                presentation = presentation_ref.get().to_dict()
-
-                return {
-                    'auditor_id': presentation['properties']['auditor_id'],
-                    'presentation_id': presentations_id,
-                }
-
-            def user_presentation_verification():
-                return get_ids_by_short_id_num()['auditor_id'] == request.session['auditor']['auditor_id']
-
-            if user_presentation_verification():
+            if user_presentation_verification(short_id_num, request):
 
                 # re-save qr
                 qr = save_qr.save_qr(short_id_num)
 
                 # count how many slides in whole presentation
                 count_slides = 0
-                presentations_ref = db.collection(u'presentations').document(get_ids_by_short_id_num()['presentation_id'])
+                presentations_ref = db.collection(u'presentations').document(get_ids_by_short_id_num(short_id_num)['presentation_id'])
                 properties = presentations_ref.get().to_dict()['properties']
                 lectures_ref = presentations_ref.collection('lectures')
                 for lecture in lectures_ref.get():
@@ -991,8 +1000,9 @@ def presentation_play(request, short_id_num):
                 context = dont_be_hacekr
 
             return render(request, 'auditor/presentation_active.html', context=context)
+    # not logged
     else:
-        return redirect('auditor:panel')
+        return redirect('auditor:panel', )
 
 
 def settings(request):
@@ -1244,3 +1254,26 @@ def rand_short_id(num_od_digit=4):
             its_first_short_id = True
     return random_short_id_dec
 
+
+def get_ids_by_short_id_num(short_id_num):
+    presentations_id = None
+    presentations_ref = db.collection(u'presentations')
+    presentations_ref = presentations_ref.where(u'properties.short_id_num', u'==', short_id_num)
+    presentations = presentations_ref.get()
+    index = 0
+    for presentation in presentations:
+        index = index + 1
+        presentations_id = presentation.id
+
+    # download presentation
+    presentation_ref = db.collection(u'presentations').document(presentations_id)
+    presentation = presentation_ref.get().to_dict()
+
+    return {
+        'auditor_id': presentation['properties']['auditor_id'],
+        'presentation_id': presentations_id,
+    }
+
+
+def user_presentation_verification(short_id_num, request):
+    return get_ids_by_short_id_num(short_id_num)['auditor_id'] == request.session['auditor']['auditor_id']

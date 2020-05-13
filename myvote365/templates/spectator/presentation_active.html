@@ -1,0 +1,27 @@
+<!doctype html>
+{% load staticfiles %}
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% include "head.html" %}
+    <title>Tytuł – 1A2B | myVote365</title>
+    <script src="https://gstatic.com/firebasejs/7.14.3/firebase-app.js"></script>
+    <script src="https://gstatic.com/firebasejs/7.14.3/firebase-firestore.js"></script>
+    <script src="{% static 'javascript/init-firebase.js' %}"></script>
+    <script>
+
+        db = firebase.firestore();
+        db.collection('presentations_active').doc('5p1aBzobtnD4Au5rcOC5').onSnapshot(doc=>{
+            console.log(doc.data()['active_slide'])
+            $('.slide_nr').text(doc.data()['active_slide'])
+        })
+
+    </script>
+</head>
+<body>
+
+<h1>Slide nr: <span class="slide_nr"></span></h1>
+
+</body>
+</html>
