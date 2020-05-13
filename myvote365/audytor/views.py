@@ -919,6 +919,7 @@ def presentation_play(request, short_id_num):
             option = str(request.POST.get('option')).strip()
             callback = []
 
+            # update active slide
             if option == 'update_active_slide':
                 if user_presentation_verification(short_id_num, request):
 
@@ -933,24 +934,11 @@ def presentation_play(request, short_id_num):
                     # UPDATE DB
                     try:
                         presentation_ref = db.collection('presentations_active').document(presentation_id)
-                        # does presentation_active exist
-                        presentation = presentation_ref.get().to_dict()
-                        # if no - set
-                        if presentation is None:
-                            presentation_ref.set({
-                                'last_log': {
-                                    'int': int(log_time.timestamp()),
-                                    'timestamp': log_time,
-                                },
-                                'short_id_num': short_id_num,
-                            })
-                        # if yes - update
-                        else:
-                            presentation_ref.update({
-                                'last_log.int': int(log_time.timestamp()),
-                                'last_log.timestamp': log_time,
-                                'active_slide': active_slide,
-                            })
+                        presentation_ref.update({
+                            'last_log.int': int(log_time.timestamp()),
+                            'last_log.timestamp': log_time,
+                            'active_slide': active_slide,
+                        })
 
                         callback = {
                             'type': 'success',
@@ -963,6 +951,39 @@ def presentation_play(request, short_id_num):
 
                 else:
                     callback = dont_be_hacekr
+
+            # update presence
+            elif option == 'update_presence':
+                if user_presentation_verification(short_id_num, request):
+
+                    # get presentation ID, the same id will be as presentation_active id
+                    ids = get_ids_by_short_id_num(short_id_num)
+
+                    # prepare to send: time, active slide
+                    presentation_id = ids['presentation_id']
+                    log_time = datetime.now()
+
+                    # UPDATE DB
+                    try:
+                        presentation_ref = db.collection('presentations_active').document(presentation_id)
+                        presentation_ref.update({
+                            'last_log.int': int(log_time.timestamp()),
+                            'last_log.timestamp': log_time,
+                        })
+
+                        callback = {
+                            'type': 'success',
+                        }
+                    except:
+                        callback = {
+                            'type': 'error',
+                            'msg': 'Set / Update error',
+                        }
+
+                else:
+                    callback = dont_be_hacekr
+
+
             else:
                 callback = dont_be_hacekr
 
@@ -977,24 +998,42 @@ def presentation_play(request, short_id_num):
                 # re-save qr
                 qr = save_qr.save_qr(short_id_num)
 
-                # count how many slides in whole presentation
-                count_slides = 0
-                presentations_ref = db.collection(u'presentations').document(get_ids_by_short_id_num(short_id_num)['presentation_id'])
-                properties = presentations_ref.get().to_dict()['properties']
-                lectures_ref = presentations_ref.collection('lectures')
-                for lecture in lectures_ref.get():
-                    slides_ref = lectures_ref.document(lecture.id).collection('slides')
-                    for slide in slides_ref.get():
-                        count_slides += 1
+                presentation_id = get_ids_by_short_id_num(short_id_num)['presentation_id']
 
+                try:
 
+                    # create presentations_active collection
+                    presentations_active_ref = db.collection('presentations_active').document(presentation_id)
+                    presentations_active_ref.set({
+                        'last_log': {
+                            'int': None,
+                            'timestamp': None,
+                        },
+                        'short_id_num': short_id_num,
+                    })
 
-                context = {
-                    'short_id_num': short_id_num,
-                    'name': request.session['auditor']['name'],
-                    'count_slides': count_slides,
-                    'title': properties['title'],
-                }
+                    # count how many slides in whole presentation
+                    count_slides = 0
+                    presentations_ref = db.collection(u'presentations').document(presentation_id)
+                    properties = presentations_ref.get().to_dict()['properties']
+                    lectures_ref = presentations_ref.collection('lectures')
+                    for lecture in lectures_ref.get():
+                        slides_ref = lectures_ref.document(lecture.id).collection('slides')
+                        for slide in slides_ref.get():
+                            count_slides += 1
+
+                    context = {
+                        'short_id_num': short_id_num,
+                        'name': request.session['auditor']['name'],
+                        'count_slides': count_slides,
+                        'title': properties['title'],
+                    }
+
+                except:
+                    context = {
+                        'type': 'error',
+                        'msg': 'Set / Update error',
+                    }
 
             else:
                 context = dont_be_hacekr

@@ -46,7 +46,7 @@
 
             // send active slide every 5s to db
             send_active_slide_to_db();
-            every_n_seconds_send_active_slide_to_db(2);
+            every_n_seconds_send_active_slide_to_db();
 
         }); // jQ END
 
@@ -107,7 +107,6 @@
                 elem.msRequestFullscreen();
             }
         }
-
         /* Close fullscreen */
         function closeFullscreen() {
             if (document.exitFullscreen) {
@@ -121,13 +120,32 @@
             }
         }
 
+        function every_n_seconds_send_presence_to_db(n=5){
+            seconds_send_presence_to_db()
+            setTimeout(function(){
+                seconds_send_presence_to_db()
+                every_n_seconds_send_presence_to_db(n=5);
+            }, n*1000)
+        }
+        function seconds_send_presence_to_db(){
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'auditor:presentation_play' short_id_num %}',{
+                option: 'update_presence',
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done(function(data_raw){
+                data_json = JSON.parse(data_raw)
+                console.log(data_json);
+            }).fail(function(){
+                console.log('send active slide failed');
+            })
+        }
+
         function every_n_seconds_send_active_slide_to_db(n=5){
             setTimeout(function(){
                 send_active_slide_to_db()
                 every_n_seconds_send_active_slide_to_db(n)
             }, n*1000)
         }
-
         function send_active_slide_to_db(){
             let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
             $.post('{% url 'auditor:presentation_play' short_id_num %}',{
