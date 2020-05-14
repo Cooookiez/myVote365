@@ -63,9 +63,11 @@ Video podglądowe co jest już zrobione:
   - [ ] TAK / NIE
   - [ ] 1-2-3-4-5 (slider)
   - [ ] Text
-- [ ] [PRESENTATION] – **is open** (so other can join to watch)
+- [x] [PRESENTATION] – **is open** (so other can join to watch)
+- [x] [PRESENTATION] – **sent data** (for spectators)
 - [ ] [PRESENTATION] – **recive views**
 - [x] [SPECTATOR] – **Front page** (to write id)
+- [x] [SPECTATOR] – **Active presentation page** (with following slide no)
 - [ ] [SPECTATOR] – **slide page**
   - [ ] TAK / NIE
   - [ ] 1-2-3-4-5 (slider)
@@ -78,11 +80,11 @@ Video podglądowe co jest już zrobione:
 | Week (deadline)                       | Description                   | status |
 | ------------------------------------: | ----------------------------- | :----: |
 | 3 (12.03.2020)                        | Raport I (Project plan)       | ✅     |
-| ~~8 (16.04.2020)~~<br>9 (23.04.2020)  | Raport II (Project status)    | ✅     |
-| 11 (14.05.2020)                       | Prototype                     | 📝     |
+| 9 (23.04.2020)                        | Raport II (Project status)    | ✅     |
+| 11 (21.05.2020)                       | Prototype                     | 📝     |
 | 13 (28.05.2020)                       | Raport III (Prototype update) | 🕐     |
 | 14 (04.06.2020)                       | Submission of the project     | 🕒     |
-| 15 (11.06.2020)                       | Project presentation          | 🕔     |
+| 15 (18.06.2020)                       | Project presentation          | 🕔     |
 
 ## 📚 Used libraries
 

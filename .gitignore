@@ -22,3 +22,13 @@ terminy.pdf
 PRIVATE/
 
 myvote365/__pycache__/
+
+python_env/lib/python3.7/importlib/__pycache__/
+
+python_env/lib/python3.7/encodings/__pycache__/
+
+python_env/lib/python3.7/collections/__pycache__/
+
+python_env/lib/python3.7/__pycache__/
+
+python_env/lib/python3.7/distutils/__pycache__/

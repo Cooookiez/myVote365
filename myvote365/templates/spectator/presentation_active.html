@@ -6,6 +6,7 @@
     <title>Title</title>
     {% include "head.html" %}
     <title>Tytuł – 1A2B | myVote365</title>
+    <link rel="stylesheet" href="{% static 'css/spectator_presentation_active.css' %}">
     <script src="https://gstatic.com/firebasejs/7.14.3/firebase-app.js"></script>
     <script src="https://gstatic.com/firebasejs/7.14.3/firebase-firestore.js"></script>
     <script src="{% static 'javascript/init-firebase.js' %}"></script>
@@ -13,15 +14,51 @@
 
         db = firebase.firestore();
         db.collection('presentations_active').doc('5p1aBzobtnD4Au5rcOC5').onSnapshot(doc=>{
-            console.log(doc.data()['active_slide'])
-            $('.slide_nr').text(doc.data()['active_slide'])
+            console.log(doc.data());
+
+            $('.short-id').each(function(i){ $(this).text(doc.data()['presentation']['short_id_num']) });
+            $('.presentation-title').each(function(i){ $(this).text(doc.data()['presentation']['title']) })
+
+            $('.slide-title').each(function(i){ $(this).text(doc.data()['slide']['active']['title']) });
+            $('.slide-no').each(function(i){ $(this).text(doc.data()['slide']['active']['no']) });
+            $('.slide-type').each(function(i){ $(this).text(doc.data()['slide']['active']['type']) });
+            $('.slide-max').each(function(i){ $(this).text(doc.data()['slide']['max']) });
+
+            $('.slide-no').each(function(i){ $(this).text(doc.data()['slide']['active']['no']) });
+
         })
 
     </script>
 </head>
 <body>
 
-<h1>Slide nr: <span class="slide_nr"></span></h1>
+    <header id="presentation_id_name">
+        <span class="short-id"></span> – <span class="presentation-title"></span>
+    </header>
+
+    <main>
+
+        <article id="user_vote">
+            <form>
+                <article id="body">
+                    <header>
+                        <span class="slide-title"></span>
+                        <span class="hr"></span>
+                    </header>
+                    <section class="answer" data-type="">
+
+                    </section>
+                    <section class="meta">[<span class="slide-type"></span>] – <span class="slide-no"></span> / <span class="slide-max"></span></section>
+                </article>
+                <article for="submit">
+                    <input id="submit" hidden>
+                </article>
+            </form>
+        </article>
+
+    </main>
+
+    <footer>created by</footer>
 
 </body>
 </html>

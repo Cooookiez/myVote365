@@ -27,12 +27,12 @@ def presentation_show(request, short_id_num):
     time_now = round(datetime.now().timestamp())
     lowest_expect_time = time_now - delay_s
 
-    # find presentation with given short id
-    presentations_ref = db.collection('presentations_active').where('short_id_num', '==', short_id_num)
-    presentations = presentations_ref.get()
+    # find presentations_active with given short id
+    presentations_active_ref = db.collection('presentations_active').where('short_id_num', '==', short_id_num)
+    presentations_active = presentations_active_ref.get()
     ids = []
-    for presentation in presentations:
-        ids.append(presentation.id)
+    for presentation_active in presentations_active:
+        ids.append(presentation_active.id)
     if len(ids) is not 1:
         # error
         pass

@@ -10,6 +10,7 @@ import bcrypt
 import static.python.convert as convert
 import random
 import static.python.save_qr as save_qr
+import sys
 
 cred = credentials.Certificate('static/__PRIVATE__/myvote365-aa6f5-firebase-adminsdk-ipqcy-ce6c711131.json')
 firebase_admin.initialize_app(cred)
@@ -929,7 +930,22 @@ def presentation_play(request, short_id_num):
                     # prepare to send: time, active slide
                     presentation_id = ids['presentation_id']
                     log_time = datetime.now()
-                    active_slide = request.POST.get('active_slide')
+                    data = {
+                        'active_slide': request.POST.get('slide[active][no]'),
+                        'lecture_id': request.POST.get('slide[active][ids][lecture_id]'),
+                        'slide_id': request.POST.get('slide[active][ids][slide_id]'),
+                        'slide_max': request.POST.get('slide[max]'),
+                    }
+
+                    # get presentation title
+                    presentation_ref = db.collection('presentations').document(presentation_id)
+                    presentation = presentation_ref.get().to_dict()
+
+                    # get slide type, and title
+                    slide_ref = presentation_ref\
+                        .collection('lectures').document(data['lecture_id'])\
+                        .collection('slides').document(data['slide_id'])
+                    slide = slide_ref.get().to_dict()
 
                     # UPDATE DB
                     try:
@@ -937,7 +953,14 @@ def presentation_play(request, short_id_num):
                         presentation_ref.update({
                             'last_log.int': int(log_time.timestamp()),
                             'last_log.timestamp': log_time,
-                            'active_slide': active_slide,
+                            'slide.max': data['slide_max'],
+                            'slide.active.no': data['active_slide'],
+                            'slide.active.title': slide['properties']['title'],
+                            'slide.active.type': slide['properties']['type'],
+                            'slide.active.ids.lecture': data['lecture_id'],
+                            'slide.active.ids.slide': data['slide_id'],
+                            'presentation.title': presentation['properties']['title'],
+                            'presentation.short_id_num': short_id_num,
                         })
 
                         callback = {
@@ -1009,7 +1032,22 @@ def presentation_play(request, short_id_num):
                             'int': None,
                             'timestamp': None,
                         },
-                        'short_id_num': short_id_num,
+                        'presentation': {
+                            'short_id_num': None,
+                            'title': None,
+                        },
+                        'slide': {
+                            'active': {
+                                'no': None,
+                                'title': None,
+                                'type': None,
+                                'ids': {
+                                    'lecture': None,
+                                    'slide': None,
+                                }
+                            },
+                            'max': None,
+                        }
                     })
 
                     # count how many slides in whole presentation
@@ -1017,16 +1055,32 @@ def presentation_play(request, short_id_num):
                     presentations_ref = db.collection(u'presentations').document(presentation_id)
                     properties = presentations_ref.get().to_dict()['properties']
                     lectures_ref = presentations_ref.collection('lectures')
+                    slides_no_to_id = []
                     for lecture in lectures_ref.get():
                         slides_ref = lectures_ref.document(lecture.id).collection('slides')
                         for slide in slides_ref.get():
+                            slides_no_to_id.append({
+                                'lecture_id': lecture.id,
+                                'slide_id': slide.id,
+                            })
                             count_slides += 1
 
+                    print(slides_no_to_id)
+                    print(json.dumps(slides_no_to_id))
+
                     context = {
-                        'short_id_num': short_id_num,
-                        'name': request.session['auditor']['name'],
-                        'count_slides': count_slides,
-                        'title': properties['title'],
+                        'author': {
+                            'name': request.session['auditor']['name'],
+                        },
+                        'slides': {
+                            'max': count_slides,
+                            'ids_json': slides_no_to_id,
+                            # 'ids_json': json.dumps(slides_no_to_id),
+                        },
+                        'properties': {
+                            'title': properties['title'],
+                            'short_id_num': short_id_num,
+                        }
                     }
 
                 except:
