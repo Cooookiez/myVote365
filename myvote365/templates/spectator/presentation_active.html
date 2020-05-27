@@ -34,14 +34,15 @@
             slide_type = doc.data()['slide']['active']['type']
             console.log(slide_no.cur, slide_no.last)
             if(slide_no.cur != slide_no.last ){
-
+                console.log('slide refresh')
                 slide_info = {
                     'type': slide_type,
                 }
                 let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
                 $.post('{% url 'spectator:presentation' short_id_num %}',{
-                    'op': 'get_slide_form',
+                    option: 'get_slide_form',
                     slide_info: slide_info,
+                    type: slide_type,
                     csrfmiddlewaretoken: csrfmiddlewaretoken,
                 }).done((data_raw)=>{
                     console.log(data_raw);
@@ -51,7 +52,7 @@
                 })
 
             }
-            {#slide_no.last = slide_no.cur#}
+            slide_no.last = slide_no.cur
 
 
             $('.slide-type').each(function(i){ $(this).text(slide_type) });

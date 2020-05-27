@@ -128,6 +128,43 @@ body{
                             
                         }
 
+                        &>[data-question-type=slider_1to5]{
+
+                            display: flex;
+                            justify-content: center;
+                            flex-wrap: wrap;
+                            padding: 10px;
+
+                            &>*{
+                                display: block;
+                                width: 100%;
+                                margin: 10px;
+                            }
+
+                            &>#slider_1to5_slider{
+
+                                background-color: $color-dark;
+                                border-radius: 10px;
+
+                                &>span{
+
+                                    background-color: $color-green-1;
+                                    font-size: 32px;
+                                    text-align: center;
+                                    border-radius: 999px;
+
+                                }
+
+                            }
+
+                            &>#slider_1to5_labels{
+                                display: flex;
+                                flex-wrap: nowrap;
+                                justify-content: space-between;
+                            }
+                            
+                        }
+
                     }
 
                     &>.meta{

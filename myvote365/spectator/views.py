@@ -23,7 +23,18 @@ def index(request):
 def presentation_show(request, short_id_num):
 
     if request.method == 'POST':
-        return render(request, 'spectator/forms/yesno.html')
+        option = request.POST.get('option')
+        if option == 'get_slide_form':
+            slide_type = request.POST.get('slide_info[type]')
+            if slide_type == 'yesno':
+                return render(request, 'spectator/forms/yesno.html')
+            elif slide_type == 'slider_1to5':
+                return render(request, 'spectator/forms/slider_1to5.html')
+            elif slide_type == 'text':
+                return render(request, 'spectator/forms/text.html')
+        else:
+            return HttpResponse('errro ?')
+            # return render(request, 'spectator/forms/yesno.html')
 
     else:
 
