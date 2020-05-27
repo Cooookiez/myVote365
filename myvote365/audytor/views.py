@@ -1057,16 +1057,52 @@ def presentation_play(request, short_id_num):
                     lectures_ref = presentations_ref.collection('lectures')
                     slides_no_to_id = []
                     for lecture in lectures_ref.get():
+                        position_lecture = lectures_ref.document(lecture.id).get().to_dict()['properties']['position']
                         slides_ref = lectures_ref.document(lecture.id).collection('slides')
                         for slide in slides_ref.get():
+                            position_slide = slides_ref.document(slide.id).get().to_dict()['properties']['position']
                             slides_no_to_id.append({
                                 'lecture_id': lecture.id,
                                 'slide_id': slide.id,
+                                'position_lecture': position_lecture,
+                                'position_slide': position_slide,
                             })
                             count_slides += 1
 
+                    slides_tmp = {}
+                    for slide in slides_no_to_id:
+                        slides_tmp[str(slide['position_lecture'])] = {}
+                    for slide in slides_no_to_id:
+                        slides_tmp[str(slide['position_lecture'])][str(slide['position_slide'])] = slide
+
+                    # print(slides_tmp['0'][str(0)])
+
+                    # sort
+                    slides_no_to_id = []
+                    end_of_lectures = False
+                    i_lecture = 0
+                    while end_of_lectures is False:
+                        print('lectures')
+                        end_of_slides = False
+                        i_slide = 0
+                        while end_of_slides is False:
+                            print('slides')
+                            print(slides_tmp[str(i_lecture)][str(i_slide)])
+                            slides_no_to_id.append(slides_tmp[str(i_lecture)][str(i_slide)])
+                            i_slide += 1
+                            if str(i_slide) not in slides_tmp[str(i_lecture)].keys():
+                                end_of_slides = True
+                        i_lecture += 1
+                        if str(i_lecture) not in slides_tmp.keys():
+                            end_of_lectures = True
+
+                    print()
+                    print()
                     print(slides_no_to_id)
+                    print()
                     print(json.dumps(slides_no_to_id))
+                    print()
+                    print()
 
                     context = {
                         'author': {
@@ -1075,7 +1111,6 @@ def presentation_play(request, short_id_num):
                         'slides': {
                             'max': count_slides,
                             'ids_json': slides_no_to_id,
-                            # 'ids_json': json.dumps(slides_no_to_id),
                         },
                         'properties': {
                             'title': properties['title'],
