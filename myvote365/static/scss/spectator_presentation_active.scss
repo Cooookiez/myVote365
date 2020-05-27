@@ -165,6 +165,21 @@ body{
                             
                         }
 
+                        &>[data-question-type=text]{
+
+                            padding: 10px;
+
+                            &>textarea{
+                                display: block;
+                                width: 100%;
+                                max-width: 100%;
+                                min-width: 100%;
+                                background-color: $color-main;
+                                color: $color-light-1 !important;
+                                padding: 4px;
+                            }
+
+                        }
                     }
 
                     &>.meta{
