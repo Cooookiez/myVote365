@@ -460,7 +460,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                             positions[position] = lecture_ref.id
 
                         # update presentation
-                        if 0 <= new_position < how_many_presentations:  # is between 0 and max
+                        if 0 <= new_position and new_position < how_many_presentations:  # is between 0 and max
 
                             # update new position for changed element
                             lecture_ref = presentation_ref.collection('lectures').document(positions[cur_position])
@@ -594,7 +594,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                             positions[position] = slide_ref.id
 
                         # update slides
-                        if 0 <= new_position < how_many_slides:
+                        if 0 <= new_position and new_position < how_many_slides:
                             # update new position for changed element
                             slide_ref = lectures_ref.collection('slides').document(positions[cur_position])
                             slide_ref.update({
@@ -1095,7 +1095,7 @@ def presentation_play(request, short_id_num):
             return render(request, 'auditor/presentation_active.html', context=context)
     # not logged
     else:
-        return redirect('auditor:panel', )
+        return redirect('auditor:panel')
 
 
 def settings(request):

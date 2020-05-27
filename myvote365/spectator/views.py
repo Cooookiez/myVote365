@@ -22,30 +22,41 @@ def index(request):
 
 def presentation_show(request, short_id_num):
 
-    delay_s = 5
-    short_id_num = str(short_id_num).upper()
-    time_now = round(datetime.now().timestamp())
-    lowest_expect_time = time_now - delay_s
+    if request.method == 'POST':
+        return render(request, 'spectator/forms/yesno.html')
 
-    # find presentations_active with given short id
-    presentations_active_ref = db.collection('presentations_active').where('short_id_num', '==', short_id_num)
-    presentations_active = presentations_active_ref.get()
-    ids = []
-    for presentation_active in presentations_active:
-        ids.append(presentation_active.id)
-    if len(ids) is not 1:
-        # error
-        pass
     else:
-        presentation_ref = db.collection('presentations_active').document(ids[0])
-        presentation = presentation_ref.get().to_dict()
-        last_log = int(presentation['last_log']['int'])
 
-        # presentation is inactive
-        if last_log < lowest_expect_time:
-            return render(request, 'spectator/presentation_inactive.html')
-        # presentation is active
+        delay_s = 10 * 60
+        short_id_num = str(short_id_num).upper()
+        time_now = round(datetime.now().timestamp())
+        lowest_expect_time = time_now - delay_s
+
+        # find presentations_active with given short id
+        presentations_active_ref = db.collection('presentations_active').where('presentation.short_id_num', '==', short_id_num)
+        presentations_active = presentations_active_ref.get()
+        ids = []
+        for presentation_active in presentations_active:
+            ids.append(presentation_active.id)
+        if len(ids) is not 1:
+            # error
+            pass
         else:
-            return render(request, 'spectator/presentation_active.html')
+            doc_id = ids[0]
+            presentation_ref = db.collection('presentations_active').document(doc_id)
+            presentation = presentation_ref.get().to_dict()
+            last_log = int(presentation['last_log']['int'])
+            print(f'{lowest_expect_time} = {time_now} - {delay_s}')
+            print(f'{last_log}')
 
-    return render(request, 'spectator/presentation_active.html')
+            # presentation is inactive
+            if last_log < lowest_expect_time:
+                return render(request, 'spectator/presentation_inactive.html')
+            # presentation is active
+            else:
+                return render(request, 'spectator/presentation_active.html', context={
+                    'doc_id': doc_id,
+                    'short_id_num': short_id_num,
+                })
+
+        return render(request, 'spectator/presentation_active.html')

@@ -77,14 +77,14 @@ Video podglądowe co jest już zrobione:
 
 ## 📆 Timetable
 
-| Week (deadline)                       | Description                   | status |
-| ------------------------------------: | ----------------------------- | :----: |
-| 3 (12.03.2020)                        | Raport I (Project plan)       | ✅     |
-| 9 (23.04.2020)                        | Raport II (Project status)    | ✅     |
-| 11 (21.05.2020)                       | Prototype                     | 📝     |
-| 13 (28.05.2020)                       | Raport III (Prototype update) | 🕐     |
-| 14 (04.06.2020)                       | Submission of the project     | 🕒     |
-| 15 (18.06.2020)                       | Project presentation          | 🕔     |
+| deadline   | Description                   | status |
+| ---------: | ----------------------------- | :----: |
+| 12.03.2020 | Raport I (Project plan)       | ✅     |
+| 23.04.2020 | Raport II (Project status)    | ✅     |
+| 21.05.2020 | Prototype                     | ✅     |
+| 28.05.2020 | Raport III (Prototype update) | 📝     |
+| 04.06.2020 | Submission of the project     | 🕐     |
+| 18.06.2020 | Project presentation          | 🕒     |
 
 ## 📚 Used libraries
 

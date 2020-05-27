@@ -12,17 +12,52 @@
     <script src="{% static 'javascript/init-firebase.js' %}"></script>
     <script>
 
+        let slide_no = {
+            'cur': null,
+            'min': 1,
+            'max': null,
+            'last': -1
+        };
+
         db = firebase.firestore();
-        db.collection('presentations_active').doc('5p1aBzobtnD4Au5rcOC5').onSnapshot(doc=>{
-            console.log(doc.data());
+        db.collection('presentations_active').doc('{{doc_id}}').onSnapshot(doc=>{
+            {#console.log(doc.data());#}
 
             $('.short-id').each(function(i){ $(this).text(doc.data()['presentation']['short_id_num']) });
             $('.presentation-title').each(function(i){ $(this).text(doc.data()['presentation']['title']) })
 
             $('.slide-title').each(function(i){ $(this).text(doc.data()['slide']['active']['title']) });
-            $('.slide-no').each(function(i){ $(this).text(doc.data()['slide']['active']['no']) });
-            $('.slide-type').each(function(i){ $(this).text(doc.data()['slide']['active']['type']) });
-            $('.slide-max').each(function(i){ $(this).text(doc.data()['slide']['max']) });
+
+            slide_no.cur = doc.data()['slide']['active']['no']
+            $('.slide-no').each(function(i){ $(this).text(slide_no.cur) });
+
+            slide_type = doc.data()['slide']['active']['type']
+            console.log(slide_no.cur, slide_no.last)
+            if(slide_no.cur != slide_no.last ){
+
+                slide_info = {
+                    'type': slide_type,
+                }
+                let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+                $.post('{% url 'spectator:presentation' short_id_num %}',{
+                    'op': 'get_slide_form',
+                    slide_info: slide_info,
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+                }).done((data_raw)=>{
+                    console.log(data_raw);
+                    $('#body > .answer').html(data_raw);
+                }).fail(()=>{
+                    console.log('error')
+                })
+
+            }
+            {#slide_no.last = slide_no.cur#}
+
+
+            $('.slide-type').each(function(i){ $(this).text(slide_type) });
+
+            slide_no.max = doc.data()['slide']['max']
+            $('.slide-max').each(function(i){ $(this).text(slide_no.max) });
 
             $('.slide-no').each(function(i){ $(this).text(doc.data()['slide']['active']['no']) });
 
@@ -31,6 +66,8 @@
     </script>
 </head>
 <body>
+
+    {% csrf_token %}
 
     <header id="presentation_id_name">
         <span class="short-id"></span> – <span class="presentation-title"></span>
@@ -48,9 +85,10 @@
                     <section class="answer" data-type="">
 
                     </section>
-                    <section class="meta">[<span class="slide-type"></span>] – <span class="slide-no"></span> / <span class="slide-max"></span></section>
+                    <section class="meta">[<span class="slide-type"></span>] | slide <span class="slide-no"></span> / <span class="slide-max"></span></section>
                 </article>
-                <article for="submit">
+                <article for="submit" data-input-disabled="false">
+                    <label for="submit">Wyślij</label>
                     <input id="submit" hidden>
                 </article>
             </form>

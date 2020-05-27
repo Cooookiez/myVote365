@@ -60,11 +60,134 @@ body{
 
                     margin-top: 50px;
 
+                    &>header{
+
+                        &>*{
+                            display: block;
+                        }
+
+                        &>.slide-title{
+                            // color: black;
+                            letter-spacing: 2px;
+                            font-weight: 500;
+                        }
+
+                        &>.hr{
+                            background-color: $color-dark;
+                            border: 2px solid $color-dark;
+                        }
+
+                    }
+
+                    &>.answer{
+
+                        // background-color: red;
+
+                        &>[data-question-type=yesno]{
+
+                            display: flex;
+                            justify-content: center;
+                            flex-wrap: wrap;
+                            padding: 10px;
+
+                            & > label{
+                                
+                                display: block;
+                                background-color: grey;
+                                padding: 20px;
+                                margin: 10px;
+                                width: 500px;
+                                text-align: center;
+                                border-radius: 10px;
+                                color: $color-light-2;
+                                transition: ease .4s box-shadow;
+
+                                &[for=radio_yes_no__yes]{
+                                    background-color: $color-green-2;
+                                }
+
+                                &[for=radio_yes_no__no]{
+                                    background-color: $color-error-dark;
+                                }
+
+                            }
+
+                            & > #radio_yes_no__yes:checked ~ label[for=radio_yes_no__yes]{
+                                // color: green;
+                                // border: 2px solid $color-green-1;
+                                box-shadow: 0 0 10px 2px $color-green-1;
+                                transition: ease .2s box-shadow;
+                            }
+
+                            & > #radio_yes_no__no:checked ~ label[for=radio_yes_no__no]{
+                                // color: red;
+                                // border: 2px solid $color-error-light;
+                                box-shadow: 0 0 10px 2px $color-error-light;
+                                transition: ease .2s box-shadow;
+                            }
+                            
+                        }
+
+                    }
+
+                    &>.meta{
+
+                        display: block;
+                        // background-color: green;
+                        font-size: 12px;
+                        text-align: right;
+
+                    }
+
                 }
 
                 &>article[for=submit]{
                     
                     height: 50px;
+                    padding: 0;
+                    transition: ease box-shadow .6s;
+
+                    &:active{
+
+                        box-shadow: 2px 2px 10px -2px black;
+                        transition: ease box-shadow .1s;
+
+                    }
+
+                    &>label{
+
+                        display: block;
+                        width: 100%;
+                        height: 100%;
+                        text-align: center;
+                        padding: 10px;
+                        cursor: pointer;
+
+                    }
+
+                    &[data-input-disabled=true]{
+
+                        background-color: $color-dark;
+
+                        &:active{
+
+                            box-shadow: none;
+
+                        }
+
+                        &>label{
+
+                            display: block;
+                            width: 100%;
+                            height: 100%;
+                            text-align: center;
+                            padding: 10px;
+                            color: $color-main;
+                            cursor: no-drop;
+
+                        }
+
+                    }
 
                 }
 
