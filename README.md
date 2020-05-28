@@ -21,7 +21,7 @@ Video podglądowe co jest już zrobione:
 
 ### Raport III
 
-Od prototypu dodałem podgląd slajdu (na razie “tak / nie”) oraz odpowiedzi dla niego
+Od prototypu dodałem podgląd slajdu (na razie “tak / nie”) oraz odpowiedzi dla niego, plus sporo poprawek i usprawnień
 ![myVote365 – youtube video – raport II](README_media/raport-iii-phone-desktop.png)
 
 ## 📝 To Do List
