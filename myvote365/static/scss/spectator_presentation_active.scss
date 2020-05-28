@@ -174,9 +174,10 @@ body{
                                 width: 100%;
                                 max-width: 100%;
                                 min-width: 100%;
-                                background-color: $color-main;
-                                color: $color-light-1 !important;
-                                padding: 4px;
+                                background-color: rgba($color: $color-main, $alpha: .3);
+                                color: $color-dark;
+                                padding: 10px;
+                                font-size: 24px;
                             }
 
                         }

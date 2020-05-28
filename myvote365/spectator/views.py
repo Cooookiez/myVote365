@@ -21,10 +21,13 @@ def index(request):
     return render(request, 'spectator/index.html')
 
 def presentation_show(request, short_id_num):
+    print('PLS DZIALAJ 1')
 
     if request.method == 'POST':
+        print('PLS DZIALAJ 2')
         option = request.POST.get('option')
         if option == 'get_slide_form':
+            print('PLS DZIALAJ 3.1')
             slide_type = request.POST.get('slide_info[type]')
             if slide_type == 'yesno':
                 return render(request, 'spectator/forms/yesno.html')
@@ -32,7 +35,19 @@ def presentation_show(request, short_id_num):
                 return render(request, 'spectator/forms/slider_1to5.html')
             elif slide_type == 'text':
                 return render(request, 'spectator/forms/text.html')
+
+        elif option == 'send_view':
+            print('PLS DZIALAJ 3.2')
+            fingerprint_id = request.POST.get('fingerprint_id')
+            presentation_id = get_ids_by_short_id_num(short_id_num)['presentation_id']
+            presentations_active_ref = db.collection('presentations_active').document(presentation_id)
+            presentations_active_ref.update({
+                f'views.{fingerprint_id}': True,
+            })
+            return HttpResponse('pls dzialaj')
+
         else:
+            print('PLS DZIALAJ 3.3')
             return HttpResponse('errro ?')
             # return render(request, 'spectator/forms/yesno.html')
 
@@ -71,3 +86,24 @@ def presentation_show(request, short_id_num):
                 })
 
         return render(request, 'spectator/presentation_active.html')
+
+
+def get_ids_by_short_id_num(short_id_num):
+    presentations_id = None
+    presentations_ref = db.collection(u'presentations')
+    presentations_ref = presentations_ref.where(u'properties.short_id_num', u'==', short_id_num)
+    presentations = presentations_ref.get()
+    index = 0
+    for presentation in presentations:
+        index = index + 1
+        presentations_id = presentation.id
+
+    # download presentation
+    presentation_ref = db.collection(u'presentations').document(presentations_id)
+    presentation = presentation_ref.get().to_dict()
+
+    return {
+        'auditor_id': presentation['properties']['auditor_id'],
+        'presentation_id': presentations_id,
+    }
+

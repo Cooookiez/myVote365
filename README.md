@@ -58,7 +58,6 @@ Video podglądowe co jest już zrobione:
   - [x] footer
   - [x] qr section
   - [ ] slide section
-- [ ] [PRESENTATION] – **qr slide❓**
 - [ ] [PRESENTATION] – **other slides**
   - [ ] TAK / NIE
   - [ ] 1-2-3-4-5 (slider)
@@ -68,10 +67,10 @@ Video podglądowe co jest już zrobione:
 - [ ] [PRESENTATION] – **recive views**
 - [x] [SPECTATOR] – **Front page** (to write id)
 - [x] [SPECTATOR] – **Active presentation page** (with following slide no)
-- [ ] [SPECTATOR] – **slide page**
-  - [ ] TAK / NIE
-  - [ ] 1-2-3-4-5 (slider)
-  - [ ] Text
+- [x] [SPECTATOR] – **slide page**
+  - [x] TAK / NIE
+  - [x] 1-2-3-4-5 (slider)
+  - [x] Text
 - [ ] [SPECTATOR] – **Send views**
 - [ ] [SPECTATOR] – **waiting screen** (for next slide after voted)
 

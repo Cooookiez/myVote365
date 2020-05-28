@@ -1047,7 +1047,8 @@ def presentation_play(request, short_id_num):
                                 }
                             },
                             'max': None,
-                        }
+                        },
+                        'views': {}
                     })
 
                     # count how many slides in whole presentation
@@ -1096,14 +1097,6 @@ def presentation_play(request, short_id_num):
                         if str(i_lecture) not in slides_tmp.keys():
                             end_of_lectures = True
 
-                    print()
-                    print()
-                    print(slides_no_to_id)
-                    print()
-                    print(json.dumps(slides_no_to_id))
-                    print()
-                    print()
-
                     context = {
                         'author': {
                             'name': request.session['auditor']['name'],
@@ -1115,6 +1108,7 @@ def presentation_play(request, short_id_num):
                         'properties': {
                             'title': properties['title'],
                             'short_id_num': short_id_num,
+                            'presentation_id': presentation_id,
                         }
                     }
 

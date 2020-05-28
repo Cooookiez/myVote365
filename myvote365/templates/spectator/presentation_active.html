@@ -10,7 +10,38 @@
     <script src="https://gstatic.com/firebasejs/7.14.3/firebase-app.js"></script>
     <script src="https://gstatic.com/firebasejs/7.14.3/firebase-firestore.js"></script>
     <script src="{% static 'javascript/init-firebase.js' %}"></script>
+    <script src="{% static 'javascript/fingerprint2.js' %}"></script>
     <script>
+
+        let fingerprintReport = function(){
+            Fingerprint2.get(function(components){
+                let murmur = Fingerprint2.x64hash128(components.map(function(pair){return pair.value}).join(), 31);
+                console.log('murmur', murmur);
+                setTimeout(function(){ send_view(murmur) }, 1000)
+            });
+        }
+
+        if (window.requestIdleCallback) {
+            cancelId = requestIdleCallback(fingerprintReport);
+        } else {
+            setTimeout(function () {
+                cancelId = requestIdleCallback(fingerprintReport);
+            }, 500)
+        }
+
+        function send_view(fingerprint_id){
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'spectator:presentation' short_id_num %}',{
+                option: 'send_view',
+                fingerprint_id: fingerprint_id,
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done((data_raw)=>{
+                console.log(data_raw);
+                console.log('fin ye')
+            }).fail(()=>{
+                console.log('fin no')
+            })
+        }
 
         let slide_no = {
             'cur': null,
@@ -33,6 +64,7 @@
 
             slide_type = doc.data()['slide']['active']['type']
             console.log(slide_no.cur, slide_no.last)
+
             if(slide_no.cur != slide_no.last ){
                 console.log('slide refresh')
                 slide_info = {

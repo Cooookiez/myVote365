@@ -7,6 +7,9 @@
     <link rel="stylesheet" href="{% static 'css/presentation_active.css' %}">
     <link rel="shortcut icon" href="{% static 'favicon/ico_play.png' %}" type="image/x-icon">
     <script src="{% static 'javascript/jquery-3.4.1.min.js' %}"></script>
+    <script src="https://gstatic.com/firebasejs/7.14.3/firebase-app.js"></script>
+    <script src="https://gstatic.com/firebasejs/7.14.3/firebase-firestore.js"></script>
+    <script src="{% static 'javascript/init-firebase.js' %}"></script>
     <script>
 
         let slide_no = {
@@ -134,7 +137,7 @@
         function every_n_seconds_send_presence_to_db(n=5){
             setTimeout(function(){
                 send_presence_to_db()
-                every_n_seconds_send_presence_to_db(n=5);
+                every_n_seconds_send_presence_to_db(n);
             }, n*1000)
         }
         function send_presence_to_db(){
@@ -174,6 +177,17 @@
             });
         }
 
+        // display active slide
+        db = firebase.firestore();
+        db.collection('presentations_active').doc('{{ properties.presentation_id }}').onSnapshot(doc=>{
+
+            $('.slide-title').each(function(i){ $(this).text(doc.data()['slide']['active']['title']) });
+            slide_type = doc.data()['slide']['active']['type']
+
+
+
+        });
+
     </script>
 </head>
 <body>
@@ -183,26 +197,12 @@
     <main>
 
         <header>
-            <div class="presentation-title">Tytul</div>
+            <div class="presentation-title slide-title"></div>
             <div class="hr"></div>
         </header>
 
-        <div class="answer">
+        <div class="answers">
 
-            <div class="yes">
-                <div class="label">Tak</div>
-                <div class="percent">32%</div>
-            </div>
-
-            <div class="no">
-                <div class="label">Nie</div>
-                <div class="percent">68%</div>
-            </div>
-
-        </div>
-
-        <div class="meta">
-            typ | 1 / 12
         </div>
 
     </main>
