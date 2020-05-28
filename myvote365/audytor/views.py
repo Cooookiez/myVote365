@@ -1006,6 +1006,59 @@ def presentation_play(request, short_id_num):
                 else:
                     callback = dont_be_hacekr
 
+            # get slide with content
+            elif option == 'show_slide':
+                slide_type = request.POST.get('slide_type')
+                presentation_id = get_ids_by_short_id_num(short_id_num)['presentation_id']
+                lecture_id = request.POST.get('lecture_id')
+                slide_id = request.POST.get('slide_id')
+                
+                context = {
+                    'presentation_id': get_ids_by_short_id_num(short_id_num)['presentation_id'],
+                    'lecture_id': lecture_id,
+                    'slide_id': slide_id,
+                }
+
+                # YES / NO
+                if slide_type == 'yesno':
+                    answers_ref = db\
+                        .collection('presentations').document(presentation_id)\
+                        .collection('lectures').document(lecture_id)\
+                        .collection('slides').document(slide_id)\
+                        .collection('answers')
+                    # get all answers and count
+                    answers = answers_ref.get()
+                    count_answers = 0
+                    for answer in answers:
+                        count_answers += 1
+                    # if 0 end with 50 / 50
+                    if count_answers <= 0:
+                        yes_percent = 50
+                        no_percent = 50
+                    # else get answers with yes
+                    else:
+                        count_answer_yes = 0
+                        answers_yes = answers_ref.where('answer', '==', 'yes').get()
+                        for answer_yes in answers_yes:
+                            count_answer_yes += 1
+                        yes_percent = round(count_answer_yes/count_answers*100)
+                        no_percent = round(100 - yes_percent)
+                    context = {
+                        'yes_percent': yes_percent,
+                        'no_percent': no_percent,
+                        'lecture_id': lecture_id,
+                        'slide_id': slide_id,
+                        'slide_type': slide_type,
+                    }
+                    return render(request, 'auditor/forms/yesno.html', context=context)
+
+                # SLIDER 1 TO 5
+                elif slide_type == 'slider_1to5':
+                    return render(request, 'auditor/forms/slider_1to5.html', context=context)
+
+                # TEXT
+                elif slide_type == 'text':
+                    return render(request, 'auditor/forms/text.html', context=context)
 
             else:
                 callback = dont_be_hacekr
@@ -1048,7 +1101,7 @@ def presentation_play(request, short_id_num):
                             },
                             'max': None,
                         },
-                        'views': {}
+                        'views': {},
                     })
 
                     # count how many slides in whole presentation
@@ -1109,7 +1162,7 @@ def presentation_play(request, short_id_num):
                             'title': properties['title'],
                             'short_id_num': short_id_num,
                             'presentation_id': presentation_id,
-                        }
+                        },
                     }
 
                 except:

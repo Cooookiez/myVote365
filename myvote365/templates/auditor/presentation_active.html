@@ -182,11 +182,32 @@
         db.collection('presentations_active').doc('{{ properties.presentation_id }}').onSnapshot(doc=>{
 
             $('.slide-title').each(function(i){ $(this).text(doc.data()['slide']['active']['title']) });
-            slide_type = doc.data()['slide']['active']['type']
+            let slide_type = doc.data()['slide']['active']['type'];
+            let lecture_id = doc.data()['slide']['active']['ids']['lecture'];
+            let slide_id = doc.data()['slide']['active']['ids']['slide'];
+            update_slide(slide_type, lecture_id, slide_id);
 
-
+            let views = doc.data()['views']
+            views = Object.keys(views).length;
+            $('.views').each(function(i){ $(this).text(views) });
 
         });
+
+        function update_slide(slide_type, lecture_id, slide_id){
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'auditor:presentation_play' properties.short_id_num %}',{
+                option: 'show_slide',
+                slide_type: slide_type,
+                lecture_id: lecture_id,
+                slide_id: slide_id,
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done((data_raw)=>{
+                console.log(data_raw)
+                $('main > article > .answers').html(data_raw)
+            }).fail(()=>{
+                console.log('fail')
+            });
+        }
 
     </script>
 </head>
@@ -196,14 +217,18 @@
 
     <main>
 
-        <header>
-            <div class="presentation-title slide-title"></div>
-            <div class="hr"></div>
-        </header>
+        <article>
 
-        <div class="answers">
+            <header>
+                <div class="presentation-title slide-title"></div>
+                <div class="hr"></div>
+            </header>
 
-        </div>
+            <div class="answers">
+d
+            </div>
+
+        </article>
 
     </main>
 
@@ -224,7 +249,7 @@
             <span class="viewers_ico">
                 <i class="ico far fa-users"></i>
             </span>
-            <span class="viewers_count">12</span>
+            <span class="viewers_count views">{{ views }}</span>
         </article>
 
         <article id="autor">

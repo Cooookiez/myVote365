@@ -1,0 +1,16 @@
+
+<article data-question-type="yesno" style="--percent: {{ yes_percent }}%;">
+
+    <div class="labels">
+        <div class="yes-label">Yes</div>
+        <div class="yes-percent">{{ yes_percent }}%</div>
+        <div class="no-label">No</div>
+        <div class="no-percent">{{ no_percent }}%</div>
+    </div>
+
+</article>
+<script>
+    setTimeout(()=>{
+        update_slide('{{slide_type}}', '{{lecture_id}}', '{{slide_id}}');
+    }, 5000);
+</script>

@@ -3,7 +3,7 @@
 
 body{
 
-    background-color: $color-main;
+    background: url('/static/img/planning-finance-business-presentation-businessman-sales-1584859-pxhere.com.jpg') no-repeat center center fixed;
     display: grid;
     position: absolute;
     top: 0;
@@ -19,7 +19,109 @@ body{
         &>main{
     
             grid-area: main;
-            background-color: red;
+
+            &>article{
+
+                display: block;
+                $margin: 40px;
+                margin: $margin;
+                width: calc(100% - #{$margin}*2);
+                height: calc(100% - #{$margin}*2);
+                background-color: rgba($color: $color-light-1, $alpha: .85);
+
+                &>header{
+
+                    padding: 10px;
+                    
+                    &>.presentation-title{
+
+                        display: block;
+                        font-size: 24px;
+                        letter-spacing: 4px;
+
+                    }
+
+                    &>.hr{
+
+                        display: block;
+                        width: 100%;
+                        height: 2px;
+                        background-color: black;
+                    }
+
+                }
+
+                &>.answers{
+                
+                    padding: 10px;
+                    background-color: rgba($color: red, $alpha: .1);
+                    display: block;
+                    width: 100%;
+
+                    &>article{
+                        
+                        &[data-question-type=yesno]{
+
+                            background-color: tan;
+                            background-image: linear-gradient(to right, $color-green-1 var(--percent), $color-error-light var(--percent));
+
+                            &>.labels{
+                                width: 100%;
+                                height: 100%;
+                                display: grid;
+                                grid-template-areas: 
+                                    "yes-label . no-label"
+                                    ". . ."
+                                    "yes-percent . no-percent"
+                                    ;
+                                grid-template-columns: auto 1fr auto;
+                                grid-template-rows: auto 1fr auto;
+                                padding: 20px;
+
+                                /*
+                                    <div class="yes-label">Yes</div>
+                                    <div class="yes-percent">33%</div>
+                                    <div class="no-label">No</div>
+                                    <div class="no-percent">67%</div>
+                                */
+
+                                &>.yes-label,
+                                &>.no-label{
+                                    font-size: 48px;
+                                    font-weight: 900;
+                                }
+
+                                &>.yes-percent,
+                                &>.no-percent{
+                                    font-size: 32px;
+                                    font-weight: 500;
+                                }
+
+                                &>.yes-label{
+                                    grid-area: yes-label;
+                                }
+
+                                &>.yes-percent{
+                                    grid-area: yes-percent;
+                                }
+
+                                &>.no-label{
+                                    grid-area: no-label;
+                                }
+
+                                &>.no-percent{
+                                    grid-area: no-percent;
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
             
         }
 
@@ -78,6 +180,7 @@ body{
             overflow: hidden;
             padding: 4px;
             font-size: 22px;
+            background-color: $color-main;
             
             &>#viewers{
                 grid-area: viewers;

@@ -59,31 +59,31 @@ Video podglądowe co jest już zrobione:
   - [x] qr section
   - [ ] slide section
 - [ ] [PRESENTATION] – **other slides**
-  - [ ] TAK / NIE
+  - [x] TAK / NIE
   - [ ] 1-2-3-4-5 (slider)
   - [ ] Text
 - [x] [PRESENTATION] – **is open** (so other can join to watch)
 - [x] [PRESENTATION] – **sent data** (for spectators)
-- [ ] [PRESENTATION] – **recive views**
+- [x] [PRESENTATION] – **recive views**
 - [x] [SPECTATOR] – **Front page** (to write id)
 - [x] [SPECTATOR] – **Active presentation page** (with following slide no)
 - [x] [SPECTATOR] – **slide page**
   - [x] TAK / NIE
   - [x] 1-2-3-4-5 (slider)
   - [x] Text
-- [ ] [SPECTATOR] – **Send views**
+- [x] [SPECTATOR] – **Send views**
 - [ ] [SPECTATOR] – **waiting screen** (for next slide after voted)
 
 ## 📆 Timetable
 
 | deadline   | Description                   | status |
 | ---------: | ----------------------------- | :----: |
-| 12.03.2020 | Raport I (Project plan)       | ✅     |
-| 23.04.2020 | Raport II (Project status)    | ✅     |
-| 21.05.2020 | Prototype                     | ✅     |
-| 28.05.2020 | Raport III (Prototype update) | 📝     |
-| 04.06.2020 | Submission of the project     | 🕐     |
-| 18.06.2020 | Project presentation          | 🕒     |
+| 12.03.2020 | Raport I (Project plan)       |   ✅   |
+| 23.04.2020 | Raport II (Project status)    |   ✅   |
+| 21.05.2020 | Prototype                     |   ✅   |
+| 28.05.2020 | Raport III (Prototype update) |   📝   |
+| 04.06.2020 | Submission of the project     |   🕐   |
+| 18.06.2020 | Project presentation          |   🕒   |
 
 ## 📚 Used libraries
 

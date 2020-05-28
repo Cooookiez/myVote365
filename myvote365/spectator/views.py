@@ -21,13 +21,10 @@ def index(request):
     return render(request, 'spectator/index.html')
 
 def presentation_show(request, short_id_num):
-    print('PLS DZIALAJ 1')
 
     if request.method == 'POST':
-        print('PLS DZIALAJ 2')
         option = request.POST.get('option')
         if option == 'get_slide_form':
-            print('PLS DZIALAJ 3.1')
             slide_type = request.POST.get('slide_info[type]')
             if slide_type == 'yesno':
                 return render(request, 'spectator/forms/yesno.html')
@@ -37,17 +34,36 @@ def presentation_show(request, short_id_num):
                 return render(request, 'spectator/forms/text.html')
 
         elif option == 'send_view':
-            print('PLS DZIALAJ 3.2')
             fingerprint_id = request.POST.get('fingerprint_id')
             presentation_id = get_ids_by_short_id_num(short_id_num)['presentation_id']
             presentations_active_ref = db.collection('presentations_active').document(presentation_id)
             presentations_active_ref.update({
-                f'views.{fingerprint_id}': True,
+                f'views.{fingerprint_id}': datetime.now(),
             })
             return HttpResponse('pls dzialaj')
 
+        elif option == 'send_answer_yes_no':
+            answer = request.POST.get('answer')
+            presentation_id = get_ids_by_short_id_num(short_id_num)['presentation_id']
+            lecture_id = request.POST.get('lecture_id')
+            slide_id = request.POST.get('slide_id')
+            fing_id = request.POST.get('fing_id')
+
+            answer_ref = db\
+                .collection('presentations').document(presentation_id)\
+                .collection('lectures').document(lecture_id)\
+                .collection('slides').document(slide_id)\
+                .collection('answers').document(fing_id)
+            if answer not in ['yes', 'no']:
+                return HttpResponse('no ans')
+            else:
+                answer_ref.set({
+                    'answer': answer,
+                })
+                return HttpResponse('ok')
+
+
         else:
-            print('PLS DZIALAJ 3.3')
             return HttpResponse('errro ?')
             # return render(request, 'spectator/forms/yesno.html')
 

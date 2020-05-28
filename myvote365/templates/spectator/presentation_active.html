@@ -13,11 +13,13 @@
     <script src="{% static 'javascript/fingerprint2.js' %}"></script>
     <script>
 
+        let fing_id = null;
+
         let fingerprintReport = function(){
             Fingerprint2.get(function(components){
-                let murmur = Fingerprint2.x64hash128(components.map(function(pair){return pair.value}).join(), 31);
-                console.log('murmur', murmur);
-                setTimeout(function(){ send_view(murmur) }, 1000)
+                fing_id = Fingerprint2.x64hash128(components.map(function(pair){return pair.value}).join(), 31);
+                console.log('fing_id', fing_id);
+                setTimeout(function(){ send_view(fing_id) }, 1000)
             });
         }
 
@@ -50,6 +52,15 @@
             'last': -1
         };
 
+        let ids = {
+            lecture: null,
+            slide: null,
+        }
+
+        let slide_type = null;
+
+        let answered_slides = {}
+
         db = firebase.firestore();
         db.collection('presentations_active').doc('{{doc_id}}').onSnapshot(doc=>{
             {#console.log(doc.data());#}
@@ -58,6 +69,9 @@
             $('.presentation-title').each(function(i){ $(this).text(doc.data()['presentation']['title']) })
 
             $('.slide-title').each(function(i){ $(this).text(doc.data()['slide']['active']['title']) });
+
+            ids.lecture = doc.data()['slide']['active']['ids']['lecture']
+            ids.slide = doc.data()['slide']['active']['ids']['slide']
 
             slide_no.cur = doc.data()['slide']['active']['no']
             $('.slide-no').each(function(i){ $(this).text(slide_no.cur) });
@@ -94,7 +108,66 @@
 
             $('.slide-no').each(function(i){ $(this).text(doc.data()['slide']['active']['no']) });
 
+            // disable submit if already answered
+            change_submit_disable()
+
         })
+
+        function change_submit_disable(){
+
+            let slide_no_cur_txt = slide_no.cur + ""
+            if(answered_slides[slide_no_cur_txt] == true){
+                $('#user_vote > form > article[for=submit]').attr('data-input-disabled', true);
+            }else{
+                $('#user_vote > form > article[for=submit]').attr('data-input-disabled', false);
+            }
+
+        }
+
+        $(function(){
+            $('#user_vote > form').submit(function(){
+
+                console.log('submit')
+
+                switch (slide_type) {
+
+                    case 'yesno':
+                        console.log('yesno')
+                        let ans = null;
+                        if( $('#radio_yes_no__yes').is(':checked') ){
+                           send_yes_no('yes')
+                        }else if ( $('#radio_yes_no__no').is(':checked') ){
+                           send_yes_no('no')
+                        }else{
+                            // not checked
+                        }
+                        break;
+
+                }
+                return false;
+            })
+        }); // jQ END
+
+        function send_yes_no(ans){
+            console.log(ans);
+            let slide_no_cur_txt = slide_no.cur + "";
+            answered_slides[slide_no_cur_txt] = true;
+            change_submit_disable();
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'spectator:presentation' short_id_num %}',{
+                option: 'send_answer_yes_no',
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+                answer: ans,
+                lecture_id: ids.lecture,
+                slide_id: ids.slide,
+                fing_id: fing_id,
+            }).done((data_raw)=>{
+                console.log(data_raw)
+            }).fail(()=>{
+                console.log('nini')
+            });
+
+        }
 
     </script>
 </head>
@@ -122,7 +195,7 @@
                 </article>
                 <article for="submit" data-input-disabled="false">
                     <label for="submit">Wyślij</label>
-                    <input id="submit" hidden>
+                    <input id="submit" type="submit" hidden>
                 </article>
             </form>
         </article>
