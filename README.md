@@ -9,13 +9,20 @@
 2. **Widzowie mogą zeskanować kod qr / wpisać w przeglądarce link (np. myVote365.com/7HC0) i odpowiada na pytania.** (w jak najbardziej prosty dla nich sposób (Brak wymogu logowania dla nich i ¿inne?))
 3. **Będzie działało na [django](https://www.djangoproject.com/) + [google firebase](https://firebase.google.com/).**
 
-## Raport II
+## Raports
+
+### Raport II
 
 Lista zrobionych rzeczy jest w [To Do List](#-to-do-list)
 
 Video podglądowe co jest już zrobione:
 
 [![myVote365 – youtube video – raport II](http://img.youtube.com/vi/hm9VYDDarjA/0.jpg)](http://www.youtube.com/watch?v=hm9VYDDarjA)
+
+### Raport III
+
+Od prototypu dodałem podgląd slajdu (na razie “tak / nie”) oraz odpowiedzi dla niego
+![myVote365 – youtube video – raport II](README_media/raport-iii-phone-desktop.png)
 
 ## 📝 To Do List
 
