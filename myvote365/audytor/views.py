@@ -1008,7 +1008,6 @@ def presentation_play(request, short_id_num):
 
             # get slide with content
             elif option == 'show_slide':
-                slide_type = request.POST.get('slide_type')
                 presentation_id = get_ids_by_short_id_num(short_id_num)['presentation_id']
                 lecture_id = request.POST.get('lecture_id')
                 slide_id = request.POST.get('slide_id')
@@ -1019,8 +1018,19 @@ def presentation_play(request, short_id_num):
                     'slide_id': slide_id,
                 }
 
+                # Get Slide type
+                slide_ref = db\
+                    .collection('presentations').document(presentation_id)\
+                    .collection('lectures').document(lecture_id)\
+                    .collection('slides').document(slide_id)
+                
+                slide_type = slide_ref.get().to_dict()['properties']['type']
+                print(f'{presentation_id}/{lecture_id}/{slide_id}')
+                print(f'SLIDE TYPE: {slide_type} / {type(slide_type)}')
+
                 # YES / NO
                 if slide_type == 'yesno':
+                    print('inside yesno')
                     answers_ref = db\
                         .collection('presentations').document(presentation_id)\
                         .collection('lectures').document(lecture_id)\
@@ -1033,8 +1043,8 @@ def presentation_play(request, short_id_num):
                         count_answers += 1
                     # if 0 end with 50 / 50
                     if count_answers <= 0:
-                        yes_percent = 50
-                        no_percent = 50
+                        yes_percent = 10
+                        no_percent = 90
                     # else get answers with yes
                     else:
                         count_answer_yes = 0
@@ -1054,11 +1064,16 @@ def presentation_play(request, short_id_num):
 
                 # SLIDER 1 TO 5
                 elif slide_type == 'slider_1to5':
+                    print('inside slider_1to5')
                     return render(request, 'auditor/forms/slider_1to5.html', context=context)
 
                 # TEXT
                 elif slide_type == 'text':
+                    print('inside text')
                     return render(request, 'auditor/forms/text.html', context=context)
+
+                else:
+                    return HttpResponse(':/')
 
             else:
                 callback = dont_be_hacekr

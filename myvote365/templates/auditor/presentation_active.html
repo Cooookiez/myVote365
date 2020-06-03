@@ -29,6 +29,9 @@
 
         let is_full_screen = false;
 
+        let lecture_id = null;
+        let slide_id = null;
+
 
         $(function(){
             console.log('slides.ids_json:');
@@ -182,10 +185,10 @@
         db.collection('presentations_active').doc('{{ properties.presentation_id }}').onSnapshot(doc=>{
 
             $('.slide-title').each(function(i){ $(this).text(doc.data()['slide']['active']['title']) });
-            let slide_type = doc.data()['slide']['active']['type'];
-            let lecture_id = doc.data()['slide']['active']['ids']['lecture'];
-            let slide_id = doc.data()['slide']['active']['ids']['slide'];
-            update_slide(slide_type, lecture_id, slide_id);
+            {#let slide_type = doc.data()['slide']['active']['type'];#}
+            lecture_id = doc.data()['slide']['active']['ids']['lecture'];
+            slide_id = doc.data()['slide']['active']['ids']['slide'];
+            update_slide();
 
             let views = doc.data()['views']
             views = Object.keys(views).length;
@@ -193,11 +196,11 @@
 
         });
 
-        function update_slide(slide_type, lecture_id, slide_id){
+        function update_slide(){
+            console.log(lecture_id, slide_id)
             let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
             $.post('{% url 'auditor:presentation_play' properties.short_id_num %}',{
                 option: 'show_slide',
-                slide_type: slide_type,
                 lecture_id: lecture_id,
                 slide_id: slide_id,
                 csrfmiddlewaretoken: csrfmiddlewaretoken,
@@ -205,7 +208,7 @@
                 console.log(data_raw)
                 $('main > article > .answers').html(data_raw)
             }).fail(()=>{
-                console.log('fail')
+                console.log('fail :/')
             });
         }
 
