@@ -8,6 +8,7 @@
           step: 1,
           slide: function( event, ui ) {
             $( "#slider_1to5_slider > span" ).text( ui.value );
+            $( "#slider_1to5_slider" ).val( ui.value );
           }
         });
         $( "#slider_1to5_slider > span" ).text( $( "#slider_1to5_slider" ).slider( "value" ) );

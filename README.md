@@ -29,16 +29,11 @@ Od prototypu dodałem podgląd slajdu (na razie “tak / nie”) oraz odpowiedzi
 - [x] [LOGIN & REGISTER] – **REGISTER**
   - [x] google reCAPTCHA
 - [x] [LOGIN & REGISTER] – **LOGIN**
-- [ ] [LOGIN & REGISTER] – **if wrong email, wrong error**
-- [ ] [LOGIN & REGISTER] – **live check if email exist**
-- [ ] [LOGIN & REGISTER] – "Co Najmniej 1 znak specjalny (!, @, #, $, …)" **Done, to delete❗️**
 - [x] [PANEL] – **Settings**
   - [x] change name
   - [x] change email
   - [x] change password
 - [x] [PANEL] – logout
-- [ ] [PANEL] – **hide / extend left menu**
-- [ ] [PANEL] – **footer with alpha looking bad when something is scrollable in main**
 - [x] [SLIDE EDIT] – **Shows slide properties, after click on one**
 - [x] [SLIDE EDIT] – **Update project title**
 - [x] [SLIDE EDIT] – **Update slide properties**
@@ -61,13 +56,13 @@ Od prototypu dodałem podgląd slajdu (na razie “tak / nie”) oraz odpowiedzi
 - [ ] [SLIDE EDIT] – **slide preview**
 - [ ] [SLIDE EDIT] – **With Add/Remove change active slide/lecture properties edit**
 - [x] [PRESENTATION] – **start**
-- [ ] [PRESENTATION] – **UI**
+- [x] [PRESENTATION] – **UI**
   - [x] footer
   - [x] qr section
-  - [ ] slide section
+  - [x] slide section
 - [ ] [PRESENTATION] – **other slides**
   - [x] TAK / NIE
-  - [ ] 1-2-3-4-5 (slider)
+  - [x] 1-2-3-4-5 (slider)
   - [ ] Text
 - [x] [PRESENTATION] – **is open** (so other can join to watch)
 - [x] [PRESENTATION] – **sent data** (for spectators)
@@ -79,7 +74,7 @@ Od prototypu dodałem podgląd slajdu (na razie “tak / nie”) oraz odpowiedzi
   - [x] 1-2-3-4-5 (slider)
   - [x] Text
 - [x] [SPECTATOR] – **Send views**
-- [ ] [SPECTATOR] – **waiting screen** (for next slide after voted)
+- [ ] [SPECTATOR] – **inactiv presentation ...**
 
 ## 📆 Timetable
 
@@ -88,9 +83,9 @@ Od prototypu dodałem podgląd slajdu (na razie “tak / nie”) oraz odpowiedzi
 | 12.03.2020 | Raport I (Project plan)       |   ✅   |
 | 23.04.2020 | Raport II (Project status)    |   ✅   |
 | 21.05.2020 | Prototype                     |   ✅   |
-| 28.05.2020 | Raport III (Prototype update) |   📝   |
-| 04.06.2020 | Submission of the project     |   🕐   |
-| 18.06.2020 | Project presentation          |   🕒   |
+| 28.05.2020 | Raport III (Prototype update) |   ✅   |
+| 04.06.2020 | Submission of the project     |   📝   |
+| 18.06.2020 | Project presentation          |   🕐   |
 
 ## 📚 Used libraries
 

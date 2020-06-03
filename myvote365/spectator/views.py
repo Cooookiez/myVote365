@@ -62,6 +62,29 @@ def presentation_show(request, short_id_num):
                 })
                 return HttpResponse('ok')
 
+        elif option == 'send_answer_slider_1to5':
+            answer = int(request.POST.get('answer'))
+            print(f'ANSWER:\t{answer}({type(answer)})')
+            presentation_id = get_ids_by_short_id_num(short_id_num)['presentation_id']
+            lecture_id = request.POST.get('lecture_id')
+            slide_id = request.POST.get('slide_id')
+            fing_id = request.POST.get('fing_id')
+
+            answer_ref = db \
+                .collection('presentations').document(presentation_id) \
+                .collection('lectures').document(lecture_id) \
+                .collection('slides').document(slide_id) \
+                .collection('answers').document(fing_id)
+            if answer not in [1, 2, 3, 4, 5]:
+                return HttpResponse('no ans')
+            else:
+                answer_ref.set({
+                    'answer': answer,
+                })
+                return HttpResponse('ok')
+
+
+
 
         else:
             return HttpResponse('errro ?')

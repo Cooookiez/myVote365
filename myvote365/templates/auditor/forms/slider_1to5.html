@@ -1,14 +1,8 @@
 
 <article data-question-type="slide_1to5">
 
-    <header class="slide_1to5_avg_text">70%</header>
+    <header class="slide_1to5_avg_text">{{ avg }}</header>
 
-    <div class="slide_1to5_avg progress_bar" style='--avg: 70%'></div>
+    <div class="slide_1to5_avg_progress_bar" style='--avg: {{ percent }}%'></div>
 
 </article>
-
-<script>
-    setTimeout(()=>{
-        update_slide();
-    }, 5000);
-</script>

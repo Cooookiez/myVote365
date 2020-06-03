@@ -1031,11 +1031,7 @@ def presentation_play(request, short_id_num):
                 # YES / NO
                 if slide_type == 'yesno':
                     print('inside yesno')
-                    answers_ref = db\
-                        .collection('presentations').document(presentation_id)\
-                        .collection('lectures').document(lecture_id)\
-                        .collection('slides').document(slide_id)\
-                        .collection('answers')
+                    answers_ref = slide_ref.collection('answers')
                     # get all answers and count
                     answers = answers_ref.get()
                     count_answers = 0
@@ -1065,6 +1061,34 @@ def presentation_play(request, short_id_num):
                 # SLIDER 1 TO 5
                 elif slide_type == 'slider_1to5':
                     print('inside slider_1to5')
+                    answers_ref = slide_ref.collection('answers')
+                    answers = answers_ref.get()
+                    answers_tab = []
+                    # download answers
+                    for answer in answers:
+                        answer_ref = answers_ref.document(answer.id)
+                        ans = answer_ref.get().to_dict()['answer']
+                        answers_tab.append(ans)
+
+                    # find avg
+                    avg = 0
+                    index = 0
+                    for ans in answers_tab:
+                        avg += int(ans)
+                        index += 1
+                    avg /= index
+                    print(f'AVERAGE: {avg}')
+                    # turn avg into percent (counting form 1, NOT 0)
+                    percent = (avg - 1) / (5 - 1)
+                    percent *= 100
+                    print(f'percent: {percent}')
+                    context = {
+                        'avg': round(avg, 2),
+                        'percent': round(percent, 2),
+                        'lecture_id': lecture_id,
+                        'slide_id': slide_id,
+                        'slide_type': slide_type,
+                    }
                     return render(request, 'auditor/forms/slider_1to5.html', context=context)
 
                 # TEXT

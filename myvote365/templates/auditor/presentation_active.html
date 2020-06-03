@@ -61,9 +61,13 @@
 
             $('#controls-full-screen-toggle').click(function(){ toggleFulscreen(); })
 
-            // send active slide every 5s to db
+            // send active slide every 10m to db
             send_active_slide_to_db();
             every_n_seconds_send_presence_to_db(10*60);
+
+            setInterval(()=>{
+                update_slide();
+            }, 5000)
 
         }); // jQ END
 
