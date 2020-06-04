@@ -5,11 +5,17 @@
     <meta charset="UTF-8">
     <title>Title</title>
     {% include "head.html" %}
-    <title>Tytuł – 1A2B | myVote365</title>
+    <title>Tytuł – {{ short_id_num }} | myVote365</title>
+    <link rel="stylesheet" href="{% static 'css/spectator_inactive.css' %}">
 </head>
 <body>
 
-<h1>inactive</h1>
+<h1>Prezentacja {{ short_id_num }} nie jest odpalona</h1>
+<script>
+
+    setTimeout(()=>{ location.reload(); }, 10000)
+
+</script>
 
 </body>
 </html>

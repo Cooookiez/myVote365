@@ -74,7 +74,7 @@ Od prototypu dodałem podgląd slajdu (na razie “tak / nie”) oraz odpowiedzi
   - [x] 1-2-3-4-5 (slider)
   - [x] Text
 - [x] [SPECTATOR] – **Send views**
-- [ ] [SPECTATOR] – **inactiv presentation ...**
+- [x] [SPECTATOR] – **inactiv presentation ...**
 
 ## 📆 Timetable
 

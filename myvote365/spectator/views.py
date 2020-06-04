@@ -102,9 +102,6 @@ def presentation_show(request, short_id_num):
             })
             return HttpResponse('ok')
 
-
-
-
         else:
             return HttpResponse('errro ?')
             # return render(request, 'spectator/forms/yesno.html')
@@ -135,7 +132,9 @@ def presentation_show(request, short_id_num):
 
             # presentation is inactive
             if last_log < lowest_expect_time:
-                return render(request, 'spectator/presentation_inactive.html')
+                return render(request, 'spectator/presentation_inactive.html', context={
+                    'short_id_num': short_id_num,
+                })
             # presentation is active
             else:
                 return render(request, 'spectator/presentation_active.html', context={
