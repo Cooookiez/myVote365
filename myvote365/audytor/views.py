@@ -1039,8 +1039,8 @@ def presentation_play(request, short_id_num):
                         count_answers += 1
                     # if 0 end with 50 / 50
                     if count_answers <= 0:
-                        yes_percent = 10
-                        no_percent = 90
+                        yes_percent = 50
+                        no_percent = 50
                     # else get answers with yes
                     else:
                         count_answer_yes = 0
@@ -1076,24 +1076,44 @@ def presentation_play(request, short_id_num):
                     for ans in answers_tab:
                         avg += int(ans)
                         index += 1
-                    avg /= index
-                    print(f'AVERAGE: {avg}')
-                    # turn avg into percent (counting form 1, NOT 0)
-                    percent = (avg - 1) / (5 - 1)
-                    percent *= 100
-                    print(f'percent: {percent}')
-                    context = {
-                        'avg': round(avg, 2),
-                        'percent': round(percent, 2),
-                        'lecture_id': lecture_id,
-                        'slide_id': slide_id,
-                        'slide_type': slide_type,
-                    }
+                    if index == 0:
+                        context = {
+                            'avg': 0,
+                            'percent': 50,
+                            'lecture_id': lecture_id,
+                            'slide_id': slide_id,
+                            'slide_type': slide_type,
+                        }
+                    else:
+                        avg /= index
+                        print(f'AVERAGE: {avg}')
+                        # turn avg into percent (counting form 1, NOT 0)
+                        percent = (avg - 1) / (5 - 1)
+                        percent *= 100
+                        print(f'percent: {percent}')
+                        context = {
+                            'avg': round(avg, 2),
+                            'percent': round(percent, 2),
+                            'lecture_id': lecture_id,
+                            'slide_id': slide_id,
+                            'slide_type': slide_type,
+                        }
                     return render(request, 'auditor/forms/slider_1to5.html', context=context)
 
                 # TEXT
                 elif slide_type == 'text':
                     print('inside text')
+                    answers_ref = slide_ref.collection('answers')
+                    # get all answers and count
+                    answers = answers_ref.get()
+                    texts = []
+                    for answer in answers:
+                        texts.append(answers_ref.document(answer.id).get().to_dict()['answer'])
+
+                    context = {
+                        'texts': texts,
+                    }
+
                     return render(request, 'auditor/forms/text.html', context=context)
 
                 else:
@@ -1188,6 +1208,11 @@ def presentation_play(request, short_id_num):
                         i_lecture += 1
                         if str(i_lecture) not in slides_tmp.keys():
                             end_of_lectures = True
+
+                    print('\n\nslides_no_to_id')
+                    print(slides_no_to_id)
+                    print()
+                    print()
 
                     context = {
                         'author': {

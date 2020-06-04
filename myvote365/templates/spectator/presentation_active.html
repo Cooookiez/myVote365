@@ -143,13 +143,16 @@
                         break;
 
                     case 'slider_1to5':
-                        slider_1to5_val = $( "#slider_1to5_slider" ).val();
                         console.log('slider_1to5')
+                        slider_1to5_val = $( "#slider_1to5_slider" ).val();
                         send_slider_1to5(slider_1to5_val)
                         break;
 
                     case 'text':
                         console.log('text')
+                        text_val = $('#text_val').val()
+                        console.log(text_val)
+                        send_text(text_val)
                         break;
 
                     default:
@@ -189,6 +192,26 @@
             let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
             $.post('{% url 'spectator:presentation' short_id_num %}',{
                 option: 'send_answer_slider_1to5',
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+                answer: ans,
+                lecture_id: ids.lecture,
+                slide_id: ids.slide,
+                fing_id: fing_id,
+            }).done((data_raw)=>{
+                console.log(data_raw)
+            }).fail(()=>{
+                console.log('nini')
+            });
+        }
+
+        function send_text(ans){
+            console.log(ans)
+            let slide_no_cur_txt = slide_no.cur + "";
+            answered_slides[slide_no_cur_txt] = true;
+            change_submit_disable();
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'spectator:presentation' short_id_num %}',{
+                option: 'send_answer_text',
                 csrfmiddlewaretoken: csrfmiddlewaretoken,
                 answer: ans,
                 lecture_id: ids.lecture,

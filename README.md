@@ -60,10 +60,10 @@ Od prototypu dodałem podgląd slajdu (na razie “tak / nie”) oraz odpowiedzi
   - [x] footer
   - [x] qr section
   - [x] slide section
-- [ ] [PRESENTATION] – **other slides**
+- [x] [PRESENTATION] – **other slides**
   - [x] TAK / NIE
   - [x] 1-2-3-4-5 (slider)
-  - [ ] Text
+  - [x] Text
 - [x] [PRESENTATION] – **is open** (so other can join to watch)
 - [x] [PRESENTATION] – **sent data** (for spectators)
 - [x] [PRESENTATION] – **recive views**

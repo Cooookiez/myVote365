@@ -83,6 +83,25 @@ def presentation_show(request, short_id_num):
                 })
                 return HttpResponse('ok')
 
+        elif option == 'send_answer_text':
+            answer = str(request.POST.get('answer')).strip()
+            print(f'ANSWER:\t{answer}({type(answer)})')
+            presentation_id = get_ids_by_short_id_num(short_id_num)['presentation_id']
+            lecture_id = request.POST.get('lecture_id')
+            slide_id = request.POST.get('slide_id')
+            fing_id = request.POST.get('fing_id')
+
+            answer_ref = db \
+                .collection('presentations').document(presentation_id) \
+                .collection('lectures').document(lecture_id) \
+                .collection('slides').document(slide_id) \
+                .collection('answers').document(fing_id)
+
+            answer_ref.set({
+                'answer': answer,
+            })
+            return HttpResponse('ok')
+
 
 
 

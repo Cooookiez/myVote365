@@ -134,6 +134,30 @@ body{
                             }
 
                         }
+                        
+                        &[data-question-type=text]{
+                            
+                            width: 100%;
+                            display: flex;
+                            flex-wrap: wrap;
+                            justify-content: flex-start;
+                            align-items: flex-start;
+                            align-content: flex-start;
+
+                            &>.single_answer{
+
+                                width: 300px;
+                                background-color: $color-dark;
+                                padding: 10px;
+                                margin: 10px;
+                                color: $color-light-1;
+                                font-weight: 500;
+                                font-size: 24px;
+                                text-align: justify;
+
+                            }
+
+                        }
 
                     }
 
