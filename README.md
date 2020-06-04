@@ -22,7 +22,20 @@ Video podglądowe co jest już zrobione:
 ### Raport III
 
 Od prototypu dodałem podgląd slajdu (na razie “tak / nie”) oraz odpowiedzi dla niego, plus sporo poprawek i usprawnień
-![myVote365 – youtube video – raport II](README_media/raport-iii-phone-desktop.png)
+
+![slide yes / no](README_media/Raport%20III/raport-iii-phone-desktop.png)
+
+### Oddanie projektu
+
+Dokończyłem resztę slidów aby był podgląd podczas pokazu
+
+![slide slider 1 to 5](README_media/Oddanie%20projektu/oddanie_slider_1to5.png)
+![slide text](README_media/Oddanie%20projektu/oddanie_text.png)
+
+Oraz podczas edytowania (tutaj jest podgląd z defaultowymi danymi)
+![slide yes / no](README_media/Oddanie%20projektu/Sizzy-Desktop%20localhost%2004Jun%2019.10-2.png)
+![slide slider 1 to 5](README_media/Oddanie%20projektu/Sizzy-Desktop%20localhost%2004Jun%2019.10-1.png)
+![slide text](README_media/Oddanie%20projektu/Sizzy-Desktop%20localhost%2004Jun%2019.10.png)
 
 ## 📝 To Do List
 
@@ -83,7 +96,7 @@ Od prototypu dodałem podgląd slajdu (na razie “tak / nie”) oraz odpowiedzi
 | 23.04.2020 | Raport II (Project status)    |   ✅   |
 | 21.05.2020 | Prototype                     |   ✅   |
 | 28.05.2020 | Raport III (Prototype update) |   ✅   |
-| 04.06.2020 | Submission of the project     |   📝   |
+| 04.06.2020 | Submission of the project     |   ✅   |
 | 18.06.2020 | Project presentation          |   🕐   |
 
 ## 📚 Used libraries
