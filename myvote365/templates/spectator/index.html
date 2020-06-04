@@ -1,0 +1,103 @@
+<!doctype html>
+{% load staticfiles %}
+<html lang="pl">
+<head>
+    {% include "head.html" %}
+    <title>myVote365</title>
+    <link rel="stylesheet" href="{% static 'css/spectator_index.css' %}">
+    <script src="https://www.google.com/recaptcha/api.js?render=6LekELYUAAAAAD0T6UTe8hN9tTeFNZ9JEDTR25H1"></script>
+    <script>
+
+        var reChaptcha_token = null;
+        grecaptcha.ready(function() {
+            generateReChaptchaToken()
+        });
+
+        $(function () {
+
+            $('#presentation_short_id_num').keyup(function(){
+                if( $(this).val().length == 4 ){
+                    submit_button_enable();
+                }else{
+                    submit_button_disable();
+                }
+            });
+
+            $('#find_presentation > form').submit(function(){
+                short_id = $('#presentation_short_id_num').val();
+                redirect_to__if_id_valid(short_id);
+                return false;
+            });
+            $('label[for=input_and_go_submit]').click(function(){
+                short_id = $('#presentation_short_id_num').val();
+                redirect_to__if_id_valid(short_id);
+                return false;
+            });
+
+        }); // jQ END
+
+        function generateReChaptchaToken() {
+            grecaptcha.execute('6LekELYUAAAAAD0T6UTe8hN9tTeFNZ9JEDTR25H1', {action: 'register'}).then(function (token) {
+                reChaptcha_token = token
+            });
+        }
+
+        function submit_button_enable(){
+            $('#presentation_short_id_num').attr('data-valid', 'true');
+        }
+
+        function submit_button_disable(){
+            $('#presentation_short_id_num').attr('data-valid', 'false');
+        }
+
+        function redirect_to__if_id_valid(short_id){
+            if( $('#presentation_short_id_num').attr('data-valid') == 'true' ){
+                window.location.href = "/" + short_id + "/";
+            }
+        }
+
+    </script>
+</head>
+<body>
+
+<main>
+
+    <article id="find_presentation">
+
+        <form action="#">
+
+            <header for="presentation_short_id_num">Wpisz podany kod</header>
+
+            <section id="input_and_go">
+
+                <input
+                    id="presentation_short_id_num"
+                    type="text"
+                    autofocus
+                    maxlength="4"
+                    minlength="4"
+                    required
+                    placeholder="A1B2"
+                    data-valid="false"
+                >
+
+                <label for="input_and_go_submit">
+                    <i class="ico far fa-arrow-right"></i>
+                </label>
+
+                <input id="input_and_go_submit" type="submit" hidden>
+
+            </section>
+
+        </form>
+
+    </article>
+
+</main>
+
+<footer>
+    <footer id="author">Author: <span>Krzysztof Kukiz</span> (<a href="mailto:kukizk@gmail.com">kukizk@gmail.com</a>) &copy; 2020</footer>
+</footer>
+
+</body>
+</html>

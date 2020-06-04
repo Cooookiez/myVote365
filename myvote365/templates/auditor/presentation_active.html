@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="pl">
+<head>
+    {% include "head.html" %}
+    <title>| ▶ |️ {{ properties.title }} –– {{ properties.short_id_num }} | myVote365</title>
+    <link rel="stylesheet" href="{% static 'css/presentation_active.css' %}">
+    <link rel="shortcut icon" href="{% static 'favicon/ico_play.png' %}" type="image/x-icon">
+    <script src="{% static 'javascript/jquery-3.4.1.min.js' %}"></script>
+    <script src="https://gstatic.com/firebasejs/7.14.3/firebase-app.js"></script>
+    <script src="https://gstatic.com/firebasejs/7.14.3/firebase-firestore.js"></script>
+    <script src="{% static 'javascript/init-firebase.js' %}"></script>
+    <script>
+
+        let slide_no = {
+            'cur': 1,
+            'min': 1,
+            'max': {{ slides.max }},
+        };
+
+        let ids_json = [
+            {% for slide in slides.ids_json %}
+                {
+                    "lecture_id": "{{ slide.lecture_id }}",
+                    "slide_id": "{{ slide.slide_id }}",
+                },
+            {% endfor %}
+        ];
+
+        let is_full_screen = false;
+
+        let lecture_id = null;
+        let slide_id = null;
+
+
+        $(function(){
+            console.log('slides.ids_json:');
+            console.log(ids_json);
+
+            // slides control
+            // by keybord arrows
+            $(document).keydown(function (e) {
+                switch (e.key) {
+                    // next slide
+                    case 'ArrowUp':
+                    case 'ArrowRight':
+                        nextSlide();
+                        break;
+                    // prev slide
+                    case 'ArrowDown':
+                    case 'ArrowLeft':
+                        prevSlide();
+                        break;
+                    default:
+                        break
+                }
+            });
+            // by dom element
+            $('#controls-right').click(function(){ nextSlide(); });
+            $('#controls-left').click(function(){ prevSlide(); });
+
+            $('#controls-full-screen-toggle').click(function(){ toggleFulscreen(); })
+
+            // send active slide every 10m to db
+            send_active_slide_to_db();
+            every_n_seconds_send_presence_to_db(10*60);
+
+            setInterval(()=>{
+                update_slide();
+            }, 5000)
+
+        }); // jQ END
+
+        function nextSlide(){
+
+            if( parseInt(slide_no.cur) + 1 <= parseInt(slide_no.max)){
+                slide_no.cur = parseInt(slide_no.cur) + 1
+            }
+
+            show_slide_numbers()
+        }
+
+        function prevSlide(){
+
+            if( parseInt(slide_no.cur) - 1 >= parseInt(slide_no.min)){
+                slide_no.cur = parseInt(slide_no.cur) - 1
+            }
+
+            show_slide_numbers()
+        }
+
+        function show_slide_numbers(){
+
+            $('#slide-no-all').text(slide_no.max);
+            $('#slide-no-current').text(slide_no.cur);
+            console.log(slide_no.cur)
+            send_active_slide_to_db(slide_no.cur)
+
+        }
+
+        function toggleFulscreen(){
+
+            if( is_full_screen ){
+                is_full_screen = false;
+                closeFullscreen();
+                $('#controls-full-screen-toggle > .ico').removeClass('fa-compress-wide');
+                $('#controls-full-screen-toggle > .ico').addClass('fa-expand-wide');
+            }else{
+                is_full_screen = true;
+                openFullscreen();
+                $('#controls-full-screen-toggle > .ico').removeClass('fa-expand-wide');
+                $('#controls-full-screen-toggle > .ico').addClass('fa-compress-wide');
+            }
+
+        }
+
+        var elem = document.documentElement;
+
+        /* View in fullscreen */
+        function openFullscreen() {
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.mozRequestFullScreen) { /* Firefox */
+                elem.mozRequestFullScreen();
+            } else if (elem.webkitRequestFullscreen) { /* Chrome, Safari and Opera */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE/Edge */
+                elem.msRequestFullscreen();
+            }
+        }
+        /* Close fullscreen */
+        function closeFullscreen() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.mozCancelFullScreen) { /* Firefox */
+                document.mozCancelFullScreen();
+            } else if (document.webkitExitFullscreen) { /* Chrome, Safari and Opera */
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) { /* IE/Edge */
+                document.msExitFullscreen();
+            }
+        }
+
+        function every_n_seconds_send_presence_to_db(n=5){
+            setTimeout(function(){
+                send_presence_to_db()
+                every_n_seconds_send_presence_to_db(n);
+            }, n*1000)
+        }
+        function send_presence_to_db(){
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'auditor:presentation_play' properties.short_id_num %}',{
+                option: 'update_presence',
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done(function(data_raw){
+                data_json = JSON.parse(data_raw)
+                console.log(data_json);
+            }).fail(function(){
+                console.log('send active slide failed');
+            })
+        }
+
+        function send_active_slide_to_db(){
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'auditor:presentation_play' properties.short_id_num %}',{
+                option: 'update_active_slide',
+                presentation: {
+                    title: '{{ properties.title }}',
+                    short_id_num: '{{ properties.short_id_num }}',
+                },
+                slide: {
+                    active: {
+                        no: slide_no.cur,
+                        ids: ids_json[slide_no.cur-1]
+                    },
+                    max: {{ slides.max }},
+                },
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done(function(data_raw){
+                data_json = JSON.parse(data_raw)
+                console.log(data_json);
+            }).fail(function(){
+                console.log('send active slide failed');
+            });
+        }
+
+        // display active slide
+        db = firebase.firestore();
+        db.collection('presentations_active').doc('{{ properties.presentation_id }}').onSnapshot(doc=>{
+
+            $('.slide-title').each(function(i){ $(this).text(doc.data()['slide']['active']['title']) });
+            {#let slide_type = doc.data()['slide']['active']['type'];#}
+            lecture_id = doc.data()['slide']['active']['ids']['lecture'];
+            slide_id = doc.data()['slide']['active']['ids']['slide'];
+            update_slide();
+
+            let views = doc.data()['views']
+            views = Object.keys(views).length;
+            $('.views').each(function(i){ $(this).text(views) });
+
+        });
+
+        function update_slide(){
+            console.log(lecture_id, slide_id)
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'auditor:presentation_play' properties.short_id_num %}',{
+                option: 'show_slide',
+                lecture_id: lecture_id,
+                slide_id: slide_id,
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done((data_raw)=>{
+                console.log(data_raw)
+                $('main > article > .answers').html(data_raw)
+            }).fail(()=>{
+                console.log('fail :/')
+            });
+        }
+
+    </script>
+</head>
+<body>
+
+    {% csrf_token %}
+
+    <main>
+
+        <article>
+
+            <header>
+                <div class="presentation-title slide-title"></div>
+                <div class="hr"></div>
+            </header>
+
+            <div class="answers">
+d
+            </div>
+
+        </article>
+
+    </main>
+
+    <aside>
+
+        <p>Zeskanuj ten kod</p>
+        <img src="/media/qr-codes/{{ properties.short_id_num }}.svg" alt="{{ properties.short_id_num }} qr code">
+        <p>lub wejdź na</p>
+        <h2>myVote365.com</h2>
+        <p>i wpisz</p>
+        <h1>{{ properties.short_id_num }}</h1>
+
+    </aside>
+
+    <footer>
+
+        <article id="viewers">
+            <span class="viewers_ico">
+                <i class="ico far fa-users"></i>
+            </span>
+            <span class="viewers_count views">{{ views }}</span>
+        </article>
+
+        <article id="autor">
+            Prezentacja stworzona przez: {{ author.name }}
+        </article>
+
+        <article id="controls">
+            <div id="controls-right">
+                <i class="ico far fa-chevron-right"></i>
+            </div>
+            <div id="controls-slide-no">
+                <div id="slide-no-current">1</div>
+                <div id="controls-slide-no-separator">/</div>
+                <div id="slide-no-all">{{ slides.max }}</div>
+            </div>
+            <div id="controls-left">
+                <i class="ico far fa-chevron-left"></i>
+            </div>
+            <div id="controls-full-screen-toggle">
+                <i class="ico far fa-expand-wide"></i>
+            </div>
+        </article>
+
+    </footer>
+
+</body>
+</html>

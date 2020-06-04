@@ -1,0 +1,263 @@
+<!doctype html>
+{% load staticfiles %}
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    {% include "head.html" %}
+    <title>Tytuł – 1A2B | myVote365</title>
+    <link rel="stylesheet" href="{% static 'css/spectator_presentation_active.css' %}">
+    <script src="https://gstatic.com/firebasejs/7.14.3/firebase-app.js"></script>
+    <script src="https://gstatic.com/firebasejs/7.14.3/firebase-firestore.js"></script>
+    <script src="{% static 'javascript/init-firebase.js' %}"></script>
+    <script src="{% static 'javascript/fingerprint2.js' %}"></script>
+    <script>
+
+        let fing_id = null;
+
+        let fingerprintReport = function(){
+            Fingerprint2.get(function(components){
+                fing_id = Fingerprint2.x64hash128(components.map(function(pair){return pair.value}).join(), 31);
+                console.log('fing_id', fing_id);
+                setTimeout(function(){ send_view(fing_id) }, 1000)
+            });
+        }
+
+        if (window.requestIdleCallback) {
+            cancelId = requestIdleCallback(fingerprintReport);
+        } else {
+            setTimeout(function () {
+                cancelId = requestIdleCallback(fingerprintReport);
+            }, 500)
+        }
+
+        function send_view(fingerprint_id){
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'spectator:presentation' short_id_num %}',{
+                option: 'send_view',
+                fingerprint_id: fingerprint_id,
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done((data_raw)=>{
+                console.log(data_raw);
+                console.log('fin ye')
+            }).fail(()=>{
+                console.log('fin no')
+            })
+        }
+
+        let slide_no = {
+            'cur': null,
+            'min': 1,
+            'max': null,
+            'last': -1
+        };
+
+        let ids = {
+            lecture: null,
+            slide: null,
+        }
+
+        let slide_type = null;
+
+        let answered_slides = {}
+
+        db = firebase.firestore();
+        db.collection('presentations_active').doc('{{doc_id}}').onSnapshot(doc=>{
+            {#console.log(doc.data());#}
+
+            $('.short-id').each(function(i){ $(this).text(doc.data()['presentation']['short_id_num']) });
+            $('.presentation-title').each(function(i){ $(this).text(doc.data()['presentation']['title']) })
+
+            $('.slide-title').each(function(i){ $(this).text(doc.data()['slide']['active']['title']) });
+
+            ids.lecture = doc.data()['slide']['active']['ids']['lecture']
+            ids.slide = doc.data()['slide']['active']['ids']['slide']
+
+            slide_no.cur = doc.data()['slide']['active']['no']
+            $('.slide-no').each(function(i){ $(this).text(slide_no.cur) });
+
+            slide_type = doc.data()['slide']['active']['type']
+            console.log(slide_no.cur, slide_no.last)
+
+            if(slide_no.cur != slide_no.last ){
+                console.log('slide refresh')
+                slide_info = {
+                    'type': slide_type,
+                }
+                let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+                $.post('{% url 'spectator:presentation' short_id_num %}',{
+                    option: 'get_slide_form',
+                    slide_info: slide_info,
+                    type: slide_type,
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+                }).done((data_raw)=>{
+                    console.log(data_raw);
+                    $('#body > .answer').html(data_raw);
+                }).fail(()=>{
+                    console.log('error')
+                })
+
+            }
+            slide_no.last = slide_no.cur
+
+
+            $('.slide-type').each(function(i){ $(this).text(slide_type) });
+
+            slide_no.max = doc.data()['slide']['max']
+            $('.slide-max').each(function(i){ $(this).text(slide_no.max) });
+
+            $('.slide-no').each(function(i){ $(this).text(doc.data()['slide']['active']['no']) });
+
+            // disable submit if already answered
+            change_submit_disable()
+
+        })
+
+        function change_submit_disable(){
+
+            let slide_no_cur_txt = slide_no.cur + ""
+            if(answered_slides[slide_no_cur_txt] == true){
+                $('#user_vote > form > article[for=submit]').attr('data-input-disabled', true);
+            }else{
+                $('#user_vote > form > article[for=submit]').attr('data-input-disabled', false);
+            }
+
+        }
+
+        $(function(){
+            $('#user_vote > form').submit(function(){
+
+                console.log('submit')
+
+                switch (slide_type) {
+
+                    case 'yesno':
+                        console.log('yesno')
+                        if( $('#radio_yes_no__yes').is(':checked') ){
+                           send_yes_no('yes')
+                        }else if ( $('#radio_yes_no__no').is(':checked') ){
+                           send_yes_no('no')
+                        }else{
+                            // not checked
+                        }
+                        break;
+
+                    case 'slider_1to5':
+                        console.log('slider_1to5')
+                        slider_1to5_val = $( "#slider_1to5_slider" ).val();
+                        send_slider_1to5(slider_1to5_val)
+                        break;
+
+                    case 'text':
+                        console.log('text')
+                        text_val = $('#text_val').val()
+                        console.log(text_val)
+                        send_text(text_val)
+                        break;
+
+                    default:
+                        break;
+
+                }
+                return false;
+            })
+        }); // jQ END
+
+        function send_yes_no(ans){
+            console.log(ans);
+            let slide_no_cur_txt = slide_no.cur + "";
+            answered_slides[slide_no_cur_txt] = true;
+            change_submit_disable();
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'spectator:presentation' short_id_num %}',{
+                option: 'send_answer_yes_no',
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+                answer: ans,
+                lecture_id: ids.lecture,
+                slide_id: ids.slide,
+                fing_id: fing_id,
+            }).done((data_raw)=>{
+                console.log(data_raw)
+            }).fail(()=>{
+                console.log('nini')
+            });
+
+        }
+
+        function send_slider_1to5(ans){
+            console.log(ans)
+            let slide_no_cur_txt = slide_no.cur + "";
+            answered_slides[slide_no_cur_txt] = true;
+            change_submit_disable();
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'spectator:presentation' short_id_num %}',{
+                option: 'send_answer_slider_1to5',
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+                answer: ans,
+                lecture_id: ids.lecture,
+                slide_id: ids.slide,
+                fing_id: fing_id,
+            }).done((data_raw)=>{
+                console.log(data_raw)
+            }).fail(()=>{
+                console.log('nini')
+            });
+        }
+
+        function send_text(ans){
+            console.log(ans)
+            let slide_no_cur_txt = slide_no.cur + "";
+            answered_slides[slide_no_cur_txt] = true;
+            change_submit_disable();
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'spectator:presentation' short_id_num %}',{
+                option: 'send_answer_text',
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+                answer: ans,
+                lecture_id: ids.lecture,
+                slide_id: ids.slide,
+                fing_id: fing_id,
+            }).done((data_raw)=>{
+                console.log(data_raw)
+            }).fail(()=>{
+                console.log('nini')
+            });
+        }
+
+    </script>
+</head>
+<body>
+
+    {% csrf_token %}
+
+    <header id="presentation_id_name">
+        <span class="short-id"></span> – <span class="presentation-title"></span>
+    </header>
+
+    <main>
+
+        <article id="user_vote">
+            <form>
+                <article id="body">
+                    <header>
+                        <span class="slide-title"></span>
+                        <span class="hr"></span>
+                    </header>
+                    <section class="answer" data-type="">
+
+                    </section>
+                    <section class="meta">[<span class="slide-type"></span>] | slide <span class="slide-no"></span> / <span class="slide-max"></span></section>
+                </article>
+                <article for="submit" data-input-disabled="false">
+                    <label for="submit">Wyślij</label>
+                    <input id="submit" type="submit" hidden>
+                </article>
+            </form>
+        </article>
+
+    </main>
+
+    <footer>created by</footer>
+
+</body>
+</html>

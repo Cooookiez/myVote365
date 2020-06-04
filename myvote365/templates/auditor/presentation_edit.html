@@ -1,0 +1,557 @@
+
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="pl">
+<head>
+    {% include "head.html" %}
+    <title>myVote365</title>
+    <link rel="stylesheet" href="{% static 'css/presentation_edit.css' %}">
+    <script src="{% static 'fontawesome-pro-5.10.2-web/js/all.js' %}"></script>
+    <script>
+        var lectures_json = {{ lectures_json | safe }};
+        var GLOBAL_save_counter = {
+            'in_edits': 0,
+            'warnings': [],
+            'errors': [],
+        }
+
+        $(function(){
+
+            update_web_title('{{ properties.title }}');
+            change_save_status();
+            update_properties(lectures_json[0], lectures_json[0]['slides'][0])
+
+            // put lectures form received json to html
+            make_lectures(lectures_json);
+
+            // click slide
+            $('#slides-panel').on('click', 'section.presentation-panels > section.slide', function(){
+                let $this = $(this);
+
+                let lecture_position = parseInt( $this.parent().parent().attr('data-position') );
+                let slide_position = parseInt( $this.attr('data-position') );
+
+                let lecture = lectures_json[lecture_position];
+                let slide = lecture.slides[slide_position];
+
+                update_properties(lecture, slide)
+                update_preview(lecture_position, slide_position)
+                $('#slide-preview > header').text(slide['properties']['title'])
+            });
+
+            // UPDATES
+
+            // update presentation title
+            $('#navigation-presentation-title > input').keyup(function(){
+                GLOBAL_save_counter.in_edits++;
+                change_save_status();
+                let new_title = $(this).val().trim();
+                let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+                update_web_title(new_title);
+                let data = {
+                    option: 'update_presentation_title',
+                    new_title: new_title,
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+                };
+                update_to_db(data, 'update presentation title post fail');
+            });
+
+            // update lecture title
+            $('#property_lecture_title').keyup(function(){
+                GLOBAL_save_counter.in_edits++;
+                change_save_status();
+                let new_title = $(this).val().trim();
+                let lecture_id = $(this).parent().parent().attr('data-lecture-id');
+                let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+                let data = {
+                    option: 'update_lecture_title',
+                    new_title: new_title,
+                    lecture_id: lecture_id,
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+                };
+                update_to_db(data, 'update lecture title post fail');
+            });
+
+            // update lecture position
+            $('#property_lecture_position').change(function(){
+                GLOBAL_save_counter.in_edits++;
+                change_save_status();
+                $this = $(this);
+                let cur_position = $this.attr('data-cur-position');
+                let new_position = $this.val();
+                let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+                let data = {
+                    option: 'update_lecture_position',
+                    cur_position: cur_position,
+                    new_position: new_position,
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+                };
+                $.post('{% url 'auditor:presentation_edit' properties.short_id_num %}', data).done(function(response_raw){
+                    $this.attr('data-cur-position', new_position);
+                    let response_json_tmp = JSON.parse(response_raw);
+                    save_response_to_status_change(response_json_tmp);
+                    change_save_status();
+                    lectures_json = JSON.parse(response_json_tmp[0].lectures_json);
+                    make_lectures(lectures_json);
+                }).fail(function(){
+                    GLOBAL_save_counter.errors.push({
+                        'error_type': 'update lecture position post fail',
+                    })
+                });
+            });
+
+            // update slide title
+            $('#property_slide_title').keyup(function(){
+                GLOBAL_save_counter.in_edits++;
+                change_save_status();
+                let new_title = $(this).val().trim();
+                let lecture_id = $(this).parent().parent().attr('data-lecture-id');
+                let slide_id = $(this).parent().parent().attr('data-slide-id');
+                let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+                let data = {
+                    option: 'update_slide_title',
+                    new_title: new_title,
+                    lecture_id: lecture_id,
+                    slide_id: slide_id,
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+                };
+                update_to_db(data, 'update slide title post fail');
+            });
+
+            // update slide type
+            $('#property_slide_type').change(function(){
+                GLOBAL_save_counter.in_edits++;
+                change_save_status();
+                let new_type = $(this).val();
+                let lecture_id = $(this).parent().parent().attr('data-lecture-id');
+                let slide_id = $(this).parent().parent().attr('data-slide-id');
+                let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+                let data = {
+                    option: 'update_slide_type',
+                    new_type: new_type,
+                    lecture_id: lecture_id,
+                    slide_id: slide_id,
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+                };
+                update_to_db(data, 'update slide type post fail');
+            });
+
+            // update slide position
+            $('#property_slide_position').change(function(){
+                GLOBAL_save_counter.in_edits++;
+                change_save_status();
+                let $this = $(this);
+                let cur_position = $this.attr('data-cur-position');
+                let new_position = $this.val();
+                let lecture_id = $this.parent().parent().attr('data-lecture-id');
+                let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+                let data = {
+                    option: 'update_slide_position',
+                    cur_position: cur_position,
+                    new_position: new_position,
+                    lecture_id: lecture_id,
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+                };
+                $.post('{% url 'auditor:presentation_edit' properties.short_id_num %}', data).done(function(response_raw){
+                    $this.attr('data-cur-position', new_position);
+                    let response_json_tmp = JSON.parse(response_raw);
+                    save_response_to_status_change(response_json_tmp);
+                    change_save_status();
+                    lectures_json = JSON.parse(response_json_tmp[0].lectures_json);
+                    make_lectures(lectures_json);
+                }).fail(function(){
+                    GLOBAL_save_counter.errors.push({
+                        'error_type': 'update slide position post fail',
+                    })
+                });
+            });
+
+
+            // ADD SLIDE
+            $('#slides-panel').on('click', '.slide-add', function(){
+                let lecture_position = parseInt( $(this).parent().parent().attr('data-position') );
+                append_slide(lecture_position);
+            });
+            // REMOVE SLIDE
+            $('#slides-panel').on('click', '.delete-slide', function(){
+                let slide_position = parseInt( $(this).parent().attr('data-position') );
+                let lecture_position = parseInt( $(this).parent().parent().parent().attr('data-position') );
+                remove_slide(lecture_position, slide_position);
+            });
+
+            // ADD LECTURE
+            $('#slides-panel').on('click', '.slides-panel-lecture-add', function(){
+                append_lecture();
+            });
+            // REMOVE LECTURE
+            $('#slides-panel').on('click', '.delete-lecture', function(){
+                let lecture_position = $(this).parent().parent().attr('data-position');
+                remove_lecture(lecture_position)
+            })
+
+        }); // jQ end
+
+        function update_to_db(data, error_msg = 'unknown error'){
+            $.post('{% url 'auditor:presentation_edit' properties.short_id_num %}', data).done(function(response_raw){
+                let response_json_tmp = JSON.parse(response_raw);
+                save_response_to_status_change(response_json_tmp);
+                change_save_status();
+                return response_raw
+            }).fail(function(){
+                GLOBAL_save_counter.errors.push({
+                    'error_type': error_msg,
+                })
+            });
+        }
+
+        function save_response_to_status_change(response){
+            for(let i = 0; i < response.length; i++){
+                switch (response[i].type) {
+                    case 'success':
+                        GLOBAL_save_counter.in_edits--;
+                        break;
+                    case 'error':
+                        GLOBAL_save_counter.errors.push(response[i].msg);
+                        break;
+                    case 'warning':
+                        GLOBAL_save_counter.warnings.push(response[i].msg);
+                        break;
+                    default: break;
+                }
+            }
+        }
+
+        function change_save_status(){
+            let msg = '';
+            let type = '';
+            let html_class = '';
+            if( GLOBAL_save_counter.errors.length !== 0 ){
+                // errors
+                msg = 'Some error';
+                type = 'error';
+                html_class = 'ico fas fa-exclamation-circle';
+            }else if( GLOBAL_save_counter.warnings.length !== 0 ){
+                // warnings
+                msg = 'Some Warning';
+                type = 'warning';
+                html_class = 'ico fas fa-exclamation-triangle';
+            }else if( GLOBAL_save_counter.in_edits !== 0 ){
+                // not saved
+                msg = 'Zapisuje...';
+                type = 'in_progress';
+                html_class = 'ico fas fa-spinner fa-pulse';
+            }else{
+                // saved
+                msg = 'Zapisano';
+                type = 'saved';
+                html_class = 'ico fas fa-check-circle';
+            }
+            let prv_type = $('#navigation-saved-status').attr('data-type');
+            if( prv_type !== type){
+                $('#navigation-saved-status > label').text(msg);
+                $('#navigation-saved-status').attr('data-type', type);
+                $('#navigation-saved-status > .ico').attr('class', html_class);
+            }
+        }
+
+        function update_web_title(presentation_title){
+            str = presentation_title + ' –– {{ properties.short_id_num }} | myVote365';
+            $('head > title').text(str)
+        }
+
+        function update_properties(lecture, slide){
+
+            let max_lectures = Object.keys(lectures_json).length;
+            let max_slides = Object.keys(lectures_json[lecture.properties.position].slides).length;
+
+            // lecture
+            $('#property_lecture_title').val(lecture.properties.title);
+            $('#property_lecture_position').val(parseInt(lecture.properties.position)+1);
+            $('#property_lecture_position').attr('data-cur-position', parseInt(lecture.properties.position)+1);
+            $('#properties-lecture').attr('data-lecture-id', lecture.id);
+            $('#property_lecture_position').attr('max', max_lectures);
+            $('#property_lecture_position').attr('min', 1);
+
+            // slide
+            $('#property_slide_title').val(slide.properties.title);
+            $('#property_slide_type').val(slide.properties.type);
+            $('#property_slide_position').val(parseInt(slide.properties.position)+1);
+            $('#property_slide_position').attr('data-cur-position', parseInt(slide.properties.position)+1);
+            $('#properties-slide').attr('data-lecture-id', lecture.id);
+            $('#properties-slide').attr('data-slide-id', slide.id);
+            $('#property_slide_position').attr('max', max_slides);
+            $('#property_slide_position').attr('min', 1);
+
+            // lecture
+            /*
+            $('#property_lecture_title').promise().done(function(){
+                $(this).val(lecture.properties.title);
+            });
+            $('#property_lecture_position').promise().done(function(){
+                $(this).val(parseInt(lecture.properties.position)+1);
+            });
+            $('#property_lecture_position').promise().done(function(){
+                $(this).attr('data-cur-position', parseInt(lecture.properties.position)+1);
+            });
+            $('#property_lecture_position').promise().done(function(){
+                $(this).attr('max', max_lectures);
+            });
+            $('#property_lecture_position').promise().done(function(){
+                $(this).attr('min', 1);
+            });
+            */
+
+            // slide
+            /*
+            $('#property_slide_title').promise().done(function(){
+                $(this).val(slide.properties.title);
+            });
+            $('#property_slide_type').promise().done(function(){
+                $(this).val(slide.properties.type);
+            });
+            $('#property_slide_position').promise().done(function(){
+                $(this).val(parseInt(slide.properties.position)+1);
+            });
+            $('#property_slide_position').promise().done(function(){
+                $(this).attr('data-cur-position', parseInt(slide.properties.position)+1);
+            });
+            $('#properties-slide').promise().done(function(){
+                $(this).attr('data-lecture-id', lecture.id);
+            });
+            $('#property_slide_position').promise().done(function(){
+                $(this).attr('max', max_slides);
+            });
+            $('#property_slide_position').promise().done(function(){
+                $(this).attr('min', 1);
+            });
+            */
+
+        }
+
+        function make_slide(slide){
+            let str2return = "";
+
+            str2return += ' <section class="slide" data-position="' + slide.properties.position + '" data-type="' + slide.properties.type + '" data-id="' + slide.id + '">';
+            str2return += '     <header>' + slide.properties.title + '</header>';
+            str2return += '     <span class="delete-slide ico far fa-trash-alt"></span>';
+            str2return += ' </section>';
+
+            return str2return;
+        }
+
+        function make_lecture(lecture){
+            let str2return = '';
+
+            str2return += ' <article class="slides-panel-presentation" data-position="' + lecture.properties.position + '" data-id="' + lecture.id + '">';
+            str2return += '     <section class="presentation-cointener-info">';
+            str2return += '         <header>' + lecture.properties.title + '</header>';
+            str2return += '         <span class="delete-lecture ico far fa-trash-alt"></span>';
+            str2return += '     </section>';
+            str2return += '     <section class="presentation-panels">';
+            Object.keys(lecture.slides).forEach(function(i){
+                str2return += make_slide(lecture.slides[i])
+            });
+            str2return += '         <section class="slide-add">';
+            str2return += '             <span class="ico far fa-plus"></span>';
+            str2return += '         </section>';
+            str2return += '     </section>';
+            str2return += ' </article>';
+
+            return str2return;
+        }
+        
+        function make_lectures(lectures){
+
+            let str2return = ''
+
+            Object.keys(lectures).forEach(function(i){
+                str2return += make_lecture(lectures[i])
+            });
+
+            str2return += ' <article class="slides-panel-lecture-add">';
+            str2return += '     <span class="ico far fa-plus"></span>';
+            str2return += ' </article>';
+
+            $('aside#slides-panel').html(str2return);
+        }
+
+        function append_slide(lecture_position){
+            GLOBAL_save_counter.in_edits++;
+            change_save_status();
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'auditor:presentation_edit' properties.short_id_num %}',{
+                    option: 'append_slide',
+                    lecture_position: lecture_position,
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done(function(response_raw){
+                let response_json_tmp = JSON.parse(response_raw);
+                save_response_to_status_change(response_json_tmp);
+                change_save_status();
+                if(response_json_tmp[0]['type'] === 'success'){
+                    lectures_json = JSON.parse(response_json_tmp[0]['lectures_json']);
+                    make_lectures(lectures_json)
+                }
+            }).fail(function(){
+                GLOBAL_save_counter.errors.push({
+                    'error_type': 'append slide post error',
+                })
+            });
+        }
+
+        function remove_slide(lecture_position, slide_position){
+            GLOBAL_save_counter.in_edits++;
+            change_save_status();
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'auditor:presentation_edit' properties.short_id_num %}',{
+                option: 'remove_slide',
+                lecture_position: lecture_position,
+                slide_position: slide_position,
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done(function(response_raw){
+                let response_json_tmp = JSON.parse(response_raw);
+                console.log(response_json_tmp);
+                save_response_to_status_change(response_json_tmp);
+                change_save_status();
+                if(response_json_tmp[0]['type'] === 'success'){
+                    lectures_json = JSON.parse(response_json_tmp[0]['lectures_json']);
+                    make_lectures(lectures_json)
+                }
+            }).fail(function(){
+                GLOBAL_save_counter.errors.push({
+                    'error_type': 'append slide post error',
+                })
+            });
+        }
+
+        function append_lecture(){
+            GLOBAL_save_counter.in_edits++;
+            change_save_status();
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'auditor:presentation_edit' properties.short_id_num %}',{
+                    option: 'append_lecture',
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done(function(response_raw){
+                let response_json_tmp = JSON.parse(response_raw);
+                save_response_to_status_change(response_json_tmp);
+                change_save_status();
+                if(response_json_tmp[0]['type'] === 'success'){
+                    lectures_json = JSON.parse(response_json_tmp[0]['lectures_json']);
+                    make_lectures(lectures_json)
+                }
+            }).fail(function(){
+                GLOBAL_save_counter.errors.push({
+                    'error_type': 'append slide post error',
+                })
+            });
+        }
+
+        function remove_lecture(lecture_position){
+            GLOBAL_save_counter.in_edits++;
+            change_save_status();
+            console.log('lecture_position', lecture_position);
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'auditor:presentation_edit' properties.short_id_num %}',{
+                option: 'remove_lecture',
+                lecture_position: lecture_position,
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done(function(response_raw){
+                let response_json_tmp = JSON.parse(response_raw);
+                console.log(response_json_tmp);
+                save_response_to_status_change(response_json_tmp);
+                change_save_status();
+                if(response_json_tmp[0]['type'] === 'success'){
+                    lectures_json = JSON.parse(response_json_tmp[0]['lectures_json']);
+                    make_lectures(lectures_json)
+                }
+            }).fail(function(){
+                GLOBAL_save_counter.errors.push({
+                    'error_type': 'append slide post error',
+                })
+            });
+        }
+
+        function update_preview(lecture_position, slide_position){
+            console.log(lecture_position, slide_position)
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'auditor:presentation_edit' short_id_num %}',{
+                option: 'slide_preview',
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+                lecture_position: lecture_position,
+                slide_position: slide_position,
+            }).done((data_raw)=>{
+                console.log(data_raw)
+                $('#slide-preview > .content').html(data_raw)
+            }).fail(()=>{
+                console.log('nini')
+            });
+        }
+
+    </script>
+</head>
+<body data-short-id-num="{{ properties.short_id_num }}"
+      data-short-id-dec="{{ properties.short_id_dec }}">
+    {% csrf_token %}
+
+    <nav class="navigation">
+        <a href="{% url 'auditor:presentations_list' %}" id="return-to-presentations">
+            <span class="ico far fa-chevron-left"></span>
+            <span class="label">Cofnij</span>
+        </a>
+        <span id="navigation-presentation-title">
+            <input type="text" value="{{ properties.title }}" placeholder="Tytuł prezentacji">
+        </span>
+        <div id="navigation-saved-status" data-type="saved">
+            <label class="label">Zapisano</label>
+            <span class="ico fas fa-check-circle"></span>
+        </div>
+        <a id="navigation-presentation-play" href="{% url 'auditor:presentation_play' properties.short_id_num %}" target="_blank">
+            <label class="label">Start</label>
+            <span class="ico far fa-play"></span>
+        </a>
+    </nav>
+
+    <aside id="slides-panel"></aside>
+
+    <main id="slide-preview">
+        <header></header>
+        <section class="content"></section>
+    </main>
+
+    <aside class="properties">
+        <article class="properties-section" id="properties-lecture">
+            <header>Wykład</header>
+            <hr>
+            <section class="property">
+                <label for="property_lecture_title">Tytuł</label>
+                <input type="text" value="" id="property_lecture_title">
+            </section>
+            <section class="property">
+                <label for="property_lecture_position">Pozycja</label>
+                <input type="number" value="" id="property_lecture_position" min="1" max="0">
+            </section>
+        </article>
+        <article class="properties-section" id="properties-slide">
+            <header>Slajd</header>
+            <section class="property">
+                <label for="property_slide_title">Tytuł</label>
+                <input type="text" value="" id="property_slide_title">
+            </section>
+            <section class="property">
+                <label for="property_slide_type">Typ</label>
+                <select name="property_slide_type" id="property_slide_type">
+                    <option value="yesno">Tak / Nie</option>
+                    <option value="slider_1to5">Slider 1 do 5</option>
+                    <option value="text">Pole tekstowe</option>
+                </select>
+            </section>
+            <section class="property">
+                <label for="property_slide_position">Pozycja</label>
+                <input type="number" value="" id="property_slide_position" min="1" max="0">
+            </section>
+        </article>
+    </aside>
+
+    <footer id="author">Autor: <span>Krzysztof Kukiz</span> (<a href="mailto:kukizk@gmail.com">kukizk@gmail.com</a>) &copy; 2020</footer>
+
+</body>
+</html>

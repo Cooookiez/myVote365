@@ -1,0 +1,180 @@
+
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="pl">
+<head>
+    {% include "head.html" %}
+    <title>Login / Register | myVote365</title>
+    <link rel="stylesheet" href="{% static 'css/login_register.css' %}">
+    <script src="https://www.google.com/recaptcha/api.js?render=6LekELYUAAAAAD0T6UTe8hN9tTeFNZ9JEDTR25H1"></script>
+    <script src="{% static 'javascript/jquery-3.4.1.min.js' %}"></script>
+    <script>
+
+        var reChaptcha_token = null;
+        grecaptcha.ready(function() {
+            generateReChaptchaToken()
+        });
+
+        $(function(){
+            console.log('jQ is ON!')
+
+            //* register
+            $('#register > form').submit(function(){
+                register_post()
+                generateReChaptchaToken()
+                return false;
+            });
+
+            //* login
+            $('#login > form').submit(function(){
+                login_post();
+                return false
+            });
+
+        }); // jQ END
+
+        function generateReChaptchaToken() {
+            grecaptcha.execute('6LekELYUAAAAAD0T6UTe8hN9tTeFNZ9JEDTR25H1', {action: 'register'}).then(function (token) {
+                reChaptcha_token = token
+            });
+        }
+
+        function login_post(){
+            console.log('Login start');
+            var email = $('#login_email').val();
+            var password = $('#login_password').val();
+            var csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+
+            $.post('{% url 'auditor:login' %}', {
+                email: email,
+                password: password,
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+            }).done(function(response_raw){
+                //clear previous callback(s)
+                $('p.callback').each(function(){
+                    $(this).text('');
+                });
+                // write callback
+                var response_json = JSON.parse(response_raw)
+                var responses_count = Object.keys(response_json).length
+                for( i = 0; i < responses_count; i++ ){
+                    var place = response_json[i].place;
+                    var type = response_json[i].type;
+                    var msg = response_json[i].msg;
+                    $('#'+place).attr('data-callback-type', type).text(msg)
+                    if( type == 'success' ){
+                        window.location.replace("/panel");
+                    }
+                }
+
+            });
+        }
+
+        function register_post(){
+                console.log('Register start')
+                var first_last_name = $('#register_first_last_name').val();
+                var email = $('#register_email').val();
+                var password_1 = $('#register_password_1').val();
+                var password_2 = $('#register_password_2').val();
+                var reCaptcha_response = reChaptcha_token;
+                var csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+
+                $.post('{% url 'auditor:register' %}', {
+                    csrfmiddlewaretoken: csrfmiddlewaretoken,
+                    first_last_name: first_last_name,
+                    email: email,
+                    password_1: password_1,
+                    password_2: password_2,
+                    reCaptcha_response: reCaptcha_response,
+                }).done(function(response_raw){
+                    //clear previous callback(s)
+                    $('p.callback').each(function(){
+                        $(this).text('');
+                    });
+                    // write callback
+                    var response_json = JSON.parse(response_raw)
+                    var responses_count = Object.keys(response_json).length
+                    for( i = 0; i < responses_count; i++ ){
+                        var place = response_json[i].place;
+                        var type = response_json[i].type;
+                        var msg = response_json[i].msg;
+                        $('#'+place).attr('data-callback-type', type).text(msg)
+                        if( type == 'success' ){
+                            $('#login_email').val(email);
+                            $('#login_password').val(password_1);
+                            login_post();
+                        }
+                    }
+                });
+        }
+
+    </script>
+</head>
+<body>
+
+    <main>
+
+        {% csrf_token %}
+
+        <article id="login">
+            <form method="POST">
+                <header>Zaloguj się</header>
+                <section>
+                    <label for="login_email">Twój Email</label>
+                    <input id="login_email" name="login_email" type="email" placeholder="twój@email.com" required autofocus>
+                </section>
+                <section>
+                    <label for="login_password">Twoje hasło</label>
+                    <input id="login_password" name="login_password" type="password" placeholder="Wpisz hasło" required>
+                </section>
+                <section>
+                    <input type="submit" value="Zaloguj się">
+                    <p class="callback" data-callback-type="" id="callback-login-submit"></p>
+                </section>
+            </form>
+        </article>
+
+        <article id="register">
+            <form method="POST">
+                <header>Zarejestruj się</header>
+                <section>
+                    <label for="register_first_last_name">Wpisz imię i nazwisko</label>
+                    <input id="register_first_last_name" name="register_first_last_name" type="text" placeholder="Jan nowak" required>
+                    <p class="callback" data-callback-type="" id="callback-register-name"></p>
+                </section>
+                <section>
+                    <label for="register_email">Twój email</label>
+                    <input id="register_email" name="register_email" type="email" placeholder="twój@email.com" required>
+                    <p class="callback" data-callback-type="" id="callback-register-email"></p>
+                </section>
+                <section>
+                    <label for="register_password_1">Hasło</label>
+                    <input id="register_password_1" name="register_password_1" type="password" placeholder="Wpisz hasło" required>
+                    <p class="callback" data-callback-type="" id="callback-register-password-1"></p>
+                    <ul>
+                        <li>Minimum 8 znaków</li>
+                        <li>Co Najmniej 1 liczba</li>
+                        <li>Co Najmniej 1 wielka litera (A, B, C, …)</li>
+                        <li>Co Najmniej 1 mała litera (a, b, c, …)</li>
+                    </ul>
+                    <ul>
+                        <li>Hasła muszą być identyczne</li>
+                    </ul>
+                    <input id="register_password_2" name="register_password_2" type="password" placeholder="Potwierdź hasło" required>
+                    <p class="callback" data-callback-type="" id="callback-register-password-2"></p>
+                </section>
+                <section>
+                    <input type="submit" value="Zarejestruj się">
+                    <p class="callback" id="callback-register-submit"></p>
+                </section>
+            </form>
+        </article>
+
+    </main>
+
+    <footer>
+        Autor: <span>Krzysztof Kukiz</span> (<a href="mailto:kukizk@gmail.com">kukizk@gmail.com</a>) &copy; 2020
+    </footer>
+
+</body>
+</html>

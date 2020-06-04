@@ -1,0 +1,27 @@
+
+<script>
+    $( function() {
+        $( "#slider_1to5_slider" ).slider({
+          value:3,
+          min: 1,
+          max: 5,
+          step: 1,
+          slide: function( event, ui ) {
+            $( "#slider_1to5_slider > span" ).text( ui.value );
+            $( "#slider_1to5_slider" ).val( ui.value );
+          }
+        });
+        $( "#slider_1to5_slider > span" ).text( $( "#slider_1to5_slider" ).slider( "value" ) );
+    } );
+</script>
+<article data-question-type="slider_1to5">
+    <div id="slider_1to5_slider"></div>
+    <div id="slider_1to5_labels">
+        <span>1</span>
+        <span>2</span>
+        <span>3</span>
+        <span>4</span>
+        <span>5</span>
+    </div>
+
+</article>

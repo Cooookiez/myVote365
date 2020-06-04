@@ -1,0 +1,44 @@
+
+@import 'variables';
+
+main{
+
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    // justify-content: center;
+    align-content: flex-start;
+
+    &>a{
+
+        display: block;
+        background-color: rgba($color: $color-dark, $alpha: 0.80);
+        margin: 10px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        text-decoration: none;
+        height: 83px;
+        width: 200px;
+
+        &:hover{
+
+            box-shadow: 1px 2px 5px 0 black;
+
+        }
+
+        &>.title{
+
+            color: $color-light-1;
+
+        }
+
+        &>.short_id_num{
+
+            color: $color-main;
+
+        }
+
+    }
+
+}

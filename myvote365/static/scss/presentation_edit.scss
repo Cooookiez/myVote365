@@ -1,0 +1,387 @@
+
+@import 'variables';
+@import 'presentation_slides_view';
+
+body{
+
+    background: url('/static/img/planning-finance-business-presentation-businessman-sales-1584859-pxhere.com.jpg') no-repeat center center fixed; 
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: 310px auto 300px;
+    grid-template-rows: 41px calc(100% - 41px - 41px) 41px;
+    grid-template-areas:
+        "navigation navigation navigation"
+        "slides-panel main properties"
+        "footer-author footer-author footer-author";
+
+    &>nav.navigation{
+    
+        grid-area: navigation;
+        background: rgba($color: $color-dark, $alpha: 1.0);
+        display: grid;
+        grid-template-columns: auto 1fr auto 1fr auto auto;
+        grid-template-rows: 100%;
+        grid-template-areas: "return-to-presentations . navigation-presentation-title . navigation-saved-status navigation-presentation-play";
+        gap: 5px;
+        padding: 5px;
+        box-shadow: 0 0 10px -2px black;
+        z-index: 100;
+
+        &>*{
+
+            height: 100%;
+            display: grid;
+            grid-template-columns: auto auto;
+            grid-template-rows: 100%;
+            gap: 5px;
+            padding: 5px;
+            border-radius: 5px;
+            color: $color-light-1;
+
+            &>.ico{
+
+                height: 100%;
+
+            }
+
+        }
+        
+        &>a#return-to-presentations{
+
+            grid-area: return-to-presentations;
+            color: $color-blue-1;
+            text-decoration: none;
+
+            &:hover{
+
+                color: darken($color-blue-1, 10%)
+
+            }
+
+        }
+        
+        &>#navigation-presentation-title{
+
+            grid-area: navigation-presentation-title;
+            display: block;
+            padding: 0;
+
+            &>input{
+                display: block;
+                height: 100%;
+                width: 100%;
+                width: 300px;
+                text-align: center;
+                background-color: transparent;
+                border-bottom: 3px solid $color-main;
+                color: $color-main;
+                font-size: 1rem;
+            }
+
+        }
+        
+        &>#navigation-saved-status{
+
+            grid-area: navigation-saved-status;
+            color: rgba($color: $color-green-2, $alpha: 1.0);
+
+            &[data-type=error]{
+                color: rgba($color: $color-error-light, $alpha: 1.0);
+            }
+            &[data-type=warning]{
+                color: rgba($color: $color-warning-1, $alpha: 1.0);
+            }
+            &[data-type=saved]{
+                color: rgba($color: $color-green-2, $alpha: 1.0);
+            }
+            &[data-type=in_progress]{
+                color: rgba($color: $color-light-2, $alpha: 1.0);
+            }
+
+        }
+        
+        &>#navigation-presentation-play{
+
+            grid-area: navigation-presentation-play;
+            background-color: rgba($color: $color-green-2, $alpha: 1.0);
+            color: rgba($color: darken($color-dark, 20%), $alpha: 1.0);
+            cursor: pointer;
+            text-decoration: none;
+
+            &:hover{
+
+                background-color: rgba($color: $color-green-1, $alpha: 1.0);
+
+            }
+
+            & *{
+
+                cursor: pointer;
+                
+            }
+
+        }
+
+    }
+
+    &>aside#slides-panel{
+
+        grid-area: slides-panel;
+        background-color: rgba($color: $color-light-1, $alpha: 0.8);
+        padding: 5px;
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        &>.slides-panel-presentation{
+            // background-color: red !important;
+            color: blue !important;
+            margin-bottom: 5px;
+            display: grid;
+            gap: 5px;
+            grid-template-columns: 50px auto;
+            grid-template-areas: "presentation-cointener-info presentation-panels";
+
+            &>.presentation-cointener-info{
+                grid-area: presentation-cointener-info;
+                background-color: #565656;
+                color: #D8D8D8;
+                text-align: center;
+                line-height: 40px;
+
+                &>.ico{
+
+                    cursor: pointer;
+
+                    &:hover{
+
+                        color: $color-error-light;
+
+                    }
+
+                }
+
+            }
+
+            &>.presentation-panels{
+                grid-area: presentation-panels;
+
+                &>.slide{
+                    border: #565656 solid 2px;
+                    background-color: #565656;
+                    color: #D8D8D8;
+                    margin-bottom: 5px;
+                    width: 245px;
+                    height: 138px;
+                    padding: 5px;
+                    cursor: pointer;
+
+                    &:hover{
+                        background-color: #8C8C8C;
+                        color: #565656;
+                    }
+
+                    &>.ico{
+
+                        &:hover{
+
+                            color: $color-error-light;
+
+                        }
+
+                    }
+
+                }
+
+                &>.slide-add{
+                    border: #565656 solid 2px;
+                    color: #565656;
+                    display: grid;
+                    grid-template-columns: 1fr auto 1fr;
+                    grid-template-rows: 1fr auto 1fr;
+                    grid-template-areas:
+                        ". . ."
+                        ". slide-add-ico ."
+                        ". . .";
+                    width: 100%;
+                    height: 50px;
+                    cursor: pointer;
+                    &:hover{
+                        background-color: #565656;
+                        color: #D8D8D8;
+                    }
+                    &>.ico{
+                        grid-area: slide-add-ico;
+                        height: 30px;
+                        width: 30px;
+                    }
+                }
+            }
+        }
+
+        &>.slides-panel-lecture-add{
+            display: grid;
+            width: 100%;
+            height: 50px;
+            grid-template-columns: 1fr auto 1fr;
+            grid-template-rows: 1fr auto 1fr;
+            grid-template-areas:
+                ". . ."
+                ". slides-panel-presentation-add-ico ."
+                ". . .";
+            border: #565656 solid 2px;
+            color: #565656;
+            cursor: pointer;
+            &:hover{
+                background-color: #565656;
+                color: #D8D8D8;
+            }
+            &>.ico{
+                grid-area: slides-panel-presentation-add-ico;
+                height: 30px;
+                width: 30px;
+            }
+        }
+
+    }
+
+    &>main#slide-preview{
+
+        background-color: rgba($color: $color-light-1, $alpha: 0.8);
+        margin: 10px;
+        padding: 10px;
+        width: calc(100% - 2*10px);
+        height: 100%;
+
+        grid-area: main;
+        // background-color: tan;
+
+        &>*{
+            margin: 10px;
+        }
+
+        &>header{
+            font-size: 24px;
+            font-weight: 500;
+            color: $color-dark;
+        }
+
+        &>.content{
+
+            &>article{
+                &[data-question-type=yesno]{
+                    @include slide_yesno;
+                }
+                
+                &[data-question-type=slide_1to5]{
+                    @include slide_slider_1to5;
+                }
+                
+                &[data-question-type=text]{
+                    @include slide_text;
+                }
+            }
+        }
+
+    }
+
+    &>aside.properties{
+
+        grid-area: properties;
+        background-color: rgba($color: $color-dark, $alpha: .8);
+        overflow-y: auto;
+        overflow-x: hidden;
+
+        &>article.properties-section{
+            
+            // background-color: $color-dark;
+            margin: 10px;
+
+            &>header{
+
+                background-color: rgba($color: $color-light-1, $alpha: .75); 
+                padding: 10px;
+                margin-bottom: 3px;
+                font-size: 1.2rem;
+                font-weight: 900;
+
+            }
+
+            &>section.property{
+
+                background-color: rgba($color: $color-light-1, $alpha: .75);
+                display: grid;
+                grid-template-rows: auto auto;
+                grid-template-columns: 100%;
+                grid-template-areas:
+                    "label"
+                    "input";
+                gap: 2px;
+                padding: 10px;
+
+                &>label,
+                &>input,
+                &>select{
+
+                    padding: 4px;
+                    font-size: 1rem;
+
+                }
+
+                &>label{
+
+                    grid-area: label;
+
+                }
+
+                &>input,
+                &>select{
+                    
+                    background-color: transparent;
+                    grid-area: input;
+                    border: 3px solid $color-dark;
+                    border-radius: 0px !important; //todo zrobić by select nie był zaokrąglony
+
+                }
+
+            }
+
+        }
+        
+    }
+
+    &>footer#author{
+
+        grid-area: footer-author;
+        background-color: rgba($color: $color-dark, $alpha: 1.0);
+        color: $color-light-2;
+        padding: 10px;
+
+        a{
+            
+            text-decoration: none;
+            color: $color-light-1;
+            cursor: pointer;
+            transition: color ease .5s;
+
+            &:active,
+            &:hover{
+
+                transition: color ease .1s;
+                color: $color-blue-1;
+
+            }
+
+        }
+
+    }
+
+}
