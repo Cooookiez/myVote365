@@ -35,6 +35,8 @@
                 let slide = lecture.slides[slide_position];
 
                 update_properties(lecture, slide)
+                update_preview(lecture_position, slide_position)
+                $('#slide-preview > header').text(slide['properties']['title'])
             });
 
             // UPDATES
@@ -468,6 +470,22 @@
             });
         }
 
+        function update_preview(lecture_position, slide_position){
+            console.log(lecture_position, slide_position)
+            let csrfmiddlewaretoken = $('[name=csrfmiddlewaretoken]').val();
+            $.post('{% url 'auditor:presentation_edit' short_id_num %}',{
+                option: 'slide_preview',
+                csrfmiddlewaretoken: csrfmiddlewaretoken,
+                lecture_position: lecture_position,
+                slide_position: slide_position,
+            }).done((data_raw)=>{
+                console.log(data_raw)
+                $('#slide-preview > .content').html(data_raw)
+            }).fail(()=>{
+                console.log('nini')
+            });
+        }
+
     </script>
 </head>
 <body data-short-id-num="{{ properties.short_id_num }}"
@@ -494,20 +512,9 @@
 
     <aside id="slides-panel"></aside>
 
-    <main>
-
-        <article id="slide-preview">
-
-            <header>
-                <span class="title">Tytuł slidu</span>
-            </header>
-
-            <section>
-
-            </section>
-
-        </article>
-
+    <main id="slide-preview">
+        <header></header>
+        <section class="content"></section>
     </main>
 
     <aside class="properties">

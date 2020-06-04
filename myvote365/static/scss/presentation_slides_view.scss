@@ -1,0 +1,92 @@
+
+@mixin slide_yesno{
+    background-color: tan;
+    background-image: linear-gradient(to right, $color-green-1 var(--percent), $color-error-light var(--percent));
+
+    &>.labels{
+        width: 100%;
+        height: 100%;
+        display: grid;
+        grid-template-areas: 
+            "yes-label . no-label"
+            ". . ."
+            "yes-percent . no-percent"
+            ;
+        grid-template-columns: auto 1fr auto;
+        grid-template-rows: auto 1fr auto;
+        padding: 20px;
+
+        /*
+            <div class="yes-label">Yes</div>
+            <div class="yes-percent">33%</div>
+            <div class="no-label">No</div>
+            <div class="no-percent">67%</div>
+        */
+
+        &>.yes-label,
+        &>.no-label{
+            font-size: 48px;
+            font-weight: 900;
+        }
+
+        &>.yes-percent,
+        &>.no-percent{
+            font-size: 32px;
+            font-weight: 500;
+        }
+
+        &>.yes-label{
+            grid-area: yes-label;
+        }
+
+        &>.yes-percent{
+            grid-area: yes-percent;
+        }
+
+        &>.no-label{
+            grid-area: no-label;
+        }
+
+        &>.no-percent{
+            grid-area: no-percent;
+        }
+
+    }
+}
+
+@mixin slide_slider_1to5{
+    &>header.slide_1to5_avg_text{
+        // background-color: green;
+        padding: 8px;
+        text-align: center;
+        font-weight: 900;
+        color: $color-blue-1;
+    }
+
+    &>.slide_1to5_avg_progress_bar{
+        width: 100%;
+        height: 16px;
+        background-image: linear-gradient(to right, $color-blue-1 var(--avg), $color-main var(--avg));
+    }
+}
+
+@mixin slide_text{          
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
+
+    &>.single_answer{
+
+        width: 300px;
+        background-color: $color-dark;
+        padding: 10px;
+        margin: 10px;
+        color: $color-light-1;
+        font-weight: 500;
+        font-size: 24px;
+        text-align: justify;
+    }
+}

@@ -53,8 +53,7 @@ Od prototypu dodałem podgląd slajdu (na razie “tak / nie”) oraz odpowiedzi
   - [x] Add
   - [x] Remove
 - [x] [SLIDE EDIT] – **scrolable slides/lectures left panel**
-- [ ] [SLIDE EDIT] – **slide preview**
-- [ ] [SLIDE EDIT] – **With Add/Remove change active slide/lecture properties edit**
+- [x] [SLIDE EDIT] – **slide preview**
 - [x] [PRESENTATION] – **start**
 - [x] [PRESENTATION] – **UI**
   - [x] footer

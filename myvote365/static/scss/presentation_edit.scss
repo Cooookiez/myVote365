@@ -1,5 +1,6 @@
 
 @import 'variables';
+@import 'presentation_slides_view';
 
 body{
 
@@ -252,10 +253,43 @@ body{
 
     }
 
-    &>main{
+    &>main#slide-preview{
+
+        background-color: rgba($color: $color-light-1, $alpha: 0.8);
+        margin: 10px;
+        padding: 10px;
+        width: calc(100% - 2*10px);
+        height: 100%;
 
         grid-area: main;
         // background-color: tan;
+
+        &>*{
+            margin: 10px;
+        }
+
+        &>header{
+            font-size: 24px;
+            font-weight: 500;
+            color: $color-dark;
+        }
+
+        &>.content{
+
+            &>article{
+                &[data-question-type=yesno]{
+                    @include slide_yesno;
+                }
+                
+                &[data-question-type=slide_1to5]{
+                    @include slide_slider_1to5;
+                }
+                
+                &[data-question-type=text]{
+                    @include slide_text;
+                }
+            }
+        }
 
     }
 

@@ -891,6 +891,65 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                         'type': 'error',
                         'msg': 'wrong option',
                     })
+            # show slide preview
+            elif option == 'slide_preview':
+                lecture_position = int(request.POST.get('lecture_position'))
+                slide_position = int(request.POST.get('slide_position'))
+
+                # get lecture / slide ids
+                lectures_where_ref = presentation_ref.collection('lectures').where('properties.position', '==', lecture_position)
+                lectures_where = lectures_where_ref.get()
+                # get lecture id
+                lectures_ids = []
+                for lecture in lectures_where:
+                    lectures_ids.append(lecture.id)
+                if len(lectures_ids) != 1:
+                    callback = dont_be_hacekr
+                else:
+                    # get slide id
+                    lecture_ref = presentation_ref.collection('lectures').document(lectures_ids[0])
+                    slides_where_ref = lecture_ref.collection('slides').where('properties.position', '==', slide_position)
+                    slides_where = slides_where_ref.get()
+                    slides_ids = []
+                    for slide in slides_where:
+                        slides_ids.append(slide.id)
+                    if len(slides_ids) != 1:
+                        callback = dont_be_hacekr
+                    else:
+                        # get slide type
+                        slide_ref = lecture_ref.collection('slides').document(slides_ids[0])
+                        slide = slide_ref.get().to_dict()
+                        title = slide['properties']['title']
+                        type = slide['properties']['type']
+
+                        # make example answers for that slide & load html
+                        if type == 'yesno':
+                            context = {
+                                'yes_percent': 50,
+                                'no_percent': 50,
+                            }
+                            return render(request, 'auditor/forms/yesno.html', context=context)
+
+                        elif type == 'slider_1to5':
+                            context = {
+                                'avg': 3,
+                                'percent': 50,
+                            }
+                            return render(request, 'auditor/forms/slider_1to5.html', context=context)
+
+                        elif type == 'text':
+                            context = {
+                                'texts': [
+                                    'Lorem ipsum dolor sit amet',
+                                    'consectetur adipiscing elit',
+                                    'Integer fringilla fermentum ante fringilla cursus',
+                                    'Nunc quis ex lacinia',
+                                ],
+                            }
+                            return render(request, 'auditor/forms/text.html', context=context)
+
+                        else:
+                            callback = dont_be_hacekr
             else:
                 callback = dont_be_hacekr
 
@@ -905,6 +964,7 @@ def presentations_edit(request, short_id_num, lecture_=None, lecture=None):
                 'properties': lectures['presentation']['properties'],
                 'lectures_data': lectures['lectures_data'],
                 'lectures_json': lectures['lectures_json'],
+                'short_id_num': short_id_num,
             }
 
             return render(request, 'auditor/presentation_edit.html', context=context)
@@ -1052,9 +1112,6 @@ def presentation_play(request, short_id_num):
                     context = {
                         'yes_percent': yes_percent,
                         'no_percent': no_percent,
-                        'lecture_id': lecture_id,
-                        'slide_id': slide_id,
-                        'slide_type': slide_type,
                     }
                     return render(request, 'auditor/forms/yesno.html', context=context)
 
