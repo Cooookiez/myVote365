@@ -33,9 +33,7 @@ Dokończyłem resztę slidów aby był podgląd podczas pokazu
 ![slide text](README_media/Oddanie%20projektu/oddanie_text.png)
 
 Oraz podczas edytowania (tutaj jest podgląd z defaultowymi danymi)
-![slide yes / no](README_media/Oddanie%20projektu/Sizzy-Desktop%20localhost%2004Jun%2019.10-2.png)
-![slide slider 1 to 5](README_media/Oddanie%20projektu/Sizzy-Desktop%20localhost%2004Jun%2019.10-1.png)
-![slide text](README_media/Oddanie%20projektu/Sizzy-Desktop%20localhost%2004Jun%2019.10.png)
+![panel](README_media/Oddanie%20projektu/oddanie%202.png)
 
 ## 📝 To Do List
 
