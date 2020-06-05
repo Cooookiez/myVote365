@@ -1,5 +1,9 @@
 # 🗳 myVote365
 
+![fulfilled the assumptions](https://img.shields.io/badge/Fulfilled_assumptions-100%25-brightgreen)
+![Raports](https://img.shields.io/badge/Raports_%26%20Presentation-83.33%25-blue)
+![Version](https://img.shields.io/badge/Version-Alpha_v1.0-blueviolet)
+
 ## 💡 Assumptions
 
 1. **Platforma do głosowania na zadane przez mówcy/wykładowcę/prelegenta pytania, np:**
