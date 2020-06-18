@@ -1,7 +1,7 @@
 # 🗳 myVote365
 
 ![fulfilled the assumptions](https://img.shields.io/badge/Fulfilled_assumptions-100%25-brightgreen)
-![Raports](https://img.shields.io/badge/Raports_%26%20Presentation-83.33%25-blue)
+![Raports](https://img.shields.io/badge/Raports_%26%20Presentation-100%25-blue)
 ![Version](https://img.shields.io/badge/Version-Alpha_v1.0-blueviolet)
 
 ## 💡 Assumptions
@@ -99,7 +99,7 @@ Oraz podczas edytowania (tutaj jest podgląd z defaultowymi danymi)
 | 21.05.2020 | Prototype                     |   ✅   |
 | 28.05.2020 | Raport III (Prototype update) |   ✅   |
 | 04.06.2020 | Submission of the project     |   ✅   |
-| 18.06.2020 | Project presentation          |   🕐   |
+| 18.06.2020 | Project presentation          |   ✅   |
 
 ## 📚 Used libraries
 
